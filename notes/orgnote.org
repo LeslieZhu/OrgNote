@@ -17,7 +17,7 @@
 
 #+KEYWORDS: 札记
 
-#+TITLE: OrgNote说明
+#+TITLE: OrgNote: 一个简单的org-mode博客
 #+AUTHOR: Leslie Zhu 
 #+EMAIL: pythonisland@gmail.com
 #+DATE: 09/26/2014
