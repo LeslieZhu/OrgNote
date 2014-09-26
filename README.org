@@ -1,5 +1,5 @@
 
-#+TITLE: OrgNote: 一个简单的org-mode博客
+* OrgNote: 一个简单的org-mode博客
 
 * 前言
 
