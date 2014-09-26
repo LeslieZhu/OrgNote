@@ -1,0 +1,3 @@
+;;; -*- org -*-
+
+- [[../notes/orgnote.html][OrgNote说明]]
