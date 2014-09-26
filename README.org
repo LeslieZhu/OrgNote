@@ -26,6 +26,7 @@
 
 =OrgNote= 的使用很简单，主要步骤:
 #+begin_quote
+0) 获取程序: =git clone git@github.com:LeslieZhu/OrgNote.git=
 1) 更新 =orgnote.py=, 根据自己情况修改，参考下一节
 2) 写一篇 =.org= 文章，用 =org-expand-as-html= 生成html
 3) 将新的html博文添加到 =public/index.org=
