@@ -47,11 +47,11 @@
 
 =OrgNote= 的使用很简单，主要步骤:
 #+begin_quote
-1) 更新 =orgnote.py=, 根据自己情况修改，需要 [[https://www.python.org/][Python]] 基础，即使不懂，也应该能修改
+1) 更新 =orgnote.py=, 根据自己情况修改，参考下一节
 2) 写一篇 =.org= 文章，用 =org-expand-as-html= 生成html
 3) 将新的html博文添加到 =public/index.org=
-4) 运行 =python orgnote.py=
-5) 立即查看效果: =python -m SimpleHTTPServer=
+4) 运行: =python orgnote.py=
+5) 查看效果: =python orgnote server [port]=
 6) 同步到github: =git push origin master=
 #+end_quote
 
