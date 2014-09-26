@@ -51,7 +51,7 @@
 2) 写一篇 =.org= 文章，用 =org-expand-as-html= 生成html
 3) 将新的html博文添加到 =public/index.org=
 4) 运行: =python orgnote.py=
-5) 查看效果: =python orgnote server [port]=
+5) 查看效果: =python orgnote.py server [port]=
 6) 同步到github: =git push origin master=
 #+end_quote
 
@@ -89,8 +89,8 @@
 博文清单书写方式举例:
 #+begin_quote
 #+begin_example
-- [[../notes/orgnote.html][OrgNote说明: 公开版本]]
-+ [[../notes/orgnote.html][OrgNote说明: 不公开版本]]
+: - [[../notes/orgnote.html][OrgNote说明: 公开版本]]
+: + [[../notes/orgnote.html][OrgNote说明: 不公开版本]]
 #+end_example
 #+end_quote
 
