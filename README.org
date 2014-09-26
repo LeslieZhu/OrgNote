@@ -31,7 +31,7 @@
 2) 写一篇 =.org= 文章，用 =org-expand-as-html= 生成html
 3) 将新的html博文添加到 =public/index.org=
 4) 运行: =python orgnote.py=
-5) 查看效果: =python orgnote.py server [port]=
+5) 查看效果: =python orgnote.py server [port]=, 浏览器打开 =localhost:port=
 6) 同步到github: =git push origin master=
 #+end_quote
 
