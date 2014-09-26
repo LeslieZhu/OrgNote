@@ -1,0 +1,133 @@
+* 前言
+
+自从使用 =Emacs= 编辑器的 =org-mode= 编辑文档后，我就喜欢上了写文档，也慢慢的积累了一些文件。
+
+当我想把这些文档以博客的形式展示的时候，发现大多博客框架对于我来说都过于复杂了。即使是 =Hexo= ，我也不太习惯，我便想能否写一个用 =org-mode= 写博客的程序。
+
+没有想太多功能，仅仅为了自己能用就行，随便弄了一个博客起来，拿了一个 =freemind= 的主题来用。
+
+我表弟想在github上建立博客，我给他推荐 =hexo=, 理由是:
+#+begin_quote
+- 流行
+- 容易上手
+- 专业
+#+end_quote
+
+但没想到，他在自己机器上安装的时候遇到了各种各样的问题，最后不了了之。
+
+这个事情让我觉得，或许有人会使用我这个程序，因为它 =足够简单= 。
+
+* OrgNote
+
+=OrgNote= 采用 =org-mode= 写博客，就如 =hexo= 使用 =markdown= 写博客一样，最终结果都是转换为 =Html=.
+
+=OrgNote= 的使用很简单，主要步骤:
+#+begin_quote
+1) 更新 =orgnote.py=, 根据自己情况修改，需要 [[https://www.python.org/][Python]] 基础，即使不懂，也应该能修改
+2) 写一篇 =.org= 文章，用 =org-expand-as-html= 生成html
+3) 将新的html博文添加到 =public/index.org=
+4) 运行 =python orgnote.py=
+5) 立即查看效果: =python -m SimpleHTTPServer=
+6) 同步到github: =git push origin master=
+#+end_quote
+
+- =Emacs= 参考: [[http://www.gnu.org/software/emacs/]]
+- =Org-mode= 参考: [[http://orgmode.org/][org-mode]]
+
+* 配置自己的博客
+
+整个程序只有一个文件 =orgnote.py=, 因此以下所有的修改都在此文件中。
+
+** 基本设置
+*** __dirs__
+
+这个 *配置项* 是一个列表，列表的元素是一个个的文件，每个文件记录用于发布的文章清单。
+
+*** __title__
+
+博客的标题。
+
+*** __author__
+
+作者。
+
+*** __description__
+
+对博客的描述。
+
+*** __blog_keywords__
+
+博客关键字，一些搜索引擎可能会收录。
+
+** 功能定制
+*** 博文清单
+
+博文清单书写方式举例:
+#+begin_quote
+#+begin_example
+- [[../notes/orgnote.html][OrgNote说明: 公开版本]]
++ [[../notes/orgnote.html][OrgNote说明: 不公开版本]]
+#+end_example
+#+end_quote
+
+注意开头的 =-/+= 后面是有空格的，这是 =org-mode= 的标记方式。
+- 如果是 =-=, 则博客发布到首页
+- 如果是 =+=, 则博客发布到 =/public/nopublic.html= 
+
+*** 博客(=关于=)页面定制
+
+找到函数 =contain_about= , 用下列HTML的标记方式写说明信息:
+#+begin_quote
+#+begin_example
+<p> 内容 </p>
+#+end_example
+#+end_quote
+
+*** 添加多说评论功能
+
+找到函数 =duosuo=, 将 =多说评论= 的嵌入代码作为内容返回即可:
+#+begin_quote
+#+begin_src python
+def duosuo():
+    return """
+    这里是我的多说引用代码:)
+    """
+#+end_src
+#+end_quote
+
+*** 添加微博展示功能
+
+找到函数 =sidebar_weibo=, 将自己微博代码加入，如:
+#+begin_quote
+#+begin_src python
+def sidebar_weibo():
+     return """
+     你的微博引用代码:)
+     """
+#+end_src
+#+end_quote
+
+*** 添加友情链接
+
+找到函数 =sidebar_link=, 参考着写就行。
+
+*** 修改最近文章数量
+
+找到函数 =sidebar_latest=, 如要展示最近10篇文章，则改成:
+#+begin_quote
+#+begin_src python
+def sidebar_latest(notes=list(), num=10):
+#+end_src
+#+end_quote
+
+这个 =num=10= 表示默认是展示最近10篇文章。
+
+
+* 后记
+
+=OrgNote= 是我的一个玩具，希望你也喜欢 :)
+
+
+
+
+
