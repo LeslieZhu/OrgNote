@@ -51,9 +51,23 @@
 1) 更新 =orgnote.py=, 根据自己情况修改，参考下一节
 2) 写一篇 =.org= 文章，用 =org-expand-as-html= 生成html
 3) 将新的html博文添加到 =public/index.org=
-4) 运行: =python orgnote.py=
+4) 运行: =python orgnote.py generate=
 5) 查看效果: =python orgnote.py server [port]=, 浏览器打开 =localhost:port=
 6) 同步到github: =git push origin master=
+#+end_quote
+
+orgnote.py:
+#+begin_quote
+#+begin_example
+$ python orgnote.py
+
+    Usage:
+          python orgnote.py note {notename}           ---- add a org-mode note
+          python orgnote.py page {notename}           ---- convert .org to .html
+
+          python orgnote.py generate                  ---- generate all notes
+          python orgnote.py server [port]             ---- start web server for review
+#+end_example
 #+end_quote
 
 - =Emacs= 参考: [[http://www.gnu.org/software/emacs/]]

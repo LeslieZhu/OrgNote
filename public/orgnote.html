@@ -168,7 +168,7 @@
 </li>
 <li>将新的html博文添加到 <code>public/index.org</code>
 </li>
-<li>运行: <code>python orgnote.py</code>
+<li>运行: <code>python orgnote.py generate</code>
 </li>
 <li>查看效果: <code>python orgnote.py server [port]</code>, 浏览器打开 <code>localhost:port</code>
 </li>
@@ -176,6 +176,27 @@
 </li>
 </ol>
 
+
+
+</blockquote>
+
+
+<p>
+orgnote.py:
+</p><blockquote>
+
+
+
+
+<pre class="example">$ python orgnote.py
+
+    Usage:
+          python orgnote.py note {notename}           ---- add a org-mode note
+          python orgnote.py page {notename}           ---- convert .org to .html
+
+          python orgnote.py generate                  ---- generate all notes
+          python orgnote.py server [port]             ---- start web server for review
+</pre>
 
 
 </blockquote>
