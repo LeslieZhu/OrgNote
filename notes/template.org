@@ -1,0 +1,23 @@
+#+STARTUP: overview
+#+STARTUP: content
+#+STARTUP: showall
+#+STARTUP: showeverything
+#+STARTUP: indent
+#+STARTUP: nohideblocks
+#+OPTIONS: ^:{}
+#+OPTIONS: LaTeX:t         
+#+OPTIONS: LaTeX:dvipng    
+#+OPTIONS: LaTeX:nil       
+#+OPTIONS: LaTeX:verbatim  
+
+#+OPTIONS: H:3
+#+OPTIONS: toc:t
+#+OPTIONS: num:t
+#+LANGUAGE: zh-CN
+
+#+KEYWORDS: 
+#+TITLE: 
+#+AUTHOR:
+#+EMAIL: 
+#+DATE: 
+
