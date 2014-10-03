@@ -344,7 +344,9 @@ def contain_page(link="",num=0, public=True):
     
     data = open(link).read()
     data = re.search("(<div id=\"content\">.*</div.).*</body>",data.replace('\n','TMD')) 
-    data = data.groups()[0].replace('TMD','\n')
+    data = data.groups()[0]
+    data = re.sub(r'<div id=\"postamble\">.*</div>','',data)
+    data = data.replace('TMD','\n')
 
     if public:
         __archives__.append([gen_public_link(__notes__[num][0],"/public/"),"fa fa-file-o",__notes__[num][1].strip()])
@@ -575,8 +577,8 @@ def header_suffix():
     return """
     <div class="container-narrow">
       <footer>
-        <p>&copy; 2014 Leslie Zhu
-        with help from <a href="http://zespia.tw/hexo/" target="_blank">Hexo</a> and <a href="http://getbootstrap.com/" target="_blank">Twitter Bootstrap</a>. Theme by <a href="http://github.com/wzpan/hexo-theme-freemind/">Freemind.</a>  Published with GitHub Pages. 
+        <p>&copy; 2014 %s
+        with help from <a href="https://github.com/LeslieZhu/OrgNote" target="_blank">OrgNote</a>, <a href="http://zespia.tw/hexo/" target="_blank">Hexo</a> and <a href="http://getbootstrap.com/" target="_blank">Twitter Bootstrap</a>. Theme by <a href="http://github.com/wzpan/hexo-theme-freemind/">Freemind.</a>  Published with GitHub Pages. 
       </p> </footer>
     </div> <!-- container-narrow -->
     
@@ -588,7 +590,7 @@ def header_suffix():
 
   </body>
 </html>
-    """
+    """ % __author__
 
 def gen_public_link(link="",prefix="public/"):
     return prefix+link.split('/')[-1]
@@ -636,7 +638,7 @@ def gen_public():
 
 def gen_index():
     output = open("index.html","w")
-    print >> output,header_prefix(title="敏毅")
+    print >> output,header_prefix(title=__title__)
     print >> output,body_prefix()
     print >> output,body_menu(__menus__)
     print >> output,contain_prefix()
@@ -717,8 +719,11 @@ def usage():
     
     print """
     Usage:
-          python orgnote.py               ---- update blog
-          python orgnote server [port]    ---- start web server
+          python orgnote.py note {notename}           ---- add a org-mode note
+          python orgnote.py page {notename}           ---- convert .org to .html
+
+          python orgnote.py generate                  ---- generate all notes
+          python orgnote.py server [port]             ---- start web server for review
     """
     sys.exit()
             
@@ -727,30 +732,58 @@ def usage():
 if __name__ == "__main__":
     import sys,os
     
-    if len(sys.argv) == 1:
-        gen_notes(__dirs__)
-        gen_tag_list()
-        gen_public()
-        gen_index()
-        gen_about()
-        gen_minyi()
-        gen_archive()
-        gen_tags()
-        gen_nopublic()
-    elif len(sys.argv) == 2:
+    if len(sys.argv) == 2:
         if sys.argv[1] == "server":
             try:
                 os.system("python -m SimpleHTTPServer")
             except Exception,ex:
                 print str(ex)
                 usage()
+        elif sys.argv[1] == "generate":
+            gen_notes(__dirs__)
+            gen_tag_list()
+            gen_public()
+            gen_index()
+            gen_about()
+            gen_minyi()
+            gen_archive()
+            gen_tags()
+            gen_nopublic()
+            print "notes generate done"
+
         else:
             usage()
-    elif len(sys.argv) == 3 and sys.argv[1] == "server":
-        try:
-            os.system("python -m SimpleHTTPServer " + sys.argv[2])
-        except Exception,ex:
-            print str(ex)
+    elif len(sys.argv) == 3:
+        if sys.argv[1] == "server":
+            try:
+                os.system("python -m SimpleHTTPServer " + sys.argv[2])
+            except Exception,ex:
+                print str(ex)
+                usage()
+        elif sys.argv[1] == "note":
+            try:
+                notename = sys.argv[2]
+                if not notename.endswith('.org'): notename += ".org"
+                if not notename.startswith('notes/'): notename = "notes/"+notename
+                if not os.path.exists(notename):
+                    os.system("cp notes/template.org %s" % notename)
+                    print "%s init done" % notename
+                else:
+                    print "%s exists, please use other name or delete it" % notename
+            except Exception,ex:
+                print str(ex)
+                usage()
+        elif sys.argv[1] == "page":
+            try:
+                notename = sys.argv[2]
+                if not notename.endswith('.org'): notename += ".org"
+                if not notename.startswith('notes/'): notename = "notes/"+notename
+                os.system("emacs --batch %s --funcall org-export-as-html" % notename)
+                print "%s generated" % notename.replace('.org','.html')
+            except Exception,ex:
+                print str(ex)
+                usage()
+        else:
             usage()
     else:
         usage()
