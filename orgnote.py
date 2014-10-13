@@ -545,7 +545,7 @@ def sidebar_date():
     <h4>时间机器</h4>
     <ul class="tag_box inline list-unstyled">
     """
-    for key in __timetags__:
+    for key in sorted(__timetags__.keys(),reverse=True):
         output += "<li><a href=\"/public/tags/%s.html\">%s<span>%s</span></a></li>" % (key,key,len(__timetags__[key]))
         
     output += """
