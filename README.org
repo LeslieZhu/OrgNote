@@ -1,13 +1,13 @@
 
-* OrgNote: A simple org-mode blog, write blog by org-mode in Emacs
+* OrgNote: A simple blog based on org-mode
 
 * Get Started
 
-  At first, need to fork OrgNote as =yourname.github.com= repo.
+  At first, need to fork =OrgNote= as =yourname.github.com= repository.
 
-  Thus you can open =yourname.github.com= in brower after wait some minutes. 
+  Thus you can open =https://yourname.github.com= in  browser after wait some minutes. 
 
-  And there is a default blog ready now!
+  There is a default blog now!
 
 * Post Blog
 
@@ -84,13 +84,13 @@ note-list-file example:
 #+end_quote
 
 Note:
-- There is a blackspace after =-/+=, this is a format of org-mode.
-- If the line beginswith =-=, thus the note will public to homepage of blog.
-- If the line beginswith =+=, thus the note will only public to =/public/nopublic.html= 
+- There is a space after =-/+=, this is a format of org-mode.
+- If the line begins with =-=, thus the note will public to homepage of blog.
+- If the line begins with =+=, thus the note will only public to =/public/nopublic.html= 
 
 *** About
 
-Find the function =contain_about=, use update it like:
+Find the function =contain_about=, use it like:
 #+begin_quote
 #+begin_example
 <p> something </p>
@@ -99,7 +99,7 @@ Find the function =contain_about=, use update it like:
 
 *** Duoshuo
 
-Find function =duosuo=, and add http://duoshuo.com/ code into it:
+Find the function =duosuo=, and add http://duoshuo.com/ code into it:
 #+begin_quote
 #+begin_src python
 def duosuo():
@@ -111,7 +111,7 @@ def duosuo():
 
 *** Weibo
 
-Find function =sidebar_weibo=, and add your weibo's code into it:
+Find the function =sidebar_weibo=, and add your weibo's code into it:
 #+begin_quote
 #+begin_src python
 def sidebar_weibo():
@@ -123,18 +123,18 @@ def sidebar_weibo():
 
 *** Links
 
-Find function =sidebar_link=, and add links.
+Find the function =sidebar_link=, and add links.
 
 *** Latest Blogs
 
-Find function =sidebar_latest=, display latest 10 notes, sample:
+Find the function =sidebar_latest=, display latest 10 notes, sample:
 #+begin_quote
 #+begin_src python
 def sidebar_latest(notes=list(), num=10):
 #+end_src
 #+end_quote
 
-The =num=10= meaning display latest 10 notes default.
+The =num=10= meaning is display latest 10 notes as default.
 
 
 * More
