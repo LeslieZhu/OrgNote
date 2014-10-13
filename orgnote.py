@@ -55,6 +55,7 @@ __minyi__ = [
 __keywords__ = list()
 __tags__ = dict()
 __page_tags__ = dict()
+__timetags__ = dict()
 
 
 
@@ -337,6 +338,15 @@ def gen_tag_list(public=True):
 
             __tags__[key].append([link[0], link[1].strip()])
 
+def gen_timetag_list(public=True):
+    if not public: return
+    for num,link in enumerate(__notes__):
+        # save each page in a yymm dict
+        yyyymm = ''.join(gen_date(link[0]).split('-')[:2])
+        if not __timetags__.has_key(yyyymm):__timetags__[yyyymm] = list()
+        __timetags__[yyyymm].append(link)
+
+
 def contain_page(link="",num=0, public=True):
     global __archives__
 
@@ -385,7 +395,7 @@ def contain_page(link="",num=0, public=True):
         index = data.find("<div id=\"postamble\">")
         data = data[:index] + page_order + duosuo() + data[index:]
     else:
-        print "ignore prev"
+        pass #print "ignore prev"
 
 
     output += data
@@ -528,6 +538,22 @@ def sidebar_tags():
 
     return output
 
+def sidebar_date():
+    output = ""
+    output += """
+    <div class="widget">
+    <h4>时间机器</h4>
+    <ul class="tag_box inline list-unstyled">
+    """
+    for key in __timetags__:
+        output += "<li><a href=\"/public/tags/%s.html\">%s<span>%s</span></a></li>" % (key,key,len(__timetags__[key]))
+        
+    output += """
+    </ul>
+    </div>
+    """
+    return output
+
 def sidebar_latest(notes=list(), num=6):
     """
     each note layout: link,name
@@ -605,6 +631,7 @@ def gen_archive():
     print >> output,contain_sidebar()
     print >> output,sidebar_latest(__notes__)            # auto gen
     print >> output,sidebar_tags()
+    print >> output,sidebar_date()
     print >> output,sidebar_weibo()
     print >> output,sidebar_link()
     print >> output,contain_suffix()
@@ -624,6 +651,7 @@ def gen_page(note=list(),num=0,public=True):
     print >> output,contain_sidebar()
     print >> output,sidebar_latest(__notes__)            # auto gen
     print >> output,sidebar_tags()
+    print >> output,sidebar_date()
     print >> output,sidebar_weibo()
     print >> output,sidebar_link()
     print >> output,contain_suffix()
@@ -646,6 +674,7 @@ def gen_index():
     print >> output,contain_sidebar()
     print >> output,sidebar_latest(__notes__)            # auto gen
     print >> output,sidebar_tags()
+    print >> output,sidebar_date()
     print >> output,sidebar_weibo()
     print >> output,sidebar_link()
     print >> output,contain_suffix()
@@ -662,6 +691,7 @@ def gen_about():
     print >> output,contain_sidebar()
     print >> output,sidebar_latest(__notes__)
     print >> output,sidebar_tags()
+    print >> output,sidebar_date()
     print >> output,sidebar_weibo()
     print >> output,sidebar_link()
     print >> output,contain_suffix()
@@ -678,6 +708,7 @@ def gen_minyi():
     print >> output,contain_sidebar()
     print >> output,sidebar_latest(__notes__)
     print >> output,sidebar_tags()
+    print >> output,sidebar_date()
     print >> output,sidebar_weibo()
     print >> output,sidebar_link()
     print >> output,contain_suffix()
@@ -696,6 +727,25 @@ def gen_tags():
         print >> output,contain_sidebar()
         print >> output,sidebar_latest(__notes__)
         print >> output,sidebar_tags()
+        print >> output,sidebar_date()
+        print >> output,sidebar_weibo()
+        print >> output,sidebar_link()
+        print >> output,contain_suffix()
+        print >> output,header_suffix()
+        output.close()
+
+def gen_timetags():
+    for key in __timetags__:
+        output = open("./public/tags/" + key + ".html","w")
+        print >> output,header_prefix(title=key)
+        print >> output,body_prefix()
+        print >> output,body_menu(__menus__)
+        print >> output,contain_prefix([key],"月份: ")
+        print >> output,contain_archive(__timetags__[key])
+        print >> output,contain_sidebar()
+        print >> output,sidebar_latest(__notes__)
+        print >> output,sidebar_tags()
+        print >> output,sidebar_date()
         print >> output,sidebar_weibo()
         print >> output,sidebar_link()
         print >> output,contain_suffix()
@@ -742,12 +792,14 @@ if __name__ == "__main__":
         elif sys.argv[1] == "generate":
             gen_notes(__dirs__)
             gen_tag_list()
+            gen_timetag_list()
             gen_public()
             gen_index()
             gen_about()
             gen_minyi()
             gen_archive()
             gen_tags()
+            gen_timetags()
             gen_nopublic()
             print "notes generate done"
 
