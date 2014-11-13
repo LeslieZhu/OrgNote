@@ -141,6 +141,7 @@ The =num=10= meaning is display latest 10 notes as default.
 
 - =Emacs= : [[http://www.gnu.org/software/emacs/]]
 - =Org-mode= : [[http://orgmode.org/][org-mode]]
+- sample: http://lesliezhu.github.io/
 
 Enjoy it! :)
 

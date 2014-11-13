@@ -22,8 +22,9 @@ import re,time
 # the blog list which list the html path and display title
 # it must be a list()
 __dirs__ = ["./public/index.org"]
-__title__ = "My Blog"
-__author__ = "My Name"
+__title__ = "OrgNote"
+__subtitle__ = "OrgNote"
+__author__ = "OrgNote"
 __description__ = "My information"
 __blog_keywords__ = "My Blog keywords"
 
@@ -162,7 +163,7 @@ def gen_tag_href(name=""):
     if name not in ["MinYi","归档","关于"]:
         return "<a href=\"/public/tags/%s.html\"><i class=\"%s\"></i>%s</a>" % (name,name,name)
     else:
-        return "<a href=\"/%s.html\"><i class=\"%s\"></i>%s</a>" % (__menus_map__[name],name,name)
+        return "<a href=\"/public/%s.html\"><i class=\"%s\"></i>%s</a>" % (__menus_map__[name],name,name)
 
 def body_menu(menus=list()):
     """
@@ -197,7 +198,7 @@ def contain_prefix(tags=[],name=""):
     <div class="content">
 
     <div class="page-header">
-    <h1>My Blot Title</h1>
+    <h1>%s</h1>
     </div>
 
     <div class="row page">
@@ -206,7 +207,7 @@ def contain_prefix(tags=[],name=""):
 
     <div class="slogan">
     <i class="fa fa-heart"></i>
-    """
+    """ % __subtitle__
 
     if not tags:
         output += "主页君: " + __author__
@@ -272,7 +273,7 @@ def gen_category(link=""):
     else:
         return ["札记"]
 
-def contain_notes(data=list()):
+def contain_notes(data=list(),num=0,lastone=0):
     # each note
 
     output = ""
@@ -302,6 +303,34 @@ def contain_notes(data=list()):
         </div> <!-- entry -->
         """
         
+
+    if num == 0:
+        prev_page = '<li class="prev disabled"><a><i class="fa fa-arrow-circle-o-left"></i>Newer</a></li>'
+    elif num == 1:
+        prev_page = '<li class="prev"><a href="%s" class=alignright prev"><i class="fa fa-arrow-circle-o-left"></i>Newer</a></li>' % ("/index.html")
+    else:
+        prev_page = '<li class="prev"><a href="%s" class=alignright prev"><i class="fa fa-arrow-circle-o-left"></i>Newer</a></li>' % ("/public/page"+str(num-1)+".html")
+
+    if lastone == len(__notes__):
+        next_page = '<li class="next disabled"><a><i class="fa fa-arrow-circle-o-right"></i>Older</a></li>'
+    else:
+        next_page = '<li class="next"><a href="%s" class="alignright next">Older<i class="fa fa-arrow-circle-o-right"></i></a></li>' % ("/public/page"+str(num+1)+".html")
+
+    output += """
+    <div>
+    <center>
+    <div class="pagination">
+    <ul class="pagination">
+    %s
+    <li><a href="/public/archive.html" target="_blank"><i class="fa fa-archive"></i>Archive</a></li>
+    %s
+    </ul>
+    </div>
+    </center>
+    </div>
+    """ % (prev_page,next_page)
+
+    output += duosuo()
 
     output += """
     </div> <!-- mypage -->
@@ -492,8 +521,7 @@ def contain_about():
      <div class="row">
       <div class="col-md-12">
     
-    <p>这是一个建立在<code><a class="i i1 fc01 h" hidefocus="true" href="https://www.github.com/LeslieZhu/OrgNote" target="_blank">www.github.com</a></code>上的博客.</p>
-    <p>网页使用 <code>Emacs</code>的<code>org-mode</code>生成HTML文件，然后<code><a class="i i1 fc01 h" hidefocus="true" href="https://github.com/LeslieZhu/OrgNote" target="_blank">OrgNote</a></code>根据<code>Hexo Freemind主题</code>转换成新的HTML文件。</p>
+    <p>这是一个建立在<code><a class="i i1 fc01 h" hidefocus="true" href="https://www.github.com/LeslieZhu/OrgNote" target="_blank">OrgNote</a></code>上的博客.</p>
     </div>
     </div>
     </div>             
@@ -545,8 +573,11 @@ def sidebar_date():
     <h4>时间机器</h4>
     <ul class="tag_box inline list-unstyled">
     """
+    tot = 0
     for key in sorted(__timetags__.keys(),reverse=True):
         output += "<li><a href=\"/public/tags/%s.html\">%s<span>%s</span></a></li>" % (key,key,len(__timetags__[key]))
+        tot += len(__timetags__[key])
+    output += "<li><a href=\"/public/archive.html\">All<span>%s</span></a></li>" % (tot)
         
     output += """
     </ul>
@@ -586,6 +617,7 @@ def sidebar_link():
     <h4>快速链接</h4>
     <ul class="entry list-unstyled">
     <li><a href="http://lesliezhu.github.com" title="LeslieZhu's Github" target="_blank"><i class="fa fa-github"></i>Leslie Zhu</a></li>
+    <li><a href="https://github.com/LeslieZhu/OrgNote" title="OrgNote" target="_blank"><i class="fa fa-github"></i>OrgNote</a></li>
     </ul>
     </div>
     """
@@ -664,13 +696,21 @@ def gen_public():
     for i,note in enumerate(__localnotes__):
         gen_page(note,i,False)
 
-def gen_index():
-    output = open("index.html","w")
+
+def split_index(num,b_index,e_index):
+    """
+    split index.html as page1,page2,page3...,so do not need display all notes in homepage
+    """
+    if num == 0:
+        output = open("index.html","w")
+    else:
+        output = open("public/page"+str(num)+".html","w")
+
     print >> output,header_prefix(title=__title__)
     print >> output,body_prefix()
     print >> output,body_menu(__menus__)
-    print >> output,contain_prefix()
-    print >> output,contain_notes(__notes__)              # auto gen
+    print >> output,contain_prefix()    
+    print >> output,contain_notes(__notes__[b_index:e_index],num,e_index)              # auto gen
     print >> output,contain_sidebar()
     print >> output,sidebar_latest(__notes__)            # auto gen
     print >> output,sidebar_tags()
@@ -681,6 +721,28 @@ def gen_index():
     print >> output,header_suffix()
     output.close()
 
+def gen_index(note_num=6):
+    """
+    each split page hold `num` notes
+    """
+
+    num = 0
+    b_index = 0
+    e_index = b_index + note_num
+    tot = len(__notes__)
+
+    while num <= tot:
+        if b_index > tot:
+            break
+        elif b_index <= tot and e_index > tot:
+            split_index(num,b_index,tot)
+        else:
+            split_index(num,b_index,e_index)
+
+        num += 1
+        b_index += note_num
+        e_index = b_index + note_num
+        
 def gen_about():
     output = open("./public/about.html","w")
     print >> output,header_prefix(title="关于")
@@ -735,7 +797,7 @@ def gen_tags():
         output.close()
 
 def gen_timetags():
-    for key in __timetags__:
+    for key in sorted(__timetags__.keys(),reverse=True):
         output = open("./public/tags/" + key + ".html","w")
         print >> output,header_prefix(title=key)
         print >> output,body_prefix()
