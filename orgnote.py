@@ -12,7 +12,7 @@
 # thus use orgnote.py convert into new html with speciall css
 # 
 
-import re,time
+import re,time,sys
 
 
 # #########################################################
@@ -197,15 +197,15 @@ def contain_prefix(tags=[],name=""):
     <div class="container">
     <div class="content">
 
-    <div class="page-header">
+    <div class="page-header">                   <!-- page-header begin -->
     <h1>%s</h1>
-    </div>
+    </div>                                      <!-- page-header end -->
 
-    <div class="row page">
-    <div class="col-md-9">
-    <div class="mypage">
+    <div class="row page">                      <!-- row-page begin -->
+    <div class="col-md-9">                      <!-- col-md-9 begin -->
+    <div class="mypage">                        <!-- mypage begin -->
 
-    <div class="slogan">
+    <div class="slogan">                        <!-- slogan begin -->
     <i class="fa fa-heart"></i>
     """ % __subtitle__
 
@@ -222,7 +222,7 @@ def contain_prefix(tags=[],name=""):
 
             
     output += """
-    </div>  
+    </div>                                     <!-- slogan end -->
     """
 
     return output
@@ -233,16 +233,33 @@ def gen_date(link=""):
     for line in open(link).readlines():
         if "<meta name=\"generated\"" in line:
             line = line.strip()
-            pattern="([0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]|[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])"
-            pubdate=re.search(pattern,line).groups(1)[0]
+            #pattern="([0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]|[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])"
+            pattern="\"([0-9].*[/-]?[0-9].*[/-]?[0-9].*)\""
+            try:
+                pubdate=re.search(pattern,line).groups(1)[0]
+            except Exception,e:
+                print e
+                sys.exit(-1)
             break
     if "/" in pubdate:
-        pubdate=time.strptime(pubdate, "%m/%d/%Y")
+        try:
+            pubdate=time.strptime(pubdate, "%m/%d/%Y")
+        except ValueError:
+            pubdate=time.strptime(pubdate, "%Y/%m/%d")
+        except exp,e:
+            print e
+            sys.exit(-1)
+            
     elif "-" in pubdate:
-        pubdate=time.strptime(pubdate, "%Y-%m-%d")
+        try:
+            pubdate=time.strptime(pubdate, "%Y-%m-%d")
+        except ValueError:
+            pubdate=time.strptime(pubdate, "%m-%d-%Y")
+        except exp,e:
+            print e
+            sys.exit(-1)
     else:
-        pubdate=re.search("([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])",link).groups(1)[0]
-        pubdate=time.strptime(pubdate, "%Y-%m-%d")
+        pubdate=time.strptime(pubdate, "%Y%m%d")
 
     pubdate=time.strftime("%Y-%m-%d %a",pubdate)
     return pubdate
@@ -644,7 +661,7 @@ def header_suffix():
       <span>▲</span> 
     </a>
 
-    <link rel="stylesheet" href="./fancybox/jquery.fancybox.css" media="screen" type="text/css">
+    <!--<link rel="stylesheet" href="./fancybox/jquery.fancybox.css" media="screen" type="text/css">-->
 
   </body>
 </html>
