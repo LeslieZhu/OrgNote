@@ -12,6 +12,8 @@
 # thus use orgnote.py convert into new html with speciall css
 # 
 
+from __future__ import absolute_import
+
 import re,time,sys
 
 
@@ -851,11 +853,15 @@ def usage():
     
     print """
     Usage:
-          python orgnote.py note {notename}           ---- add a org-mode note
+          python orgnote.py init                      ---- init current dir as blog root
+
+          python orgnote.py new  {notename}           ---- add a org-mode note
           python orgnote.py page {notename}           ---- convert .org to .html
 
           python orgnote.py generate                  ---- generate all notes
           python orgnote.py server [port]             ---- start web server for review
+
+          python orgnote.py upload                    ----- upload blog to public websites,like github
     """
     sys.exit()
             
@@ -867,10 +873,16 @@ if __name__ == "__main__":
     if len(sys.argv) == 2:
         if sys.argv[1] == "server":
             try:
-                os.system("python -m SimpleHTTPServer")
+                os.system("python -m SimpleHTTPServer 8080")
             except Exception,ex:
                 print str(ex)
                 usage()
+        elif sys.argv[1] == "init":
+            print "init...."
+            import orgnote.init
+            orgnote.init.main()
+        elif sys.argv[1] == "upload":
+            print "upload..."
         elif sys.argv[1] == "generate":
             gen_notes(__dirs__)
             gen_tag_list()
@@ -894,7 +906,7 @@ if __name__ == "__main__":
             except Exception,ex:
                 print str(ex)
                 usage()
-        elif sys.argv[1] == "note":
+        elif sys.argv[1] == "new":
             try:
                 notename = sys.argv[2]
                 if not notename.endswith('.org'): notename += ".org"
