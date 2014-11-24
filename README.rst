@@ -1,39 +1,38 @@
+OrgNote: A simple blog based on org-mode
+=======================================
 
-* OrgNote: A simple blog based on org-mode
+Get Started
+============
 
-* Get Started
+At first, need to fork **OrgNote** as **yourname.github.com** repository.
 
-  At first, need to fork =OrgNote= as =yourname.github.com= repository.
+Thus you can open **https://yourname.github.com** in  browser after wait some minutes. 
 
-  Thus you can open =https://yourname.github.com= in  browser after wait some minutes. 
+There is a default blog now!
 
-  There is a default blog now!
+Post Blog
+=========
 
-* Post Blog
+Steps::
 
-Steps:
-#+begin_quote
-#+begin_example
-$ git clone git@github.com:yourname/yourname.github.com.git
+  $ git clone git@github.com:yourname/yourname.github.com.git
 
-$ python orgnote.py note newnote
+  $ python orgnote.py note newnote
 
-$ python orgnote.py page newnote
+  $ python orgnote.py page newnote
 
-$ python orgnote.py generate
+  $ python orgnote.py generate
 
-$ python orgnote.py server [port]
+  $ python orgnote.py server [port]
 
-$ git add file1 file2 ...
+  $ git add file1 file2 ...
 
-$ git push origin master
-#+end_example
-#+end_quote
+  $ git push origin master
 
-=orgnote.py= Usage:
-#+begin_quote
-#+begin_example
-$ python orgnote.py
+
+`orgnote.py` Usage::
+
+  $ python orgnote.py
 
     Usage:
           python orgnote.py note {notename}           ---- add a org-mode note
@@ -41,106 +40,100 @@ $ python orgnote.py
 
           python orgnote.py generate                  ---- generate all notes
           python orgnote.py server [port]             ---- start web server for review
-#+end_example
-#+end_quote
 
 
+Configure
+=========
 
+There is only one program named `orgnote.py`, all configures will apply in this file.
 
-* Configure
+basic
+======
 
-There is only one program named =orgnote.py=, all configures will apply in this file.
-
-** basic
-*** __dirs__
+__dirs__
+---------
 
 The __dirs__ is a list() and each item is a note-list-file.
 
-*** __title__
+__title__
+----------
 
-The =name/title= of the blog.
+The **name/title** of the blog.
 
-*** __author__
+__author__
+-----------
 
-The =author= of the blog.
+The **author** of the blog.
 
-*** __description__
+__description__
+----------------
 
-The =description= of the blog.
+The **description** of the blog.
 
-*** __blog_keywords__
+__blog_keywords__
+--------------------
 
-The =keywords= of the blog.
+The **keywords** of the blog.
 
-** feature
-*** note-list-file
+feature
+=========
 
-note-list-file example:
-#+begin_quote
-#+begin_example
- - [[../notes/orgnote.html][OrgNote: public   version] ]
- + [[../notes/orgnote.html][OrgNote: nopublic version] ]
-#+end_example
-#+end_quote
+note-list-file
+---------------
+
+note-list-file example::
+  - [[../notes/orgnote.html][OrgNote: public   version] ]
+  + [[../notes/orgnote.html][OrgNote: nopublic version] ]
 
 Note:
-- There is a space after =-/+=, this is a format of org-mode.
-- If the line begins with =-=, thus the note will public to homepage of blog.
-- If the line begins with =+=, thus the note will only public to =/public/nopublic.html= 
+- There is a space after **-/+**, this is a format of org-mode.
+- If the line begins with **-**, thus the note will public to homepage of blog.
+- If the line begins with **+**, thus the note will only public to =/public/nopublic.html= 
 
-*** About
+About
+-------
 
-Find the function =contain_about=, use it like:
-#+begin_quote
-#+begin_example
-<p> something </p>
-#+end_example
-#+end_quote
+Find the function **contain_about**, use it like::
+  <p> something </p>
+  
 
-*** Duoshuo
+Duoshuo
+-------
 
-Find the function =duosuo=, and add http://duoshuo.com/ code into it:
-#+begin_quote
-#+begin_src python
-def duosuo():
-    return """
-    your duoshuo code here!
-    """
-#+end_src
-#+end_quote
+Find the function **duosuo**, and add http://duoshuo.com/ code into it::
+  def duosuo():
+      return """
+      your duoshuo code here!
+      """
 
-*** Weibo
+Weibo
+------
 
-Find the function =sidebar_weibo=, and add your weibo's code into it:
-#+begin_quote
-#+begin_src python
-def sidebar_weibo():
-     return """
-     your weibo code here!
-     """
-#+end_src
-#+end_quote
+Find the function **sidebar_weibo**, and add your weibo's code into it::
+  def sidebar_weibo():
+      return """
+             your weibo code here!
+             """
+Links
+-------
 
-*** Links
+Find the function **sidebar_link**, and add links.
 
-Find the function =sidebar_link=, and add links.
+Latest Blogs
+-------------
 
-*** Latest Blogs
-
-Find the function =sidebar_latest=, display latest 10 notes, sample:
-#+begin_quote
-#+begin_src python
-def sidebar_latest(notes=list(), num=10):
-#+end_src
-#+end_quote
-
-The =num=10= meaning is display latest 10 notes as default.
+Find the function **sidebar_latest**, display latest 10 notes, sample::
+  def sidebar_latest(notes=list(), num=10):
 
 
-* More
+The **num=10** meaning is display latest 10 notes as default.
 
-- =Emacs= : [[http://www.gnu.org/software/emacs/]]
-- =Org-mode= : [[http://orgmode.org/][org-mode]]
+
+More
+=======
+
+- `Emacs` : http://www.gnu.org/software/emacs/
+- `Org-mode` : http://orgmode.org/
 - sample: http://lesliezhu.github.io/
 
 Enjoy it! :)
