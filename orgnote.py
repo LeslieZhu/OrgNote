@@ -124,10 +124,10 @@ def header_prefix(deep=1,title=__title__):
     <link href="/favicon.ico" rel="icon">
 
     
-    <link rel="stylesheet" href="/css/bootstrap.min.css" media="screen" type="text/css">
-    <link rel="stylesheet" href="/css/font-awesome.css" media="screen" type="text/css">
-    <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
-    <link rel="stylesheet" href="/css/highlight.css" media="screen" type="text/css">
+    <link rel="stylesheet" href="/theme/freemind/css/bootstrap.min.css" media="screen" type="text/css">
+    <link rel="stylesheet" href="/theme/freemind/css/font-awesome.css" media="screen" type="text/css">
+    <link rel="stylesheet" href="/theme/freemind/css/style.css" media="screen" type="text/css">
+    <link rel="stylesheet" href="/theme/freemind/css/highlight.css" media="screen" type="text/css">
     </head>
     """ % (title, __author__, __description__, __site_name__,__blog_keywords__)
 
