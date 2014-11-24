@@ -116,9 +116,14 @@ def create_public_file(name = "public.org"):
     _init_file = _dir + name
 
     if name == "public.org":
-        _data = "- [[./HelloOrgNote.html][HelloOrgNote]]"
+        _data = """# for example:
+# - [[./HelloOrgNote.html][HelloOrgNote]]
+- [[./HelloOrgNote.html][HelloOrgNote]]
+        """
     else:
-        _data = "+ [[./HelloOrgNote.html][HelloOrgNote]]"
+        _data = """# for example:
+# + [[./HelloOrgNote.html][HelloOrgNote]]
+        """
 
     if not os.path.exists(_dir):
         os.mkdir(_dir)
@@ -151,6 +156,7 @@ def main(args=None):
     create_emacs_init()
     create_default_note()
     create_config_file()
+    create_config_file("_config.py")
     create_public_file("public.org")
     create_public_file("nopublic.org")
 

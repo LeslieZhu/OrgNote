@@ -77,6 +77,7 @@ def gen_notes(dirs=list()):
     for notedir in dirs:
         dirname = os.path.dirname(notedir)
         for line in open(notedir):
+            if line.startswith("#"): continue
             public = False
             local  = False
             if "- [[" in line: public = True
