@@ -852,16 +852,16 @@ def usage():
     import sys
     
     print """
-    Usage:
-          python orgnote.py init                      ---- init current dir as blog root
+    Usage: orgnote [OPTIONS]
 
-          python orgnote.py new  {notename}           ---- add a org-mode note
-          python orgnote.py page {notename}           ---- convert .org to .html
+    options:
 
-          python orgnote.py generate                  ---- generate all notes
-          python orgnote.py server [port]             ---- start web server for review
-
-          python orgnote.py upload                    ----- upload blog to public websites,like github
+    init                      ---- init current dir as blog root
+    new  {notename}           ---- add a org-mode note
+    page {notename}           ---- convert .org to .html
+    generate                  ---- generate all notes
+    server [port]             ---- start web server for review
+    upload                    ----- upload blog to public websites,like github
     """
     sys.exit()
             
