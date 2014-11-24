@@ -1,1 +1,1 @@
-- [[./orgnote.html][OrgNote说明]]
+- [[./HelloOrgNote.html][HelloOrgNote]]
