@@ -401,7 +401,7 @@ def contain_page(link="",num=0, public=True):
     data = open(link).read()
     data = re.search("(<div id=\"content\">.*</div.).*</body>",data.replace('\n','TMD')) 
     data = data.groups()[0]
-    data = re.sub(r'<div id=\"postamble\">.*</div>','',data)
+    data = data.replace(re.search(r'<div id="postamble">.*?</div>',data).group(),'')
     data = data.replace('TMD','\n')
 
     if public:
@@ -437,6 +437,9 @@ def contain_page(link="",num=0, public=True):
     if "<div class=\"ds-thread\">" in data:
         index = data.find("<div class=\"ds-thread\">")
         data = data[:index] + page_order + data[index:]
+    elif "</body>" in data:
+        index = data.find("</body>")
+        data = data[:index] + page_order + duosuo() + data[index:]
     elif "<div id=\"postamble\">" in data:
         index = data.find("<div id=\"postamble\">")
         data = data[:index] + page_order + duosuo() + data[index:]
