@@ -1,3 +1,12 @@
+2014-11-24  Leslie Zhu  <pythonisland@gmail.com>
+
+	* 0.3.0: new design
+	- add Config system, so user can configure OrgNote easy
+	- add setup.py, so user can install it as a python package
+	- add more command like `init`,`list`..etc, so it more Hexo-like
+	- only support default theme
+	- only support emacs org-html.el convert,not use HTML parser in this verion
+
 2014-11-13  Leslie Zhu  <pythonisland@gmail.com>
 
 	* 0.2.0: the basic functions ready
