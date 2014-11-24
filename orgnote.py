@@ -912,7 +912,7 @@ if __name__ == "__main__":
                 notename = sys.argv[2]
                 if not notename.endswith('.org'): notename += ".org"
                 if not notename.startswith('notes/'): notename = "notes/"+notename
-                os.system("emacs --batch %s --funcall org-export-as-html" % notename)
+                os.system("emacs -l init-orgnote.el --batch %s --funcall org-export-as-html" % notename)
                 print "%s generated" % notename.replace('.org','.html')
             except Exception,ex:
                 print str(ex)
