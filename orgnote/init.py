@@ -81,7 +81,7 @@ def create_default_note(name="HelloOrgNote.org"):
 
 def create_config_file(name="~/.orgnote"):
     """
-    init ~/.orgnote config file
+    init ~/.orgnote global config file
     """
 
     import os
@@ -98,6 +98,33 @@ email = ""
         output = open(_name,"w")
         print >> output,_data
         output.close()
+
+
+def create_public_file(name = "public.org"):
+    """
+    init ./notes/public.org
+    """
+    
+    import os
+    import os.path
+
+    _dir = "./notes/"
+    _init_file = _dir + name
+
+    if name == "public.org":
+        _data = "- [[./HelloOrgNote.html][HelloOrgNote]]"
+    else:
+        _data = "+ [[./HelloOrgNote.html][HelloOrgNote]]"
+
+    if not os.path.exists(_dir):
+        os.mkdir(_dir)
+
+    if not os.path.exists(_init_file):
+        print "[info] create ",_init_file
+        output = open(_init_file,"w")
+        print >> output,_data
+        output.close()
+    
 
 def main(args=None):
     import os
@@ -116,9 +143,12 @@ def main(args=None):
         if not os.path.exists(target):
             os.mkdir(target)
 
+    # init files
     create_emacs_init()
     create_default_note()
     create_config_file()
+    create_public_file("public.org")
+    create_public_file("nopublic.org")
 
 
 if __name__ == "__main__":
