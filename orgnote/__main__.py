@@ -642,6 +642,7 @@ def sidebar_link():
     <ul class="entry list-unstyled">
     <li><a href="http://lesliezhu.github.com" title="LeslieZhu's Github" target="_blank"><i class="fa fa-github"></i>Leslie Zhu</a></li>
     <li><a href="https://github.com/LeslieZhu/OrgNote" title="OrgNote" target="_blank"><i class="fa fa-github"></i>OrgNote</a></li>
+    <li><a href="https://github.com/LeslieZhu/orgnote-theme-freemind" title="OrgNote" target="_blank"><i class="fa fa-github"></i>orgnote-theme-freemind</a></li>
     </ul>
     </div>
     """
@@ -660,7 +661,7 @@ def header_suffix():
     <div class="container-narrow">
       <footer>
         <p>&copy; 2014 %s
-        with help from <a href="https://github.com/LeslieZhu/OrgNote" target="_blank">OrgNote</a>, <a href="http://zespia.tw/hexo/" target="_blank">Hexo</a> and <a href="http://getbootstrap.com/" target="_blank">Twitter Bootstrap</a>. Theme by <a href="http://github.com/wzpan/hexo-theme-freemind/">Freemind.</a>  Published with GitHub Pages. 
+        with help from <a href="https://github.com/LeslieZhu/OrgNote" target="_blank">OrgNote</a>. Theme by <a href="https://github.com/LeslieZhu/orgnote-theme-freemind">orgnote-theme-freemind</a>.  Published with GitHub Pages. 
       </p> </footer>
     </div> <!-- container-narrow -->
     
