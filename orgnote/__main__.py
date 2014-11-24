@@ -867,7 +867,8 @@ def usage():
             
 
 
-if __name__ == "__main__":
+
+def main(args=None):
     import sys,os
     
     if len(sys.argv) == 2:
@@ -934,4 +935,6 @@ if __name__ == "__main__":
     else:
         usage()
 
-        
+if __name__ == "__main__":
+    import sys
+    sys.exit(main())
