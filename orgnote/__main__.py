@@ -403,6 +403,7 @@ def contain_page(link="",num=0, public=True):
     data = open(link).read()
     data = re.search("(<div id=\"content\">.*</div.).*</body>",data.replace('\n','TMD')) 
     data = data.groups()[0]
+
     data = data.replace(re.search(r'<div id="postamble">.*?</div>',data).group(),'')
     data = data.replace('TMD','\n')
 

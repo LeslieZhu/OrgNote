@@ -64,7 +64,11 @@ def create_default_note(name="HelloOrgNote.org"):
 #+TITLE: 标题
 #+AUTHOR: 作者
 #+EMAIL: 作者邮件
-#+DATE: 日期
+#+DATE: 10/1/2014
+
+* HelloOrgNote
+
+[[https://github.com/LeslieZhu/OrgNote][OrgNote]] is a simple blog based on org-mode, enjoy it:)
 """
 
 
@@ -139,8 +143,8 @@ def main(args=None):
     target_list = ["./theme/","./notes/","./scripts/","./public/","./public/tags/"]
 
     for target in target_list:
-        print "[info] create ",target
         if not os.path.exists(target):
+            print "[info] create ",target
             os.mkdir(target)
 
     # init files
