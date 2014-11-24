@@ -18,7 +18,7 @@ def find_version(*file_paths):
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
 
-long_description = read('README.org')
+long_description = read('README.rst')
 
 setup(
     name = "orgnote",
@@ -34,15 +34,31 @@ setup(
     url = 'https://github.com/LeslieZhu/OrgNote',
 
     packages = find_packages(),
-    #package_data = {'': ['*.*'],'docs':['*.*'],'css':['*.*']},
+    package_dir = {'orgnote':'orgnote',
+               },
+                   
+    package_data = {'': ['*.*']},
 
 
     include_package_data = True,
     platforms = 'linux',
     zip_safe=False,
 
+    tests_require=['pytest'],
     #install_requires = ['PyYAML'],
 
+    classifiers = [
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2.7",
+        "Development Status :: 3 - Beta",
+        "Environment :: Other Environment",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: GPL",
+        "Operating System :: OS Independent",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: Text Processing :: Linguistic",
+    ],
+    
     entry_points={
         "console_scripts": [
             "orgnote=orgnote:main",
@@ -50,4 +66,9 @@ setup(
             "orgnote%s=orgnote:main" % sys.version[:3],
         ],
     },
+
+    extras_require={
+        'testing': ['pytest'],
+    }
+    
 )
