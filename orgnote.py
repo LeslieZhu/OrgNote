@@ -21,7 +21,7 @@ import re,time,sys
 
 # the blog list which list the html path and display title
 # it must be a list()
-__dirs__ = ["./public/index.org"]
+__dirs__ = ["./notes/index.org","./notes/nopublic.org"]
 __title__ = "OrgNote"
 __subtitle__ = "OrgNote"
 __author__ = "OrgNote"
