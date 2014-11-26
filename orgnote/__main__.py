@@ -15,7 +15,7 @@
 from __future__ import absolute_import
 
 import re,time,sys
-
+from orgnote import _config as cfg
 
 # #########################################################
 # Setting of Blog(You shoud update it!)
@@ -24,17 +24,17 @@ import re,time,sys
 # the blog list which list the html path and display title
 # it must be a list()
 __dirs__ = ["./notes/public.org","./notes/nopublic.org"]
-__title__ = "OrgNote"
-__subtitle__ = "OrgNote"
-__author__ = "OrgNote"
-__description__ = "My information"
-__blog_keywords__ = "My Blog keywords"
+__title__ = cfg.__title__
+__subtitle__ = cfg.__subtitle__
+__author__ = cfg.__author__
+__description__ = cfg.__description__
+__blog_keywords__ = cfg.__blog_keywords__
 
 
 # ####################
 # init
 # ####################
-__site_name__ = __title__
+__site_name__ = cfg.__title__
 __notes__ = list()
 __localnotes__ = list()
 __archives__ = list()
@@ -859,6 +859,7 @@ def usage():
 
     options:
 
+    config                    ---- init/list config file
     init                      ---- init current dir as blog root
     new  {notename}           ---- add a org-mode note
     page {notename}           ---- convert .org to .html
@@ -887,7 +888,11 @@ def main(args=None):
             orgnote.init.main()
         elif sys.argv[1] == "upload":
             print "upload..."
+        elif sys.argv[1] == "config":
+            import orgnote.config
+            orgnote.config.main()
         elif sys.argv[1] == "generate":
+            import _config as cfg
             gen_notes(__dirs__)
             gen_tag_list()
             gen_timetag_list()

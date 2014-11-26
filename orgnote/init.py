@@ -83,25 +83,23 @@ def create_default_note(name="HelloOrgNote.org"):
     elif name != "HelloOrgNote.org":
         print "File %s already exists, please use a new name!" % name
 
-def create_config_file(name="~/.orgnote"):
+def create_config_file(name="_config.py"):
     """
-    init ~/.orgnote global config file
+    init _config.py config file
     """
 
     import os
     import os.path
 
-    _data = """# OrgNote global config file
-[general]
-user = ""
-email = ""
-"""
     _name = os.path.expanduser(name)
     if not os.path.exists(_name):
         print "[info] create ",_name
-        output = open(_name,"w")
-        print >> output,_data
-        output.close()
+        import orgnote.config
+        orgnote.config.main()
+    #else:
+    #    print "[info] config info.."
+    #    with open(_name) as cin:
+    #        print cin.next()
 
 
 def create_public_file(name = "public.org"):
@@ -139,12 +137,6 @@ def main(args=None):
     import os
     import os.path
     
-    cur_dir = os.popen("pwd").readline().strip()
-    
-    path_sep = os.path.sep
-    orgnote_dir = os.path.abspath(os.path.dirname(__file__))
-    OrgNote_dir = path_sep.join(orgnote_dir.split(path_sep)[:-1])
-    
     target_list = ["./theme/","./notes/","./scripts/","./public/","./public/tags/"]
 
     for target in target_list:
@@ -155,7 +147,7 @@ def main(args=None):
     # init files
     create_emacs_init()
     create_default_note()
-    create_config_file()
+    #create_config_file()
     create_config_file("_config.py")
     create_public_file("public.org")
     create_public_file("nopublic.org")
