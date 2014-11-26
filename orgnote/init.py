@@ -32,7 +32,7 @@ def create_emacs_init(initfile="init-orgnote.el"):
         print >> output,_data
         output.close()
 
-def create_default_note(name="HelloOrgNote.org"):
+def create_default_note(name="notes/HelloOrgNote.org"):
     """
     init notes/template.org
     """
@@ -40,7 +40,7 @@ def create_default_note(name="HelloOrgNote.org"):
     import os
     import os.path
 
-    _dirname = "./notes/"
+    _dirname = "./"
     _init_file = _dirname + name
 
     _data =  """#+STARTUP: overview
@@ -153,7 +153,7 @@ def main(args=None):
 
     # init files
     create_emacs_init("init-orgnote.el")
-    create_default_note("HelloOrgNote.org")
+    create_default_note("./notes/HelloOrgNote.org")
     create_config_file("_config.ini")
     create_public_file("public.org")
     create_public_file("nopublic.org")
