@@ -37,7 +37,7 @@ setup(
     package_dir = {'orgnote':'orgnote',
                },
                    
-    package_data = {'': ['*.py']},
+    package_data = {'': ['*.py','_config.ini']},
 
 
     include_package_data = True,
