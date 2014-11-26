@@ -83,9 +83,9 @@ def create_default_note(name="HelloOrgNote.org"):
     elif name != "HelloOrgNote.org":
         print "File %s already exists, please use a new name!" % name
 
-def create_config_file(name="_config.py"):
+def create_config_file(name="_config.ini"):
     """
-    init _config.py config file
+    init _config.ini config file
     """
 
     import os
@@ -96,10 +96,6 @@ def create_config_file(name="_config.py"):
         print "[info] create ",_name
         import orgnote.config
         orgnote.config.main()
-    #else:
-    #    print "[info] config info.."
-    #    with open(_name) as cin:
-    #        print cin.next()
 
 
 def create_public_file(name = "public.org"):
@@ -147,8 +143,8 @@ def main(args=None):
     # init files
     create_emacs_init()
     create_default_note()
-    #create_config_file()
-    create_config_file("_config.py")
+    create_config_file()
+    #create_config_file("_config.ini")
     create_public_file("public.org")
     create_public_file("nopublic.org")
 

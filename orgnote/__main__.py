@@ -15,26 +15,20 @@
 from __future__ import absolute_import
 
 import re,time,sys
-from orgnote import _config as cfg
+from orgnote import config
 
 # #########################################################
 # Setting of Blog(You shoud update it!)
 # #########################################################
+cfg = config.Config()
 
-# the blog list which list the html path and display title
-# it must be a list()
 __dirs__ = ["./notes/public.org","./notes/nopublic.org"]
-__title__ = cfg.__title__
-__subtitle__ = cfg.__subtitle__
-__author__ = cfg.__author__
-__description__ = cfg.__description__
-__blog_keywords__ = cfg.__blog_keywords__
 
 
 # ####################
 # init
 # ####################
-__site_name__ = cfg.__title__
+
 __notes__ = list()
 __localnotes__ = list()
 __archives__ = list()
@@ -100,7 +94,7 @@ def gen_notes(dirs=list()):
                     __localnotes__ += [[link,name]]
 
 
-def header_prefix(deep=1,title=__title__):
+def header_prefix(deep=1,title=cfg.cfg["title"]):
     """
     gen the header of each html
     """
@@ -132,7 +126,7 @@ def header_prefix(deep=1,title=__title__):
     <link rel="stylesheet" href="/theme/freemind/css/style.css" media="screen" type="text/css">
     <link rel="stylesheet" href="/theme/freemind/css/highlight.css" media="screen" type="text/css">
     </head>
-    """ % (title, __author__, __description__, __site_name__,__blog_keywords__)
+    """ % (title, cfg.cfg["author"], cfg.cfg["description"], cfg.cfg["title"],cfg.cfg["keywords"])
 
 def body_prefix():
     return """
@@ -149,7 +143,7 @@ def body_prefix():
     </button>
 
     <a class="navbar-brand" href="/index.html">%s</a>
-    """ % __title__
+    """ % cfg.cfg["title"]
 
 def gen_href(line=list()):
     if len(line) == 4:          # menu
@@ -210,10 +204,10 @@ def contain_prefix(tags=[],name=""):
 
     <div class="slogan">                        <!-- slogan begin -->
     <i class="fa fa-heart"></i>
-    """ % __subtitle__
+    """ % cfg.cfg["subtitle"]
 
     if not tags:
-        output += "主页君: " + __author__
+        output += "主页君: " + cfg.cfg["author"]
     elif len(tags) == 1:
         output += name
         output += gen_tag_href(tags[0])
@@ -673,7 +667,7 @@ def header_suffix():
 
   </body>
 </html>
-    """ % __author__
+    """ % cfg.cfg["author"]
 
 def gen_public_link(link="",prefix="public/"):
     return prefix+link.split('/')[-1]
@@ -731,7 +725,7 @@ def split_index(num,b_index,e_index):
     else:
         output = open("public/page"+str(num)+".html","w")
 
-    print >> output,header_prefix(title=__title__)
+    print >> output,header_prefix(title=cfg.cfg["title"])
     print >> output,body_prefix()
     print >> output,body_menu(__menus__)
     print >> output,contain_prefix()    
@@ -892,7 +886,7 @@ def main(args=None):
             import orgnote.config
             orgnote.config.main()
         elif sys.argv[1] == "generate":
-            import _config as cfg
+            cfg.update()
             gen_notes(__dirs__)
             gen_tag_list()
             gen_timetag_list()
