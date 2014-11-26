@@ -2,7 +2,7 @@
 
 from __future__ import absolute_import
 
-def create_emacs_init():
+def create_emacs_init(initfile="init-orgnote.el"):
     """
     init ./scripts/init-orgnote.el
     """
@@ -11,7 +11,7 @@ def create_emacs_init():
     import os.path
 
     _dirname = "./scripts/"
-    _init_file = _dirname + "init-orgnote.el"
+    _init_file = _dirname + initfile
 
     _data = """;; 设置org-mode输出中文目录
 (custom-set-variables
@@ -90,12 +90,23 @@ def create_config_file(name="_config.ini"):
 
     import os
     import os.path
+    
+    _dir = "./"
+    _init_file = _dir + name
+    _data = """[general]
+author = Leslie Zhu
+email  = pythonisland@gmail.com
+title = OrgNote
+subtitle = OrgNote By Leslie Zhu
+description = My information
+keywords = My Blog keywords(Blog,OrgNote,Emacs,Org-mode)
+"""
 
-    _name = os.path.expanduser(name)
-    if not os.path.exists(_name):
-        print "[info] create ",_name
-        import orgnote.config
-        orgnote.config.main()
+    if not os.path.exists(_init_file):
+        print "[info] create ",_init_file
+        output = open(_init_file,"w")
+        print >> output,_data
+        output.close()
 
 
 def create_public_file(name = "public.org"):
@@ -141,10 +152,9 @@ def main(args=None):
             os.mkdir(target)
 
     # init files
-    create_emacs_init()
-    create_default_note()
-    create_config_file()
-    #create_config_file("_config.ini")
+    create_emacs_init("init-orgnote.el")
+    create_default_note("HelloOrgNote.org")
+    create_config_file("_config.ini")
     create_public_file("public.org")
     create_public_file("nopublic.org")
 

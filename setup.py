@@ -44,8 +44,7 @@ setup(
     platforms = 'linux',
     zip_safe=False,
 
-    tests_require=['pytest'],
-    #install_requires = ['PyYAML'],
+    #tests_require=['pytest'],
 
     classifiers = [
         "Programming Language :: Python",
@@ -67,8 +66,8 @@ setup(
         ],
     },
 
-    extras_require={
-        'testing': ['pytest'],
-    }
+    #extras_require={
+    #    'testing': ['pytest'],
+    #}
     
 )

@@ -26,27 +26,9 @@ class Config(object):
             for option in self.fp.options(section):
                 self.cfg[option] = self.fp.get(section,option)
         
-
-
-def config_init():
-    """
-    create _config.ini file as configure file
-    """
-    import os
-    import os.path
-
-    if not os.path.exists("./_config.ini"):
-        print "[info] init config file"
-        cur_dir = os.popen("pwd").readline().strip()
-        path_sep = os.path.sep
-        orgnote_dir = os.path.abspath(os.path.dirname(__file__))
-        OrgNote_dir = path_sep.join(orgnote_dir.split(path_sep)[:-1])
-        cmd = "cp %s/_config.ini ./_config.ini" % orgnote_dir
-        os.system(cmd)
-        
 def main(args=None):
-    config_init()
-    
+    cfg=Config()
+    cfg.update()
     
 
 

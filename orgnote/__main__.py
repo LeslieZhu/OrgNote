@@ -853,7 +853,6 @@ def usage():
 
     options:
 
-    config                    ---- init/list config file
     init                      ---- init current dir as blog root
     new  {notename}           ---- add a org-mode note
     page {notename}           ---- convert .org to .html
@@ -882,9 +881,12 @@ def main(args=None):
             orgnote.init.main()
         elif sys.argv[1] == "upload":
             print "upload..."
-        elif sys.argv[1] == "config":
-            import orgnote.config
-            orgnote.config.main()
+            if not os.path.exists("./.git/"):
+                print "please config git-url in _config.ini, and run:"
+                print "$ git init"
+            else:
+                cmd = "git add index.html _config.ini notes/ public/ scripts/ theme/;git commit -m \"update\""
+                os.system(cmd)
         elif sys.argv[1] == "generate":
             cfg.update()
             gen_notes(__dirs__)
@@ -915,7 +917,9 @@ def main(args=None):
                 if not notename.endswith('.org'): notename += ".org"
                 if not notename.startswith('notes/'): notename = "notes/"+notename
                 if not os.path.exists(notename):
-                    os.system("cp notes/template.org %s" % notename)
+                    #os.system("cp notes/template.org %s" % notename)
+                    import orgnote.init
+                    orgnote.init.create_default_note(notename)
                     print "%s init done" % notename
                 else:
                     print "%s exists, please use other name or delete it" % notename
