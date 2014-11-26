@@ -1,132 +1,78 @@
 OrgNote: A simple blog based on org-mode
 =======================================
 
+Install
+============
+
+Install OrgNote by `pip`::
+  $ pip install orgnote
+
+Install OrgNote by `easy_install`::
+
+  $ easy_install orgnote
+
+Install OrgNote by source code::
+
+  $ git clone git@github.com:LeslieZhu/OrgNote.git
+  $ cd OrgNote
+  $ python setup.py install
+
+
 Get Started
 ============
 
-At first, need to fork **OrgNote** as **yourname.github.com** repository.
-
-Thus you can open **https://yourname.github.com** in  browser after wait some minutes. 
-
-There is a default blog now!
-
-Post Blog
-=========
-
-Steps::
+At first, you should crate a **yourname.github.com.git** on `GitHub`::
 
   $ git clone git@github.com:yourname/yourname.github.com.git
-
-  $ python orgnote.py note newnote
-
-  $ python orgnote.py page newnote
-
-  $ python orgnote.py generate
-
-  $ python orgnote.py server [port]
-
-  $ git add file1 file2 ...
-
-  $ git push origin master
-
-
-`orgnote.py` Usage::
-
-  $ python orgnote.py
-
-    Usage:
-          python orgnote.py note {notename}           ---- add a org-mode note
-          python orgnote.py page {notename}           ---- convert .org to .html
-
-          python orgnote.py generate                  ---- generate all notes
-          python orgnote.py server [port]             ---- start web server for review
+  $ cd yourname.github.com
+  $ git clone git@github.com:LeslieZhu/orgnote-theme-freemind.git theme/freemind
+  $ git clone git@github.com:LeslieZhu/orgnote-emacs-el.git scripts/
+  $ orgnote init
 
 
 Configure
 =========
 
-There is only one program named `orgnote.py`, all configures will apply in this file.
+update `_config.ini` ,sample::
+ 
+  [general]
+  title = OrgNote
+  subtitle = OrgNote
+  author = OrgNote
+  description = My information
+  keywords = My Blog keywords
 
-basic
-======
+Post Blog
+==========
 
-__dirs__
----------
+::
+  $ orgnote new note-name
 
-The __dirs__ is a list() and each item is a note-list-file.
+  $ orgnote page note-name
 
-__title__
-----------
+  $ orgnote generate
 
-The **name/title** of the blog.
+  $ orgnote server [port]
 
-__author__
------------
+  $ orgnote upload
 
-The **author** of the blog.
+Usage
+=======
+::
+   $ orgnote help
 
-__description__
-----------------
+   Usage: orgnote [OPTIONS]
 
-The **description** of the blog.
+   options:
 
-__blog_keywords__
---------------------
-
-The **keywords** of the blog.
-
-feature
-=========
-
-note-list-file
----------------
-
-note-list-file example::
-  - [[../notes/orgnote.html][OrgNote: public   version] ]
-  + [[../notes/orgnote.html][OrgNote: nopublic version] ]
-
-Note:
-- There is a space after **-/+**, this is a format of org-mode.
-- If the line begins with **-**, thus the note will public to homepage of blog.
-- If the line begins with **+**, thus the note will only public to =/public/nopublic.html= 
-
-About
--------
-
-Find the function **contain_about**, use it like::
-  <p> something </p>
-  
-
-Duoshuo
--------
-
-Find the function **duosuo**, and add http://duoshuo.com/ code into it::
-  def duosuo():
-      return """
-      your duoshuo code here!
-      """
-
-Weibo
-------
-
-Find the function **sidebar_weibo**, and add your weibo's code into it::
-  def sidebar_weibo():
-      return """
-             your weibo code here!
-             """
-Links
--------
-
-Find the function **sidebar_link**, and add links.
-
-Latest Blogs
--------------
-
-Find the function **sidebar_latest**, display latest 10 notes, sample::
-  def sidebar_latest(notes=list(), num=10):
-
-
-The **num=10** meaning is display latest 10 notes as default.
+   config                    ---- init/list config file
+   init                      ---- init current dir as blog root
+   new  {notename}           ---- add a org-mode note
+   page {notename}           ---- convert .org to .html
+   generate                  ---- generate all notes
+   server [port]             ---- start web server for review
+   upload                    ---- upload blog to public websites,like github
+   
 
 
 More
