@@ -80,8 +80,8 @@ def create_default_note(name="notes/HelloOrgNote.org"):
         output = open(_init_file,"w")
         print >> output,_data
         output.close()
-    elif name != "HelloOrgNote.org":
-        print "File %s already exists, please use a new name!" % name
+    elif "HelloOrgNote.org" not in _init_file:
+        print "File %s already exists, please use a new name!" % _init_file
 
 def create_config_file(name="_config.ini"):
     """
@@ -121,14 +121,9 @@ def create_public_file(name = "public.org"):
     _init_file = _dir + name
 
     if name == "public.org":
-        _data = """# for example:
-# - [[./HelloOrgNote.html][HelloOrgNote]]
-- [[./HelloOrgNote.html][HelloOrgNote]]
-        """
+        _data = """- [[./HelloOrgNote.html][HelloOrgNote]]"""
     else:
-        _data = """# for example:
-# + [[./HelloOrgNote.html][HelloOrgNote]]
-        """
+        _data = """+ [[./HelloOrgNote.html][HelloOrgNote]]"""
 
     if not os.path.exists(_dir):
         os.mkdir(_dir)

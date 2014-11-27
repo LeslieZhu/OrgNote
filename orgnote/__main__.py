@@ -852,8 +852,8 @@ def usage():
     Usage: orgnote <command>
 
     Commands:
-    init       Create a new Hexo folder
-    new        Create a new post
+    init       Create a new OrgNote folder
+    new        Create a new .org post
     page       convert .org to .html
     publish    Publish a note
     generate   Generate static files
@@ -954,8 +954,9 @@ def main(args=None):
                     notename = "./"+notename[notename.find("notes/"):]
                 else:
                     notename = "./notes/"+notename
-                print notename
                 print "add %s into notes/public.org" % notename
+                _title = gen_title(notename)
+                print "- [[%s][%s]]" % (notename,_title)
             except Exception,ex:
                 print str(ex)
         else:
