@@ -849,17 +849,21 @@ def usage():
     import sys
     
     print """
-    Usage: orgnote [OPTIONS]
+    Usage: orgnote <command>
 
-    options:
-
-    init                      ---- init current dir as blog root
-    new  {notename}           ---- add a org-mode note
-    page {notename}           ---- convert .org to .html
-    generate                  ---- generate all notes
-    server [port]             ---- start web server for review
-    upload                    ----- upload blog to public websites,like github
-    """
+    Commands:
+    init       Create a new Hexo folder
+    new        Create a new post
+    page       convert .org to .html
+    publish    Publish a note
+    generate   Generate static files
+    server     Start the server
+    deploy     Deploy your website
+    help       Get help on a command
+    version    Display version information
+    
+    For more help, you can check the docs:  http://lesliezhu.github.io/OrgNote/
+     """
     sys.exit()
             
 
@@ -879,14 +883,18 @@ def main(args=None):
             print "init...."
             import orgnote.init
             orgnote.init.main()
-        elif sys.argv[1] == "upload":
+        elif sys.argv[1] == "deploy":
             print "upload..."
             if not os.path.exists("./.git/"):
                 print "please config git-url in _config.ini, and run:"
                 print "$ git init"
             else:
-                cmd = "git add index.html _config.ini notes/ public/ scripts/ theme/;git commit -m \"update\""
-                os.system(cmd)
+                cmd = "git add index.html _config.ini notes/ public/ scripts/ theme/;git commit -m \"update\";git push origin master"
+                #os.system(cmd)
+                print cmd
+        elif sys.argv[1] == "version":
+            import orgnote
+            print orgnote.__version__
         elif sys.argv[1] == "generate":
             cfg.update()
             gen_notes(__dirs__)
@@ -936,6 +944,20 @@ def main(args=None):
             except Exception,ex:
                 print str(ex)
                 usage()
+        elif sys.argv[1] == "publish":
+            try:
+                notename = sys.argv[2]
+                print notename
+                if notename.endswith('.org'): notename = notename[:notename.find(".org")]
+                if not notename.endswith('.html'): notename += ".html"
+                if notename.startswith('notes/') or notename.startswith('./notes/'): 
+                    notename = "./"+notename[notename.find("notes/"):]
+                else:
+                    notename = "./notes/"+notename
+                print notename
+                print "add %s into notes/public.org" % notename
+            except Exception,ex:
+                print str(ex)
         else:
             usage()
     else:
