@@ -14,7 +14,7 @@
 
 from __future__ import absolute_import
 
-import re,time,sys
+import re,time,sys,os
 from orgnote import config
 
 __dirs__ = ["./notes/public.org","./notes/nopublic.org"]
@@ -807,6 +807,7 @@ class OrgNote(object):
         pubdate=time.strftime("%Y-%m-%d %a",pubdate)
         return pubdate
 
+
     def gen_title(self,link=""):
         """ Filter Title from HTML metadata """
         
@@ -834,6 +835,82 @@ class OrgNote(object):
             return ["札记"]
 
     
+    def server(self,port="8080"):
+        try:
+            os.system("python -m SimpleHTTPServer %s" % port)
+        except Exception,ex:
+            print str(ex)
+            usage()
+
+    def deploy(self):
+        if not os.path.exists("./.git/"):
+            print "please config git-url in _config.ini, and run:"
+            print "$ git init"
+        else:
+            cmd = "git add index.html _config.ini notes/ public/ scripts/ theme/;git commit -m \"update\";git push origin master"
+            #os.system(cmd)
+            print cmd
+
+    def generate(self):
+        self.cfg.update()
+        self.gen_notes(__dirs__)
+        self.gen_tag_list()
+        self.gen_timetag_list()
+        self.gen_public()
+        self.gen_index()
+        self.gen_about()
+        self.gen_minyi()
+        self.gen_archive()
+        self.gen_tags()
+        self.gen_timetags()
+        self.gen_nopublic()
+        print "notes generate done" 
+
+    def new(self,notename=""):
+        try:
+            #notename = sys.argv[2]
+            if not notename.endswith('.org'): notename += ".org"
+            if not notename.startswith('notes/'): notename = "notes/"+notename
+            if not os.path.exists(notename):
+                #os.system("cp notes/template.org %s" % notename)
+                import orgnote.init
+                orgnote.init.create_default_note(notename)
+                print "%s init done" % notename
+            else:
+                print "%s exists, please use other name or delete it" % notename
+        except Exception,ex:
+            print str(ex)
+            usage()        
+
+
+    def page(self,notename=""):
+        import os
+        try:
+            if not notename.endswith('.org'): notename += ".org"
+            if not notename.startswith('notes/'): notename = "notes/"+notename
+            os.system("emacs -l scripts/init-orgnote.el --batch %s --funcall org-export-as-html" % notename)
+            print "%s generated" % notename.replace('.org','.html')
+        except Exception,ex:
+            print str(ex)
+            usage()
+
+
+    def publish(self,notename=""):
+        try:
+            if notename.endswith('.org'): notename = notename[:notename.find(".org")]
+            if not notename.endswith('.html'): notename += ".html"
+            if notename.startswith('notes/'):
+                notename = "./"+notename[notename.find("notes/"):]
+            elif notename.startswith('./notes/'):
+                notename = "./"+notename[notename.find("./notes/"):]
+            else:
+                notename = "./notes/"+notename
+            print "add %s into notes/public.org" % notename
+            _title = self.gen_title(notename)
+            print "- [[%s][%s]]" % (notename,_title)
+        except Exception,ex:
+            print str(ex)
+
 def usage():
     import sys
     
@@ -860,95 +937,36 @@ def usage():
 
 def main(args=None):
     import sys,os
+    import orgnote
     import orgnote.parser
+    import orgnote.init
+
     blog = orgnote.parser.OrgNote()
+
     if len(sys.argv) == 2:
         if sys.argv[1] == "server":
-            try:
-                os.system("python -m SimpleHTTPServer 8080")
-            except Exception,ex:
-                print str(ex)
-                usage()
+            blog.server()
         elif sys.argv[1] == "init":
             print "init...."
-            import orgnote.init
             orgnote.init.main()
         elif sys.argv[1] == "deploy":
-            print "upload..."
-            if not os.path.exists("./.git/"):
-                print "please config git-url in _config.ini, and run:"
-                print "$ git init"
-            else:
-                cmd = "git add index.html _config.ini notes/ public/ scripts/ theme/;git commit -m \"update\";git push origin master"
-                #os.system(cmd)
-                print cmd
+            blog.deploy()
         elif sys.argv[1] == "version":
-            import orgnote
             print orgnote.__version__
         elif sys.argv[1] == "generate":
-            blog.cfg.update()
-            blog.gen_notes(__dirs__)
-            blog.gen_tag_list()
-            blog.gen_timetag_list()
-            blog.gen_public()
-            blog.gen_index()
-            blog.gen_about()
-            blog.gen_minyi()
-            blog.gen_archive()
-            blog.gen_tags()
-            blog.gen_timetags()
-            blog.gen_nopublic()
-            print "notes generate done"
-
+            blog.generate()
         else:
             usage()
     elif len(sys.argv) == 3:
         if sys.argv[1] == "server":
-            try:
-                os.system("python -m SimpleHTTPServer " + sys.argv[2])
-            except Exception,ex:
-                print str(ex)
-                usage()
+            blog.server(sys.argv[2])
         elif sys.argv[1] == "new":
-            try:
-                notename = sys.argv[2]
-                if not notename.endswith('.org'): notename += ".org"
-                if not notename.startswith('notes/'): notename = "notes/"+notename
-                if not os.path.exists(notename):
-                    #os.system("cp notes/template.org %s" % notename)
-                    import orgnote.init
-                    orgnote.init.create_default_note(notename)
-                    print "%s init done" % notename
-                else:
-                    print "%s exists, please use other name or delete it" % notename
-            except Exception,ex:
-                print str(ex)
-                usage()
+            blog.new(sys.argv[2])
         elif sys.argv[1] == "page":
-            try:
-                notename = sys.argv[2]
-                if not notename.endswith('.org'): notename += ".org"
-                if not notename.startswith('notes/'): notename = "notes/"+notename
-                os.system("emacs -l scripts/init-orgnote.el --batch %s --funcall org-export-as-html" % notename)
-                print "%s generated" % notename.replace('.org','.html')
-            except Exception,ex:
-                print str(ex)
-                usage()
+            blog.page(sys.argv[2])
         elif sys.argv[1] == "publish":
-            try:
-                notename = sys.argv[2]
-                print notename
-                if notename.endswith('.org'): notename = notename[:notename.find(".org")]
-                if not notename.endswith('.html'): notename += ".html"
-                if notename.startswith('notes/') or notename.startswith('./notes/'): 
-                    notename = "./"+notename[notename.find("notes/"):]
-                else:
-                    notename = "./notes/"+notename
-                print "add %s into notes/public.org" % notename
-                _title = gen_title(notename)
-                print "- [[%s][%s]]" % (notename,_title)
-            except Exception,ex:
-                print str(ex)
+            print ">>>",sys.argv[2]
+            blog.publish(sys.argv[2])
         else:
             usage()
     else:

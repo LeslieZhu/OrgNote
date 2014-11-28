@@ -83,6 +83,12 @@ def create_default_note(name="notes/HelloOrgNote.org"):
     elif "HelloOrgNote.org" not in _init_file:
         print "File %s already exists, please use a new name!" % _init_file
 
+    if "HelloOrgNote.org" in _init_file:
+        import orgnote.parser
+        blog = orgnote.parser.OrgNote()
+        blog.page(_init_file)
+        blog.publish(_init_file)
+
 def create_config_file(name="_config.ini"):
     """
     init _config.ini config file
@@ -148,7 +154,7 @@ def main(args=None):
 
     # init files
     create_emacs_init("init-orgnote.el")
-    create_default_note("./notes/HelloOrgNote.org")
+    create_default_note("notes/HelloOrgNote.org")
     create_config_file("_config.ini")
     create_public_file("public.org")
     create_public_file("nopublic.org")
