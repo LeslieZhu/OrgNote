@@ -83,11 +83,11 @@ def create_default_note(name="notes/HelloOrgNote.org"):
     elif "HelloOrgNote.org" not in _init_file:
         print "File %s already exists, please use a new name!" % _init_file
 
-    if "HelloOrgNote.org" in _init_file:
-        import orgnote.parser
-        blog = orgnote.parser.OrgNote()
-        blog.page(_init_file)
-        blog.publish(_init_file)
+    #if "HelloOrgNote.org" in _init_file:
+    #    import orgnote.parser
+    #    blog = orgnote.parser.OrgNote()
+    #    blog.page(_init_file)
+    #    blog.publish(_init_file)
 
 def create_config_file(name="_config.ini"):
     """
@@ -99,20 +99,11 @@ def create_config_file(name="_config.ini"):
     
     _dir = "./"
     _init_file = _dir + name
-    _data = """[general]
-author = Leslie Zhu
-email  = pythonisland@gmail.com
-title = OrgNote
-subtitle = OrgNote By Leslie Zhu
-description = My information
-keywords = My Blog keywords(Blog,OrgNote,Emacs,Org-mode)
-"""
 
     if not os.path.exists(_init_file):
         print "[info] create ",_init_file
-        output = open(_init_file,"w")
-        print >> output,_data
-        output.close()
+        import orgnote.config
+        orgnote.config.Config().dump()
 
 
 def create_public_file(name = "public.org"):
