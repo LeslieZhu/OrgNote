@@ -1,7 +1,4 @@
 v0.3.0:
-    - auto publish a note
-    - auto check notes's status
-    - auto create notes with yy/mm/dd/ directory structure
     - all speciall can configure
     - code style and design more pythonic
     - publish OrgNote on PyPI
