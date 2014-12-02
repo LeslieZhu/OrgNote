@@ -30,7 +30,7 @@ def to_page(notename=""):
     import os
     try:
         os.system("emacs -l scripts/init-orgnote.el --batch %s --funcall org-export-as-html 2>/dev/null" % notename)
-        print "%s generated" % notename.replace('.org','.html')
+        #print "%s generated" % notename.replace('.org','.html')
     except Exception,ex:
         print str(ex)
 
@@ -55,7 +55,7 @@ def publish_note(notename=""):
     try:
         import glob,os.path
         if notename.endswith(".org"): notename = notename[:-4]
-        for _file in glob.glob("./notes/????/??/??/%s.org" % notename):
+        for _file in reversed(sorted(glob.glob("./notes/????/??/??/%s.org" % notename))):
             _html = _file.replace(".org",".html")
             if not os.path.exists(_html):
                 to_page(_file)

@@ -1,9 +1,7 @@
 v0.3.0:
     - auto publish a note
-    - auto generate a JSON file to save all notes
     - auto check notes's status
     - auto create notes with yy/mm/dd/ directory structure
-    - change the publish note's format
     - all speciall can configure
     - code style and design more pythonic
     - publish OrgNote on PyPI

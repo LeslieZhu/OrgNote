@@ -876,7 +876,7 @@ class OrgNote(object):
         if not os.path.exists(publish_list):
             output = open(publish_list,"w")
             self.scan()
-            for _note in sorted(self.notes_db.keys()):
+            for _note in reversed(sorted(self.notes_db.keys())):
                 publish_line = util.publish_note(self.notes_db[_note])
                 
                 if publish_line in nopublish_data: 
@@ -912,10 +912,42 @@ class OrgNote(object):
 
         for path,dirs,files in os.walk(note_dir):
             for _file in files:
+                if not _file.endswith(".org"):continue
                 _path = path + '/' + _file
                 if _path == "./notes/public.org" or _path == "./notes/nopublic.org": continue
                 if _path.endswith(".html"):continue
                 self.notes_db[_path] = _file
+
+    def do_list(self):
+        """
+        list all notes
+        """
+        self.scan()
+        for _note in reversed(sorted(self.notes_db.keys())):
+            print _note
+
+    def do_status(self):
+        
+        publish_list = self.dirs[0]
+        nopublish_list = self.dirs[1]
+        
+        publish_data = open(publish_list,"r").readlines()
+        publish_data = [i.strip() for i in publish_data]
+
+        nopublish_data = open(nopublish_list,"r").readlines()
+        nopublish_data = [i.strip().replace("+ [[","- [[") for i in nopublish_data]
+        
+        all_publish = True
+        self.scan()
+        for _note in reversed(sorted(self.notes_db.keys())):
+            publish_line = util.publish_note(self.notes_db[_note])
+            if publish_line not in publish_data and publish_line not in nopublish_data:
+                print "%s not publish yet!" % _note
+                all_publish = False
+
+        if all_publish:
+            print "all notes published!"
+            
         
 
 def usage():
