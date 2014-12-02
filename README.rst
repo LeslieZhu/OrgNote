@@ -5,6 +5,7 @@ Install
 ============
 
 Install OrgNote by `pip`::
+
   $ pip install orgnote
 
 Install OrgNote by `easy_install`::
@@ -46,6 +47,7 @@ Post Blog
 ==========
 
 ::
+
   $ orgnote new note-name
 
   $ orgnote list
@@ -63,6 +65,7 @@ Post Blog
 Usage
 =======
 ::
+
    $ orgnote help
 
    Usage: orgnote <command>
