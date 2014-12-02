@@ -15,7 +15,6 @@ from __future__ import absolute_import
 import re,time,sys,os
 import json
 from orgnote import config
-from orgnote import note
 from orgnote import util
 
 class OrgNote(object):
