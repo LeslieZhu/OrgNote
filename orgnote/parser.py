@@ -19,7 +19,6 @@ from orgnote import util
 
 class OrgNote(object):
     def __init__(self):
-        self.note = note.Note()
         self.cfg = config.Config()
         self.notes_db = dict()
 
