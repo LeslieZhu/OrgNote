@@ -13,39 +13,45 @@ then use orgnote convert into new html with default theme.
 from __future__ import absolute_import
 
 import re,time,sys,os
+import json
 from orgnote import config
+from orgnote import note
+from orgnote import util
 
 class OrgNote(object):
     def __init__(self):
+        self.note = note.Note()
         self.cfg = config.Config()
-        self.__dirs__ = ["./notes/public.org","./notes/nopublic.org"]
+        self.notes_db = dict()
 
-        self.__notes__ = list()
-        self.__localnotes__ = list()
-        self.__archives__ = list()
+        self.dirs = ["./notes/public.org","./notes/nopublic.org"]
+
+        self.notes = list()
+        self.localnotes = list()
+        self.archives = list()
 
 
-        self.__menus__ = [
+        self.menus = [
             ["/public/minyi.html","归档","fa fa-sitemap","MinYi"],
             ["/public/archive.html","归档","fa fa-archive","归档"],
             ["/public/about.html","关于","fa fa-user","关于"],
         ]
 
 
-        self.__menus_map__ = {
+        self.menus_map = {
             "MinYi":"minyi",
             "归档": "archive",
             "关于": "about"
         }
 
 
-        self.__minyi__ = [
+        self.minyi = [
             ["/public/tags/nopublic.html","fa fa-link","暂不公开"]
         ]
-        self.__keywords__ = list()
-        self.__tags__ = dict()
-        self.__page_tags__ = dict()
-        self.__timetags__ = dict()
+        self.keywords = list()
+        self.tags = dict()
+        self.page_tags = dict()
+        self.timetags = dict()
 
 
 
@@ -100,6 +106,13 @@ class OrgNote(object):
         <a class="navbar-brand" href="/index.html">%s</a>
         """ % self.cfg.cfg["general"]["title"]
 
+
+    def gen_tag_href(self,name=""):
+        if name not in ["MinYi","归档","关于"]:
+            return "<a href=\"/public/tags/%s.html\"><i class=\"%s\"></i>%s</a>" % (name,name,name)
+        else:
+            return "<a href=\"/public/%s.html\"><i class=\"%s\"></i>%s</a>" % (self.menus_map[name],name,name)
+
     def gen_href(self,line=list()):
         if len(line) == 4:          # menu
             if "rss" in line[0]:
@@ -110,12 +123,6 @@ class OrgNote(object):
             return "<li><a href=\"%s\" target=\"_blank\"><i class=\"%s\"></i>%s</a></li>" % (line[0],line[1],line[2])
         else:
             return ""
-
-    def gen_tag_href(self,name=""):
-        if name not in ["MinYi","归档","关于"]:
-            return "<a href=\"/public/tags/%s.html\"><i class=\"%s\"></i>%s</a>" % (name,name,name)
-        else:
-            return "<a href=\"/public/%s.html\"><i class=\"%s\"></i>%s</a>" % (self.__menus_map__[name],name,name)
 
     def body_menu(self,menus=list()):
         """
@@ -142,6 +149,7 @@ class OrgNote(object):
         """
 
         return output
+
 
     def contain_prefix(self,tags=[],name=""):
         output =  """
@@ -186,8 +194,8 @@ class OrgNote(object):
         import os
         #global __notes__,__localnotes__
         for notedir in dirs:
-            dirname = os.path.dirname(notedir)
             for line in open(notedir):
+                line = line.strip()
                 if line.startswith("#"): continue
                 public = False
                 local  = False
@@ -199,16 +207,16 @@ class OrgNote(object):
                     line = line.split('[')[2:]
                     
                     if line[0][0] == ".":
-                        link = dirname + "/" + line[0]
+                        link = line[0]
                     else:
                         link = line[0]
                         
                     name = line[1]
             
                     if public:
-                        self.__notes__ += [[link,name]]
+                        self.notes += [[link,name]]
                     if local:
-                        self.__localnotes__ += [[link,name]]
+                        self.localnotes += [[link,name]]
 
     def contain_notes(self,data=list(),num=0,lastone=0):
         # each note
@@ -233,7 +241,7 @@ class OrgNote(object):
         
             output += self.contain_note(item[0])
 
-            sub_title = sub_title = "<h1 class=\"title\">%s</h1>" % self.gen_title(item[0])
+            sub_title = sub_title = "<h1 class=\"title\">%s</h1>" % util.gen_title(item[0])
             output = output.replace(sub_title,"")
             
             output += """
@@ -248,7 +256,7 @@ class OrgNote(object):
         else:
             prev_page = '<li class="prev"><a href="%s" class=alignright prev"><i class="fa fa-arrow-circle-o-left"></i>Newer</a></li>' % ("/public/page"+str(num-1)+".html")
 
-        if lastone == len(self.__notes__):
+        if lastone == len(self.notes):
             next_page = '<li class="next disabled"><a><i class="fa fa-arrow-circle-o-right"></i>Older</a></li>'
         else:
             next_page = '<li class="next"><a href="%s" class="alignright next">Older<i class="fa fa-arrow-circle-o-right"></i></a></li>' % ("/public/page"+str(num+1)+".html")
@@ -280,37 +288,37 @@ class OrgNote(object):
         if num == 0:
             return ""
         else:
-            return self.gen_public_link(self.__notes__[num-1][0],"/public/")
+            return self.gen_public_link(self.notes[num-1][0],"/public/")
 
     def gen_next(self,num=0):
-        if num == len(self.__notes__) - 1:
+        if num == len(self.notes) - 1:
             return ""
         else:
-            return self.gen_public_link(self.__notes__[num+1][0],"/public/")
+            return self.gen_public_link(self.notes[num+1][0],"/public/")
 
     def gen_tag_list(self,public=True):
         if not public: return
-        for num,link in enumerate(self.__notes__):
+        for num,link in enumerate(self.notes):
             keywords = self.gen_category(link[0])
 
-            self.__page_tags__[link[0]] = keywords
+            self.page_tags[link[0]] = keywords
 
             for key in keywords:
-                if key not in self.__keywords__:
-                    self.__keywords__.append(key)
-                if not self.__tags__.has_key(key):
-                    self.__tags__[key] = list()
+                if key not in self.keywords:
+                    self.keywords.append(key)
+                if not self.tags.has_key(key):
+                    self.tags[key] = list()
                 else: pass
 
-                self.__tags__[key].append([link[0], link[1].strip()])
+                self.tags[key].append([link[0], link[1].strip()])
 
     def gen_timetag_list(self,public=True):
         if not public: return
-        for num,link in enumerate(self.__notes__):
+        for num,link in enumerate(self.notes):
             # save each page in a yymm dict
             yyyymm = ''.join(self.gen_date(link[0]).split('-')[:2])
-            if not self.__timetags__.has_key(yyyymm):self.__timetags__[yyyymm] = list()
-            self.__timetags__[yyyymm].append(link)
+            if not self.timetags.has_key(yyyymm):self.timetags[yyyymm] = list()
+            self.timetags[yyyymm].append(link)
 
     def contain_page(self,link="",num=0, public=True):
         #global __archives__
@@ -325,14 +333,14 @@ class OrgNote(object):
         data = data.replace('TMD','\n')
 
         if public:
-            self.__archives__.append([self.gen_public_link(self.__notes__[num][0],"/public/"),"fa fa-file-o",self.__notes__[num][1].strip()])
+            self.archives.append([self.gen_public_link(self.notes[num][0],"/public/"),"fa fa-file-o",self.notes[num][1].strip()])
             
             if num == 0:
                 prev_page = '<li class="prev disabled"><a><i class="fa fa-arrow-circle-o-left"></i>上一页</a></li>'
             else:
                 prev_page = '<li class="prev"><a href="%s" class=alignright prev"><i class="fa fa-arrow-circle-o-left"></i>上一页</a></li>' % self.gen_prev(num)
                 
-            if num == len(self.__notes__) - 1:
+            if num == len(self.notes) - 1:
                 next_page = '<li class="next disabled"><a><i class="fa fa-arrow-circle-o-right"></i>下一页</a></li>' 
             else:
                 next_page = '<li class="next"><a href="%s" class="alignright next">下一页<i class="fa fa-arrow-circle-o-right"></i></a></li>' % self.gen_next(num)
@@ -496,8 +504,8 @@ class OrgNote(object):
         <ul class="tag_box inline list-unstyled">
         """
         
-        for key in self.__keywords__:
-            output += "<li><a href=\"/public/tags/%s.html\">%s<span>%s</span></a></li>" % (key,key,len(self.__tags__[key]))
+        for key in self.keywords:
+            output += "<li><a href=\"/public/tags/%s.html\">%s<span>%s</span></a></li>" % (key,key,len(self.tags[key]))
 
         output += """
         </ul>
@@ -514,9 +522,9 @@ class OrgNote(object):
         <ul class="tag_box inline list-unstyled">
         """
         tot = 0
-        for key in sorted(self.__timetags__.keys(),reverse=True):
-            output += "<li><a href=\"/public/tags/%s.html\">%s<span>%s</span></a></li>" % (key,key,len(self.__timetags__[key]))
-            tot += len(self.__timetags__[key])
+        for key in sorted(self.timetags.keys(),reverse=True):
+            output += "<li><a href=\"/public/tags/%s.html\">%s<span>%s</span></a></li>" % (key,key,len(self.timetags[key]))
+            tot += len(self.timetags[key])
         output += "<li><a href=\"/public/archive.html\">All<span>%s</span></a></li>" % (tot)
         
         output += """
@@ -598,11 +606,11 @@ class OrgNote(object):
         output = open("./public/archive.html","w")
         print >> output,self.header_prefix(title="归档")
         print >> output,self.body_prefix()
-        print >> output,self.body_menu(self.__menus__)
+        print >> output,self.body_menu(self.menus)
         print >> output,self.contain_prefix(["归档"],"")
-        print >> output,self.contain_archive(self.__archives__)              # auto gen
+        print >> output,self.contain_archive(self.archives)              # auto gen
         print >> output,self.contain_sidebar()
-        print >> output,self.sidebar_latest(self.__notes__)            # auto gen
+        print >> output,self.sidebar_latest(self.notes)            # auto gen
         print >> output,self.sidebar_tags()
         print >> output,self.sidebar_date()
         print >> output,self.sidebar_weibo()
@@ -615,14 +623,14 @@ class OrgNote(object):
         output = open(self.gen_public_link(note[0]),"w")
         print >> output,self.header_prefix(2,note[1].strip())
         print >> output,self.body_prefix()
-        print >> output,self.body_menu(self.__menus__)
+        print >> output,self.body_menu(self.menus)
         if public:
-            print >> output,self.contain_prefix(self.__page_tags__[note[0]],"标签: ")
+            print >> output,self.contain_prefix(self.page_tags[note[0]],"标签: ")
         else:
             print >> output,self.contain_prefix(['nopublic'],"标签: ")
         print >> output,self.contain_page(note[0],num,public)              # auto gen
         print >> output,self.contain_sidebar()
-        print >> output,self.sidebar_latest(self.__notes__)            # auto gen
+        print >> output,self.sidebar_latest(self.notes)            # auto gen
         print >> output,self.sidebar_tags()
         print >> output,self.sidebar_date()
         print >> output,self.sidebar_weibo()
@@ -632,9 +640,9 @@ class OrgNote(object):
         output.close()
         
     def gen_public(self):
-        for i,note in enumerate(self.__notes__):
+        for i,note in enumerate(self.notes):
             self.gen_page(note,i)
-        for i,note in enumerate(self.__localnotes__):
+        for i,note in enumerate(self.localnotes):
             self.gen_page(note,i,False)
 
     def split_index(self,num,b_index,e_index):
@@ -648,11 +656,11 @@ class OrgNote(object):
 
         print >> output,self.header_prefix(title=self.cfg.cfg["general"]["title"])
         print >> output,self.body_prefix()
-        print >> output,self.body_menu(self.__menus__)
+        print >> output,self.body_menu(self.menus)
         print >> output,self.contain_prefix()    
-        print >> output,self.contain_notes(self.__notes__[b_index:e_index],num,e_index)              # auto gen
+        print >> output,self.contain_notes(self.notes[b_index:e_index],num,e_index)              # auto gen
         print >> output,self.contain_sidebar()
-        print >> output,self.sidebar_latest(self.__notes__)            # auto gen
+        print >> output,self.sidebar_latest(self.notes)            # auto gen
         print >> output,self.sidebar_tags()
         print >> output,self.sidebar_date()
         print >> output,self.sidebar_weibo()
@@ -669,7 +677,7 @@ class OrgNote(object):
         num = 0
         b_index = 0
         e_index = b_index + note_num
-        tot = len(self.__notes__)
+        tot = len(self.notes)
 
         while num <= tot:
             if b_index > tot:
@@ -687,11 +695,11 @@ class OrgNote(object):
         output = open("./public/about.html","w")
         print >> output,self.header_prefix(title="关于")
         print >> output,self.body_prefix()
-        print >> output,self.body_menu(self.__menus__)
+        print >> output,self.body_menu(self.menus)
         print >> output,self.contain_prefix(["关于"],"")
         print >> output,self.contain_about()
         print >> output,self.contain_sidebar()
-        print >> output,self.sidebar_latest(self.__notes__)
+        print >> output,self.sidebar_latest(self.notes)
         print >> output,self.sidebar_tags()
         print >> output,self.sidebar_date()
         print >> output,self.sidebar_weibo()
@@ -704,11 +712,11 @@ class OrgNote(object):
         output = open("./public/minyi.html","w")
         print >> output,self.header_prefix(title="MinYi")
         print >> output,self.body_prefix()
-        print >> output,self.body_menu(self.__menus__)
+        print >> output,self.body_menu(self.menus)
         print >> output,self.contain_prefix(["MinYi"],"")
-        print >> output,self.contain_archive(self.__minyi__)
+        print >> output,self.contain_archive(self.minyi)
         print >> output,self.contain_sidebar()
-        print >> output,self.sidebar_latest(self.__notes__)
+        print >> output,self.sidebar_latest(self.notes)
         print >> output,self.sidebar_tags()
         print >> output,self.sidebar_date()
         print >> output,self.sidebar_weibo()
@@ -718,16 +726,16 @@ class OrgNote(object):
         output.close()
 
     def gen_tags(self):
-        for key in self.__keywords__:
+        for key in self.keywords:
             output = open("./public/tags/" + key + ".html","w")
             print >> output,self.header_prefix(title=key)
             print >> output,self.body_prefix()
-            print >> output,self.body_menu(self.__menus__)
+            print >> output,self.body_menu(self.menus)
             print >> output,self.contain_prefix([key],"分类: ")
             #print >> output,self.contain_notes(__tags__[key])
-            print >> output,self.contain_archive(self.__tags__[key])              # auto gen
+            print >> output,self.contain_archive(self.tags[key])              # auto gen
             print >> output,self.contain_sidebar()
-            print >> output,self.sidebar_latest(self.__notes__)
+            print >> output,self.sidebar_latest(self.notes)
             print >> output,self.sidebar_tags()
             print >> output,self.sidebar_date()
             print >> output,self.sidebar_weibo()
@@ -737,15 +745,15 @@ class OrgNote(object):
             output.close()
             
     def gen_timetags(self):
-        for key in sorted(self.__timetags__.keys(),reverse=True):
+        for key in sorted(self.timetags.keys(),reverse=True):
             output = open("./public/tags/" + key + ".html","w")
             print >> output,self.header_prefix(title=key)
             print >> output,self.body_prefix()
-            print >> output,self.body_menu(self.__menus__)
+            print >> output,self.body_menu(self.menus)
             print >> output,self.contain_prefix([key],"月份: ")
-            print >> output,self.contain_archive(self.__timetags__[key])
+            print >> output,self.contain_archive(self.timetags[key])
             print >> output,self.contain_sidebar()
-            print >> output,self.sidebar_latest(self.__notes__)
+            print >> output,self.sidebar_latest(self.notes)
             print >> output,self.sidebar_tags()
             print >> output,self.sidebar_date()
             print >> output,self.sidebar_weibo()
@@ -758,9 +766,9 @@ class OrgNote(object):
         output = open("./public/tags/nopublic.html","w")
         print >> output,self.header_prefix(title="nopublic")
         print >> output,self.body_prefix()
-        print >> output,self.body_menu(self.__menus__)
+        print >> output,self.body_menu(self.menus)
         print >> output,self.contain_prefix(["nopublic"],"分类: ")
-        print >> output,self.contain_archive(self.__localnotes__)              # auto gen
+        print >> output,self.contain_archive(self.localnotes)              # auto gen
         print >> output,self.contain_suffix()
         print >> output,self.header_suffix()
         output.close()
@@ -803,16 +811,6 @@ class OrgNote(object):
         return pubdate
 
 
-    def gen_title(self,link=""):
-        """ Filter Title from HTML metadata """
-        
-
-        for line in open(link).readlines():
-            if "<title>" in line:
-                line = line.strip()
-                title=re.match("<title>(.*)</title>",line).groups(1)[0]
-                break
-        return title
 
     def gen_category(self,link=""):
         """ Filter Keywords from HTML metadata """
@@ -830,14 +828,14 @@ class OrgNote(object):
             return ["札记"]
 
     
-    def server(self,port="8080"):
+    def do_server(self,port="8080"):
         try:
             os.system("python -m SimpleHTTPServer %s" % port)
         except Exception,ex:
             print str(ex)
             usage()
 
-    def deploy(self):
+    def do_deploy(self):
         if not os.path.exists("./.git/"):
             print "please config git-url in _config.ini, and run:"
             print "$ git init"
@@ -846,9 +844,9 @@ class OrgNote(object):
             #os.system(cmd)
             print cmd
 
-    def generate(self):
+    def do_generate(self):
         self.cfg.update()
-        self.gen_notes(self.__dirs__)
+        self.gen_notes(self.dirs)
         self.gen_tag_list()
         self.gen_timetag_list()
         self.gen_public()
@@ -861,50 +859,64 @@ class OrgNote(object):
         self.gen_nopublic()
         print "notes generate done" 
 
-    def new(self,notename=""):
-        try:
-            #notename = sys.argv[2]
-            if not notename.endswith('.org'): notename += ".org"
-            if not notename.startswith('notes/'): notename = "notes/"+notename
-            if not os.path.exists(notename):
-                #os.system("cp notes/template.org %s" % notename)
-                import orgnote.init
-                orgnote.init.create_default_note(notename)
-                print "%s init done" % notename
-            else:
-                print "%s exists, please use other name or delete it" % notename
-        except Exception,ex:
-            print str(ex)
-            usage()        
+    def do_new(self,notename=""):
+        return util.add_note(notename)
 
+    def do_page(self,notename=""):
+        return util.to_page(notename)
 
-    def page(self,notename=""):
-        import os
-        try:
-            if not notename.endswith('.org'): notename += ".org"
-            if not notename.startswith('notes/'): notename = "notes/"+notename
-            os.system("emacs -l scripts/init-orgnote.el --batch %s --funcall org-export-as-html" % notename)
-            print "%s generated" % notename.replace('.org','.html')
-        except Exception,ex:
-            print str(ex)
-            usage()
+    def do_publish(self,notename=""):
+        publish_list = self.dirs[0]
+        nopublish_list = self.dirs[1]
+        publish_line = util.publish_note(notename)
 
+        nopublish_data = open(nopublish_list,"r").readlines()
+        nopublish_data = [i.strip().replace("+ [[","- [[") for i in nopublish_data]
 
-    def publish(self,notename=""):
-        try:
-            if notename.endswith('.org'): notename = notename[:notename.find(".org")]
-            if not notename.endswith('.html'): notename += ".html"
-            if notename.startswith('notes/'):
-                notename = "./"+notename[notename.find("notes/"):]
-            elif notename.startswith('./notes/'):
-                notename = "./"+notename[notename.find("./notes/"):]
-            else:
-                notename = "./notes/"+notename
-            print "add %s into notes/public.org" % notename
-            _title = self.gen_title(notename)
-            print "- [[%s][%s]]" % (notename,_title)
-        except Exception,ex:
-            print str(ex)
+        if not os.path.exists(publish_list):
+            output = open(publish_list,"w")
+            self.scan()
+            for _note in sorted(self.notes_db.keys()):
+                publish_line = util.publish_note(self.notes_db[_note])
+                
+                if publish_line in nopublish_data: 
+                    continue
+                print >> output,publish_line
+            output.close()
+        else:
+            publish_line = util.publish_note(notename)
+
+            if publish_line == None:
+                print "ERROR: Can not publish note: %s, are you sure it exists?" % notename
+                return
+
+            data = open(publish_list,"r").readlines()
+            data = [i.strip() for i in data]
+
+            if publish_line in data or publish_line in nopublish_data:
+                print "publish done"
+                return
+            output = open(publish_list,"w")
+            print >> output,publish_line
+            for line in data:
+                if line in nopublish_data: 
+                    continue
+                print >> output,line
+            output.close()
+        print "publish done"
+
+    def scan(self,note_dir = "./notes"):
+        """
+        scan the note_dir, build a dict with notes
+        """
+
+        for path,dirs,files in os.walk(note_dir):
+            for _file in files:
+                _path = path + '/' + _file
+                if _path == "./notes/public.org" or _path == "./notes/nopublic.org": continue
+                if _path.endswith(".html"):continue
+                self.notes_db[_path] = _file
+        
 
 def usage():
     import sys
@@ -915,7 +927,8 @@ def usage():
     Commands:
     init       Create a new OrgNote folder
     new        Create a new .org post
-    page       convert .org to .html
+    list       List this blog notes
+    status     Status of those notes
     publish    Publish a note
     generate   Generate static files
     server     Start the server
@@ -940,28 +953,29 @@ def main(args=None):
 
     if len(sys.argv) == 2:
         if sys.argv[1] == "server":
-            blog.server()
+            blog.do_server()
         elif sys.argv[1] == "init":
             print "init...."
             orgnote.init.main()
         elif sys.argv[1] == "deploy":
-            blog.deploy()
+            blog.do_deploy()
         elif sys.argv[1] == "version":
             print orgnote.__version__
         elif sys.argv[1] == "generate":
-            blog.generate()
+            blog.do_generate()
+        elif sys.argv[1] == "list":
+            blog.do_list()
+        elif sys.argv[1] == "status":
+            blog.do_status()
         else:
             usage()
     elif len(sys.argv) == 3:
         if sys.argv[1] == "server":
-            blog.server(sys.argv[2])
+            blog.do_server(sys.argv[2])
         elif sys.argv[1] == "new":
-            blog.new(sys.argv[2])
-        elif sys.argv[1] == "page":
-            blog.page(sys.argv[2])
+            blog.do_new(sys.argv[2])
         elif sys.argv[1] == "publish":
-            print ">>>",sys.argv[2]
-            blog.publish(sys.argv[2])
+            blog.do_publish(sys.argv[2])
         else:
             usage()
     else:

@@ -49,9 +49,7 @@ def create_default_note(name="notes/HelloOrgNote.org"):
 
     import os
     import os.path
-
-    _dirname = "./"
-    _init_file = _dirname + name
+    import time
 
     _data =  """#+STARTUP: overview
 #+STARTUP: content
@@ -76,28 +74,28 @@ def create_default_note(name="notes/HelloOrgNote.org"):
 #+EMAIL: 作者邮件
 #+DATE: 10/1/2014
 
-* HelloOrgNote
+* Hello OrgNote
 
 [[https://github.com/LeslieZhu/OrgNote][OrgNote]] is a simple blog based on org-mode, enjoy it:)
 """
 
+    
+    _dirname = "./notes/"+time.strftime("%Y/%m/%d",time.localtime())
+    _init_file = _dirname + "/" + os.path.basename(name)
 
     if not os.path.exists(_dirname):
-        os.mkdir(_dirname)
+        os.makedirs(_dirname)
 
     if not os.path.exists(_init_file):
         print "[info] create ",_init_file
         output = open(_init_file,"w")
         print >> output,_data
         output.close()
+        return _init_file
     elif "HelloOrgNote.org" not in _init_file:
         print "File %s already exists, please use a new name!" % _init_file
+        return None
 
-    #if "HelloOrgNote.org" in _init_file:
-    #    import orgnote.parser
-    #    blog = orgnote.parser.OrgNote()
-    #    blog.page(_init_file)
-    #    blog.publish(_init_file)
 
 def create_config_file(name="_config.ini"):
     """
@@ -128,9 +126,9 @@ def create_public_file(name = "public.org"):
     _init_file = _dir + name
 
     if name == "public.org":
-        _data = """- [[./HelloOrgNote.html][HelloOrgNote]]"""
+        _data = """"""
     else:
-        _data = """+ [[./HelloOrgNote.html][HelloOrgNote]]"""
+        _data = """"""
 
     if not os.path.exists(_dir):
         os.mkdir(_dir)
