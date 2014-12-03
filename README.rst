@@ -27,7 +27,9 @@ At first, you should crate a **yourname.github.com.git** on `GitHub`::
   $ git clone git@github.com:yourname/yourname.github.com.git
   $ cd yourname.github.com
   $ git clone git@github.com:LeslieZhu/orgnote-theme-freemind.git theme/freemind
+  $ rm -rf theme/freemind/.git
   $ git clone git@github.com:LeslieZhu/orgnote-emacs-el.git scripts/
+  $ rm -rf scripts/.git
   $ orgnote init
 
 
