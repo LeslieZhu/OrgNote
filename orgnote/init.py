@@ -144,7 +144,7 @@ def main(args=None):
     import os
     import os.path
     
-    target_list = ["./theme/","./notes/","./scripts/","./public/","./public/tags/"]
+    target_list = ["./theme/","./notes/","./public/","./public/tags/"]
 
     for target in target_list:
         if not os.path.exists(target):
@@ -152,11 +152,20 @@ def main(args=None):
             os.mkdir(target)
 
     # init files
-    create_emacs_init("init-orgnote.el")
+    #create_emacs_init("init-orgnote.el")
     create_default_note("notes/HelloOrgNote.org")
     create_config_file("_config.ini")
     create_public_file("public.org")
     create_public_file("nopublic.org")
+
+    cmd = "git clone git@github.com:LeslieZhu/orgnote-theme-freemind.git theme/freemind"
+    os.system(cmd)
+    cmd = "rm -rf theme/freemind/.git"
+    os.system(cmd)
+    cmd = "git clone git@github.com:LeslieZhu/orgnote-emacs-el.git scripts/"
+    os.system(cmd)
+    cmd = "rm -rf scripts/.git"
+    os.system(cmd)
 
 
 if __name__ == "__main__":

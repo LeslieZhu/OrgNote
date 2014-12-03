@@ -834,16 +834,11 @@ class OrgNote(object):
             usage()
 
     def do_deploy(self):
-        #if not os.path.exists("./.git/"):
-        #    print "please config git-url in _config.ini, and run:"
-        #    print "git init"
-        #else:
-        print "run:"
-        print "git add index.html _config.ini notes/ public/ scripts/ theme/"
-        print "git commit -m \"update\""
-        print "git push origin master"
-            #cmd = "git add index.html _config.ini notes/ public/ scripts/ theme/;git commit -m \"update\";git push origin master"
-            #os.system(cmd)
+        import os
+        os.system("git add .")
+        os.system("git commit -m \"update\"")
+        os.system("git push origin master")
+
 
     def do_generate(self):
         self.cfg.update()
