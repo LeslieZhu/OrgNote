@@ -57,8 +57,8 @@ def publish_note(notename=""):
         if notename.endswith(".org"): notename = notename[:-4]
         for _file in reversed(sorted(glob.glob("./notes/????/??/??/%s.org" % notename))):
             _html = _file.replace(".org",".html")
-            if not os.path.exists(_html):
-                to_page(_file)
+            #if not os.path.exists(_html):
+            to_page(_file)
             _title = gen_title(_html)
             return "- [[%s][%s]]" % (_html,_title)
         return None
