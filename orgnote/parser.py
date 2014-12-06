@@ -950,22 +950,23 @@ def usage():
     import sys
     
     print """
-    Usage: orgnote <command>
+Usage: orgnote <command>
 
-    Commands:
-    init       Create a new OrgNote folder
-    new        Create a new .org post
-    list       List this blog notes
-    status     Status of those notes
-    publish    Publish a note
-    generate   Generate static files
-    server     Start the server
-    deploy     Deploy your website
-    help       Get help on a command
-    version    Display version information
+Commands:
+  init       Create a new OrgNote folder
+  new        Create a new .org post
+  list       List this blog notes
+  status     Status of those notes
+  publish    Publish a note
+  generate   Generate static files
+  server     Start the server
+  deploy     Deploy your website
+  help       Get help on a command
+  version    Display version information
     
-    For more help, you can check the docs:  http://lesliezhu.github.io/OrgNote/
-     """
+For more help, you can check the docs:  http://lesliezhu.github.io/OrgNote/
+    """
+
     sys.exit()
             
 
