@@ -82,7 +82,10 @@ Usage
    
    For more help, you can check the docs:  http://lesliezhu.github.io/OrgNote/
    
+OrgNote Bash Completion
+=======================
 
+see https://github.com/LeslieZhu/orgnote-bash-completion
 
 More
 =======
