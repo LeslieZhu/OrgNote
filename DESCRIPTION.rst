@@ -15,7 +15,8 @@ Thus, update **_config.yml** configure file.
 Usage
 ======
 
-::
+The usage of **orgnote**::
+
    $ orgnote help
 
    Usage: orgnote <command>
