@@ -1,7 +1,7 @@
 OrgNote: A simple blog based on org-mode
 =======================================
 
-https://travis-ci.org/LeslieZhu/OrgNote.svg?branch=v0.4.0
+.. image:: https://travis-ci.org/LeslieZhu/OrgNote.svg?branch=v0.4.0
 
 
 Install
