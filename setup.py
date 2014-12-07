@@ -37,7 +37,9 @@ setup(
     package_dir = {'orgnote':'orgnote',
                },
                    
-    package_data = {'': ['*.py','_config.ini']},
+    package_data = {
+        '': ['*.py','_config.yml']
+    },
 
 
     include_package_data = True,
@@ -63,6 +65,10 @@ setup(
             "orgnote%s=orgnote:main" % sys.version[:3],
         ],
     },
+
+    install_requires = [
+        "PyYAML==3.11",
+    ]
 
     #extras_require={
     #    'testing': ['pytest'],

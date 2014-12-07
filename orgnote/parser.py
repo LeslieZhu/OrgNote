@@ -64,7 +64,7 @@ class OrgNote(object):
 
         self.per_page = self.cfg.cfg.get("per_page",6)
 
-        self.sidebar_show = self.cfg.cfg.get("sidebar_show","0")
+        self.sidebar_show = self.cfg.cfg.get("sidebar_show",0)
         
         self.sidebar_list = self.cfg.cfg.get("sidebar",list())
         
@@ -512,15 +512,20 @@ class OrgNote(object):
         <div class="entry">
         <div class="row">
         <div class="col-md-12">
+        """
         
-        <p>这是一个建立在<code><a class="i i1 fc01 h" hidefocus="true" href="https://www.github.com/LeslieZhu/OrgNote" target="_blank">OrgNote</a></code>上的博客.</p>
-        <p>
-        %s
-        </p>
+        if self.description:
+            output += "<p>%s</p>" % self.description
+        else:
+            output += """
+            <p>这是一个建立在<code><a class="i i1 fc01 h" hidefocus="true" href="https://www.github.com/LeslieZhu/OrgNote" target="_blank">OrgNote</a></code>上的博客.</p>
+            """
+
+        output += """
         </div>
         </div>
         </div>             
-        """ % self.description
+        """ 
 
         output += self.duosuo()
 

@@ -13,6 +13,7 @@ then use orgnote convert into new html with default theme.
 from __future__ import absolute_import
 
 from yaml import load, dump
+import os,os.path
 
 
 class Config(object):
@@ -93,8 +94,12 @@ links:
 
     def __init__(self,cfgfile="_config.yml"):
         self.cfgfile = cfgfile
-        self.cfg = load(self._default_yml)
-        self.update()
+        self.cfg = dict()
+        
+        if not os.path.exists(self.cfgfile):
+            self.cfg = load(self._default_yml)
+        else:
+            self.update()
 
     def update(self):
         import os.path

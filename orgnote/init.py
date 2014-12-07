@@ -80,7 +80,7 @@ def create_default_note(name="HelloOrgNote.org"):
 * Hello OrgNote
 
 [[https://github.com/LeslieZhu/OrgNote][OrgNote]] is a simple blog based on org-mode, enjoy it:)
-""" % (blog.language, "未分类", os.path.basename(name).strip(".org"),blog.author,blog.email,time.strftime("%Y/%m/%d",time.localtime()))
+""" % (blog.language, blog.default_tag.encode('utf-8'), os.path.basename(name).strip(".org"),blog.author,blog.email,time.strftime("%Y/%m/%d",time.localtime()))
 
     
     _dirname = "./" + blog.source_dir + "/"+ time.strftime("%Y/%m/%d",time.localtime())
@@ -154,10 +154,10 @@ def main(args=None):
     create_config_file("_config.yml")
 
     source_dir = "./" + blog.source_dir + "/"
-    public_dir = "./" + blog.public_dir + "/"
+    public_dir = "." + blog.public_dir
     tags_dir = public_dir + "/tags/"
     
-    target_list = ["./theme/",source_dir,public_dir,tags_dir]
+    target_list = ["./theme/",public_dir,tags_dir,source_dir]
 
     for target in target_list:
         if not os.path.exists(target):
