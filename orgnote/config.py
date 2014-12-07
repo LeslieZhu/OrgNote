@@ -24,59 +24,77 @@ class Config(object):
 # Site
 title: OrgNote
 subtitle: "A simple org-mode blog, write blog by org-mode in Emacs"
-description: "A simple org-mode blog, write blog by org-mode in Emacs"
-author: Leslie Zhu
-email:
+
+author: OrgNote
+email: pythonisland@gmail.com
+
 language: zh-CN
+
+# About this blog
+description: "Use OrgNote."
+keywords: "OrgNote,Emacs,org-mode,blog,python,geek"
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 url: http://yoursite.com
 root: /
-permalink: :year/:month/:day/:title/
-tag_dir: tags
-archive_dir: archives
+
 
 # Directory
-source_dir: notes
+# if the source_dir is ./notes, then set 'source_dir' as 'notes', not include the '/'
 public_dir: public
+source_dir: notes
+
 
 # Category & Tag
 default_tag: 札记
-tag_map:
 
-# Archives
-## 2: Enable pagination
-## 1: Disable pagination
-## 0: Fully Disable
-archive: 2
-category: 2
-tag: 2
+# Theme
+# the default is 'freemind' and it's only theme for OrgNote now
+theme: freemind
 
-# Server
-port: 4000
-server_ip: 0.0.0.0
 
 # Pagination
-## Set per_page to 0 to disable pagination
-per_page: 10
-pagination_dir: page
+## the note num of each page
+per_page: 6
+
 
 # duoshuo
 duoshuo_shortname:
 
-# Extensions
-theme: freemind
-exclude_generator:
 
-# Deployment
-deploy:
-  type: git
+
+# layout
+## 1: enable
+## 0: disable
+### if 'sidebar_show` is disable, igore all `sidebar` option
+### the sidebar item display as the config order, sidebar items list:
+### sidebar_latest,sidebar_tags,sidebar_time,sidebar_weibo,sidebar_link
+
+sidebar_show: 1
+sidebar:
+  - sidebar_latest
+  - sidebar_tags
+  - sidebar_time
+  - sidebar_link
+
+
+# links, each link should setting url,name,icon
+links:
+  link1:
+    url: http://lesliezhu.github.com
+    name: Leslie Zhu
+    icon: fa fa-github
+  link2:
+    url: https://github.com/LeslieZhu/OrgNote
+    name: OrgNote
+    icon: fa fa-github
 """
 
     def __init__(self,cfgfile="_config.yml"):
         self.cfgfile = cfgfile
         self.cfg = load(self._default_yml)
+        self.update()
 
     def update(self):
         import os.path
@@ -84,7 +102,7 @@ deploy:
             self.default()
 
         fp = open(self.cfgfile,"r")
-        self.cfg = load(fp)
+        self.cfg.update(load(fp))
         fp.close()
         
     def dump(self):
@@ -100,8 +118,13 @@ deploy:
 
     def display(self):
         """display the _config.yml contents"""
-        for key in  self.cfg:
-            print key,":",self.cfg[key]
+        for key in  sorted(self.cfg):
+            if isinstance(self.cfg[key],dict):
+                print key
+                for key2 in sorted(self.cfg[key]):
+                    print "\t",key2,":",self.cfg[key][key2]
+            else:
+                print key,":",self.cfg[key]
 
         
 def main(args=None):

@@ -42,14 +42,17 @@ def create_emacs_init(initfile="init-orgnote.el"):
         print >> output,_data
         output.close()
 
-def create_default_note(name="notes/HelloOrgNote.org"):
+def create_default_note(name="HelloOrgNote.org"):
     """
-    init notes/template.org
+    init source_dir/template.org
     """
 
     import os
     import os.path
     import time
+
+    import orgnote.parser
+    blog = orgnote.parser.OrgNote()
 
     _data =  """#+STARTUP: overview
 #+STARTUP: content
@@ -66,21 +69,21 @@ def create_default_note(name="notes/HelloOrgNote.org"):
 #+OPTIONS: H:3
 #+OPTIONS: toc:t
 #+OPTIONS: num:t
-#+LANGUAGE: zh-CN
+#+LANGUAGE: %s
         
-#+KEYWORDS: 标签
-#+TITLE: 标题
-#+AUTHOR: 作者
-#+EMAIL: 作者邮件
-#+DATE: 10/1/2014
+#+KEYWORDS: %s
+#+TITLE: %s
+#+AUTHOR: %s
+#+EMAIL: %s
+#+DATE: %s
 
 * Hello OrgNote
 
 [[https://github.com/LeslieZhu/OrgNote][OrgNote]] is a simple blog based on org-mode, enjoy it:)
-"""
+""" % (blog.language, "未分类", os.path.basename(name).strip(".org"),blog.author,blog.email,time.strftime("%Y/%m/%d",time.localtime()))
 
     
-    _dirname = "./notes/"+time.strftime("%Y/%m/%d",time.localtime())
+    _dirname = "./" + blog.source_dir + "/"+ time.strftime("%Y/%m/%d",time.localtime())
     _init_file = _dirname + "/" + os.path.basename(name)
 
     if not os.path.exists(_dirname):
@@ -116,13 +119,15 @@ def create_config_file(name="_config.yml"):
 
 def create_public_file(name = "public.org"):
     """
-    init ./notes/public.org
+    init ./source_dir/public.org
     """
     
     import os
     import os.path
+    import orgnote.parser
+    blog = orgnote.parser.OrgNote()
 
-    _dir = "./notes/"
+    _dir = "./" + blog.source_dir + "/"
     _init_file = _dir + name
 
     if name == "public.org":
@@ -143,8 +148,16 @@ def create_public_file(name = "public.org"):
 def main(args=None):
     import os
     import os.path
+    import orgnote.parser
+    blog = orgnote.parser.OrgNote()
+
+    create_config_file("_config.yml")
+
+    source_dir = "./" + blog.source_dir + "/"
+    public_dir = "./" + blog.public_dir + "/"
+    tags_dir = public_dir + "/tags/"
     
-    target_list = ["./theme/","./notes/","./public/","./public/tags/"]
+    target_list = ["./theme/",source_dir,public_dir,tags_dir]
 
     for target in target_list:
         if not os.path.exists(target):
@@ -153,10 +166,9 @@ def main(args=None):
 
     # init files
     #create_emacs_init("init-orgnote.el")
-    create_default_note("notes/HelloOrgNote.org")
-    create_config_file("_config.yml")
     create_public_file("public.org")
     create_public_file("nopublic.org")
+    create_default_note(blog.source_dir + "/HelloOrgNote.org")
 
     if not os.path.exists("theme/freemind"):
         cmd = "git clone git@github.com:LeslieZhu/orgnote-theme-freemind.git theme/freemind"

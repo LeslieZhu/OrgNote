@@ -20,21 +20,67 @@ from orgnote import util
 class OrgNote(object):
     def __init__(self):
         self.cfg = config.Config()
+
         self.notes_db = dict()
-
-        self.dirs = ["./notes/public.org","./notes/nopublic.org"]
-
         self.notes = list()
         self.localnotes = list()
         self.archives = list()
 
+        self.keywords = list()
+        self.tags = dict()
+        self.page_tags = dict()
+        self.timetags = dict()
 
-        self.menus = [
-            ["/public/minyi.html","归档","fa fa-sitemap","MinYi"],
-            ["/public/archive.html","归档","fa fa-archive","归档"],
-            ["/public/about.html","关于","fa fa-user","关于"],
+
+        # general option
+        self.title = self.cfg.cfg.get("title","OrgNote")
+
+        self.subtitle = self.cfg.cfg.get("subtitle","OrgNote")
+
+        self.author = self.cfg.cfg.get("author","OrgNote")
+
+        self.email = self.cfg.cfg.get("email","")
+
+        self.description = self.cfg.cfg.get("description","")
+
+        self._keywords = self.cfg.cfg.get("keywords","OrgNote")
+
+        self.language = self.cfg.cfg.get("language","zh-CN")
+        
+        # blog option
+        self.homepage = self.cfg.cfg.get("url","https://github.com/LeslieZhu/OrgNote")
+
+        self.blogroot = self.cfg.cfg.get("root","/")
+
+        self.source_dir = self.cfg.cfg.get("source_dir","notes")
+
+        self.public_dir = self.blogroot + self.cfg.cfg.get("public_dir","public") + "/"
+
+        self.theme = self.cfg.cfg.get("theme","freemind")
+
+        self.duoshuo_shortname = self.cfg.cfg.get("duoshuo_shortname",None)
+
+        self.default_tag = self.cfg.cfg.get("default_tag","札记")
+
+        self.per_page = self.cfg.cfg.get("per_page",6)
+
+        self.sidebar_show = self.cfg.cfg.get("sidebar_show","0")
+        
+        self.sidebar_list = self.cfg.cfg.get("sidebar",list())
+        
+        self.dirs = [self.source_dir + "/public.org", self.source_dir + "/nopublic.org"]
+        
+        self.minyi = [
+            [self.public_dir + "tags/nopublic.html","fa fa-link","暂不公开"]
         ]
-
+        
+        
+        # menus
+        self.menus = [
+            [self.public_dir + "minyi.html","归档","fa fa-sitemap","MinYi"],
+            [self.public_dir + "archive.html","归档","fa fa-archive","归档"],
+            [self.public_dir + "about.html","关于","fa fa-user","关于"]
+        ]
 
         self.menus_map = {
             "MinYi":"minyi",
@@ -42,14 +88,19 @@ class OrgNote(object):
             "关于": "about"
         }
 
+        self.menu_list = self.cfg.cfg.get("menu_list",dict())
+        for _menu in self.menu_list:
+            menu = self.menu_list[_menu]
+            if menu["url"].endswith(".html"):
+                _url = menu["url"]
+            else:
+                _url = menu["url"] + ".html"
 
-        self.minyi = [
-            ["/public/tags/nopublic.html","fa fa-link","暂不公开"]
-        ]
-        self.keywords = list()
-        self.tags = dict()
-        self.page_tags = dict()
-        self.timetags = dict()
+            _item = [self.public_dir + _url,menu["title"],menu["icon"],menu["title"]]
+            self.menus.append(_item)
+            self.menus_map[menu["title"]] = _url.strip(".html")
+        
+        self.links = self.cfg.cfg.get("links",list())
 
 
 
@@ -77,15 +128,20 @@ class OrgNote(object):
         
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
         <meta property="og:image" content="undefined"/>
-        <link href="/favicon.ico" rel="icon">
+
+        <link href="%sfavicon.ico" rel="icon">
         
-        
-        <link rel="stylesheet" href="/theme/freemind/css/bootstrap.min.css" media="screen" type="text/css">
-        <link rel="stylesheet" href="/theme/freemind/css/font-awesome.css" media="screen" type="text/css">
-        <link rel="stylesheet" href="/theme/freemind/css/style.css" media="screen" type="text/css">
-        <link rel="stylesheet" href="/theme/freemind/css/highlight.css" media="screen" type="text/css">
+        <link rel="stylesheet" href="%stheme/%s/css/bootstrap.min.css" media="screen" type="text/css">
+        <link rel="stylesheet" href="%stheme/%s/css/font-awesome.css" media="screen" type="text/css">
+        <link rel="stylesheet" href="%stheme/%s/css/style.css" media="screen" type="text/css">
+        <link rel="stylesheet" href="%stheme/%s/css/highlight.css" media="screen" type="text/css">
         </head>
-        """ % (self.cfg.cfg["general"]["title"], self.cfg.cfg["general"]["author"], self.cfg.cfg["general"]["description"], self.cfg.cfg["general"]["title"],self.cfg.cfg["general"]["keywords"])
+        """ % (self.title, self.author, self.description, self.title,self._keywords,
+               self.blogroot,
+               self.blogroot,self.theme,
+               self.blogroot,self.theme,
+               self.blogroot,self.theme,
+               self.blogroot,self.theme)
 
     def body_prefix(self):
         return """
@@ -101,15 +157,14 @@ class OrgNote(object):
         <span class="icon-bar"></span>
         </button>
     
-        <a class="navbar-brand" href="/index.html">%s</a>
-        """ % self.cfg.cfg["general"]["title"]
-
+        <a class="navbar-brand" href="%sindex.html">%s</a>
+        """ % (self.blogroot,self.title)
 
     def gen_tag_href(self,name=""):
-        if name not in ["MinYi","归档","关于"]:
-            return "<a href=\"/public/tags/%s.html\"><i class=\"%s\"></i>%s</a>" % (name,name,name)
+        if name not in self.menus_map.keys():
+            return "<a href=\"%stags/%s.html\"><i class=\"%s\"></i>%s</a>" % (self.public_dir,name,name,name)
         else:
-            return "<a href=\"/public/%s.html\"><i class=\"%s\"></i>%s</a>" % (self.menus_map[name],name,name)
+            return "<a href=\"%s%s.html\"><i class=\"%s\"></i>%s</a>" % (self.public_dir,self.menus_map[name],name,name)
 
     def gen_href(self,line=list()):
         if len(line) == 4:          # menu
@@ -148,7 +203,6 @@ class OrgNote(object):
 
         return output
 
-
     def contain_prefix(self,tags=[],name=""):
         output =  """
         <div class="clearfix"></div>
@@ -165,10 +219,10 @@ class OrgNote(object):
         
         <div class="slogan">                        <!-- slogan begin -->
         <i class="fa fa-heart"></i>
-        """ % self.cfg.cfg["general"]["subtitle"]
+        """ % self.subtitle
 
         if not tags:
-            output += "主页君: " + self.cfg.cfg["general"]["author"]
+            output += "主页君: " + self.author
         elif len(tags) == 1:
             output += name
             output += self.gen_tag_href(tags[0])
@@ -190,7 +244,6 @@ class OrgNote(object):
         gen each note from blog list
         """
         import os
-        #global __notes__,__localnotes__
         for notedir in dirs:
             for line in open(notedir):
                 line = line.strip()
@@ -227,7 +280,7 @@ class OrgNote(object):
             <a href="%s">%s</a>
             <span class="date">%s </span>
             </h3>
-            """ % (self.gen_public_link(item[0],"/public/"),item[1],self.gen_date(item[0]))
+            """ % (self.gen_public_link(item[0],self.public_dir),item[1],self.gen_date(item[0]))
 
         
             output += """
@@ -250,14 +303,14 @@ class OrgNote(object):
         if num == 0:
             prev_page = '<li class="prev disabled"><a><i class="fa fa-arrow-circle-o-left"></i>Newer</a></li>'
         elif num == 1:
-            prev_page = '<li class="prev"><a href="%s" class=alignright prev"><i class="fa fa-arrow-circle-o-left"></i>Newer</a></li>' % ("/index.html")
+            prev_page = '<li class="prev"><a href="%s" class=alignright prev"><i class="fa fa-arrow-circle-o-left"></i>Newer</a></li>' % (self.blogroot + "index.html")
         else:
-            prev_page = '<li class="prev"><a href="%s" class=alignright prev"><i class="fa fa-arrow-circle-o-left"></i>Newer</a></li>' % ("/public/page"+str(num-1)+".html")
+            prev_page = '<li class="prev"><a href="%s" class=alignright prev"><i class="fa fa-arrow-circle-o-left"></i>Newer</a></li>' % (self.public_dir + "page"+str(num-1)+".html")
 
         if lastone == len(self.notes):
             next_page = '<li class="next disabled"><a><i class="fa fa-arrow-circle-o-right"></i>Older</a></li>'
         else:
-            next_page = '<li class="next"><a href="%s" class="alignright next">Older<i class="fa fa-arrow-circle-o-right"></i></a></li>' % ("/public/page"+str(num+1)+".html")
+            next_page = '<li class="next"><a href="%s" class="alignright next">Older<i class="fa fa-arrow-circle-o-right"></i></a></li>' % (self.public_dir + "page"+str(num+1)+".html")
 
         output += """
         <div>
@@ -265,13 +318,13 @@ class OrgNote(object):
         <div class="pagination">
         <ul class="pagination">
         %s
-        <li><a href="/public/archive.html" target="_blank"><i class="fa fa-archive"></i>Archive</a></li>
+        <li><a href="%sarchive.html" target="_blank"><i class="fa fa-archive"></i>Archive</a></li>
         %s
         </ul>
         </div>
         </center>
         </div>
-        """ % (prev_page,next_page)
+        """ % (prev_page,self.public_dir,next_page)
         
         output += self.duosuo()
         
@@ -286,13 +339,13 @@ class OrgNote(object):
         if num == 0:
             return ""
         else:
-            return self.gen_public_link(self.notes[num-1][0],"/public/")
+            return self.gen_public_link(self.notes[num-1][0],self.public_dir)
 
     def gen_next(self,num=0):
         if num == len(self.notes) - 1:
             return ""
         else:
-            return self.gen_public_link(self.notes[num+1][0],"/public/")
+            return self.gen_public_link(self.notes[num+1][0],self.public_dir)
 
     def gen_tag_list(self,public=True):
         if not public: return
@@ -319,8 +372,6 @@ class OrgNote(object):
             self.timetags[yyyymm].append(link)
 
     def contain_page(self,link="",num=0, public=True):
-        #global __archives__
-
         output = ""
         
         data = open(link).read()
@@ -331,14 +382,14 @@ class OrgNote(object):
         data = data.replace('TMD','\n')
 
         if public:
-            self.archives.append([self.gen_public_link(self.notes[num][0],"/public/"),"fa fa-file-o",self.notes[num][1].strip()])
+            self.archives.append([self.gen_public_link(self.notes[num][0],self.public_dir),"fa fa-file-o",self.notes[num][1].strip()])
             
             if num == 0:
                 prev_page = '<li class="prev disabled"><a><i class="fa fa-arrow-circle-o-left"></i>上一页</a></li>'
             else:
                 prev_page = '<li class="prev"><a href="%s" class=alignright prev"><i class="fa fa-arrow-circle-o-left"></i>上一页</a></li>' % self.gen_prev(num)
                 
-            if num == len(self.notes) - 1:
+            if num == (len(self.notes) - 1):
                 next_page = '<li class="next disabled"><a><i class="fa fa-arrow-circle-o-right"></i>下一页</a></li>' 
             else:
                 next_page = '<li class="next"><a href="%s" class="alignright next">下一页<i class="fa fa-arrow-circle-o-right"></i></a></li>' % self.gen_next(num)
@@ -349,28 +400,25 @@ class OrgNote(object):
             <div class="pagination">
             <ul class="pagination">
             %s
-            <li><a href="/public/archive.html" target="_blank"><i class="fa fa-archive"></i>Archive</a></li>
+            <li><a href="%sarchive.html" target="_blank"><i class="fa fa-archive"></i>Archive</a></li>
             %s
             </ul>
             </div>
             </center>
             </div>
-            """ % (prev_page,next_page)
+            """ % (prev_page,self.public_dir,next_page)
         else:
             page_order = ""
 
             
-        if "<div class=\"ds-thread\">" in data:
-            index = data.find("<div class=\"ds-thread\">")
-            data = data[:index] + page_order + data[index:]
-        elif "</body>" in data:
+        if "</body>" in data:
             index = data.find("</body>")
             data = data[:index] + page_order + self.duosuo() + data[index:]
         elif "<div id=\"postamble\">" in data:
             index = data.find("<div id=\"postamble\">")
             data = data[:index] + page_order + self.duosuo() + data[index:]
         else:
-            pass #print "ignore prev"
+            data = data + page_order + self.duosuo()
 
 
         output += data
@@ -393,7 +441,7 @@ class OrgNote(object):
         if data:
             data = data.groups()[0].replace('TMD','\n')
             data = data.replace("<div id=\"outline-container-1\" class=\"outline-2\">","</div>")
-            data = data.replace("#sec",self.gen_public_link(link,"/public/") + "#sec")
+            data = data.replace("#sec",self.gen_public_link(link,self.public_dir) + "#sec")
             output += data
         else:
             if data2:
@@ -416,7 +464,7 @@ class OrgNote(object):
         </div>
         <div class="clearfix"></div>
         </footer>
-        """ % self.gen_public_link(link,"/public/")
+        """ % self.gen_public_link(link,self.public_dir)
         
         output += "</div> <!-- col-md-12 -->"
         
@@ -427,8 +475,6 @@ class OrgNote(object):
     def contain_archive(self,data=list()):
         
         output = ""
-        
-
         output += """
         <!-- display as entry -->
         <div class="entry">
@@ -438,7 +484,7 @@ class OrgNote(object):
         
         for archive in data:
             if len(archive) == 2:
-                newarchive = ["/public/"+archive[0].split('/')[-1],'fa fa-file-o',archive[1]]
+                newarchive = [self.public_dir + archive[0].split('/')[-1],'fa fa-file-o',archive[1]]
                 output += self.gen_href(newarchive)
             else:
                 output += self.gen_href(archive)
@@ -468,10 +514,13 @@ class OrgNote(object):
         <div class="col-md-12">
         
         <p>这是一个建立在<code><a class="i i1 fc01 h" hidefocus="true" href="https://www.github.com/LeslieZhu/OrgNote" target="_blank">OrgNote</a></code>上的博客.</p>
+        <p>
+        %s
+        </p>
         </div>
         </div>
         </div>             
-        """
+        """ % self.description
 
         output += self.duosuo()
 
@@ -483,8 +532,26 @@ class OrgNote(object):
         return output
 
     def duosuo(self):
-        return """
-        """
+        if not self.duoshuo_shortname:
+            return """
+            """
+        else:
+                return """
+                <!-- Duoshuo Comment BEGIN -->
+                <div class="ds-thread"></div>
+                <script type="text/javascript">
+                var duoshuoQuery = {short_name:"%s"};
+                (function() {
+                var ds = document.createElement('script');
+                ds.type = 'text/javascript';ds.async = true;
+                ds.src = 'http://static.duoshuo.com/embed.js';
+                ds.charset = 'UTF-8';
+                (document.getElementsByTagName('head')[0]
+                || document.getElementsByTagName('body')[0]).appendChild(ds);
+                })();
+                </script>
+                <!-- Duoshuo Comment END -->
+                """ % self.duoshuo_shortname
         
     def contain_sidebar(self):
         return """
@@ -503,7 +570,7 @@ class OrgNote(object):
         """
         
         for key in self.keywords:
-            output += "<li><a href=\"/public/tags/%s.html\">%s<span>%s</span></a></li>" % (key,key,len(self.tags[key]))
+            output += "<li><a href=\"%stags/%s.html\">%s<span>%s</span></a></li>" % (self.public_dir,key,key,len(self.tags[key]))
 
         output += """
         </ul>
@@ -521,9 +588,9 @@ class OrgNote(object):
         """
         tot = 0
         for key in sorted(self.timetags.keys(),reverse=True):
-            output += "<li><a href=\"/public/tags/%s.html\">%s<span>%s</span></a></li>" % (key,key,len(self.timetags[key]))
+            output += "<li><a href=\"%stags/%s.html\">%s<span>%s</span></a></li>" % (self.public_dir,key,key,len(self.timetags[key]))
             tot += len(self.timetags[key])
-        output += "<li><a href=\"/public/archive.html\">All<span>%s</span></a></li>" % (tot)
+        output += "<li><a href=\"%sarchive.html\">All<span>%s</span></a></li>" % (self.public_dir,tot)
         
         output += """
         </ul>
@@ -544,7 +611,7 @@ class OrgNote(object):
         """
         
         for note in notes[:num]:
-            output += "<li><a href=\"%s\"><i class=\"fa fa-file-o\"></i>%s</a></li>" % (self.gen_public_link(note[0].replace('"',""),"/public/"),note[1])
+            output += "<li><a href=\"%s\"><i class=\"fa fa-file-o\"></i>%s</a></li>" % (self.gen_public_link(note[0].replace('"',""),self.public_dir),note[1])
             
         output += """
         </ul>   
@@ -558,21 +625,33 @@ class OrgNote(object):
         """
 
     def sidebar_link(self):
-        return """
+        output = """
         <div class="widget">
         <h4>快速链接</h4>
         <ul class="entry list-unstyled">
-        <li><a href="http://lesliezhu.github.com" title="LeslieZhu's Github" target="_blank"><i class="fa fa-github"></i>Leslie Zhu</a></li>
-        <li><a href="https://github.com/LeslieZhu/OrgNote" title="OrgNote" target="_blank"><i class="fa fa-github"></i>OrgNote</a></li>
-        <li><a href="https://github.com/LeslieZhu/orgnote-theme-freemind" title="OrgNote" target="_blank"><i class="fa fa-github"></i>orgnote-theme-freemind</a></li>
+        """
+
+        for key in self.links:
+            _link = self.links[key]
+            output += """
+            <li><a href="%s" title="%s" target="_blank"><i class="%s"></i>%s</a></li>
+            """ % (_link["url"], _link["name"], _link["icon"], _link["name"])
+        
+        output += """
         </ul>
         </div>
         """
 
-    def contain_suffix(self):
+        return output
+
+    def end_sidebar(self):
         return """
         </div> <!-- sidebar -->
         </div> <!-- col-md-3 -->
+        """
+        
+    def contain_suffix(self):
+        return """
         </div> <!-- row-fluid -->
         </div>
         </div>
@@ -591,34 +670,63 @@ class OrgNote(object):
         <span>▲</span> 
         </a>
         
-        <!--<link rel="stylesheet" href="./fancybox/jquery.fancybox.css" media="screen" type="text/css">-->
-        
         </body>
         </html>
-        """ % self.cfg.cfg["general"]["author"]
+        """ % self.author
 
-    def gen_public_link(self,link="",prefix="public/"):
-        return prefix+link.split('/')[-1]
+    def gen_public_link(self,link="",prefix=None):
+        if prefix == None:
+            prefix = self.public_dir
+
+        return prefix+'/'.join(link.split('/')[2:])
+
+    def gen_sidebar(self):
+        """
+        if the sidebar enable, then display each sidebar by order
+        """
+
+        if self.sidebar_show == 1:
+            output = self.contain_sidebar()
+            for _sidebar in self.sidebar_list:
+                if _sidebar == "sidebar_latest":
+                    output += self.sidebar_latest(self.notes)
+                elif _sidebar == 'sidebar_tags':
+                    output += self.sidebar_tags()
+                elif _sidebar == 'sidebar_time':
+                    output += self.sidebar_date()
+                elif _sidebar == 'sidebar_link':
+                    output += self.sidebar_link()
+                elif _sidebar == 'sidebar_weibo':
+                    output += self.sidebar_weibo()
+            output += self.end_sidebar()
+        else:
+            output = ""
+            
+        return output
 
     def gen_archive(self):
-        output = open("./public/archive.html","w")
+        output = open("./" + self.public_dir + "archive.html","w")
         print >> output,self.header_prefix(title="归档")
         print >> output,self.body_prefix()
         print >> output,self.body_menu(self.menus)
         print >> output,self.contain_prefix(["归档"],"")
         print >> output,self.contain_archive(self.archives)              # auto gen
-        print >> output,self.contain_sidebar()
-        print >> output,self.sidebar_latest(self.notes)            # auto gen
-        print >> output,self.sidebar_tags()
-        print >> output,self.sidebar_date()
-        print >> output,self.sidebar_weibo()
-        print >> output,self.sidebar_link()
+        print >> output,self.gen_sidebar()
         print >> output,self.contain_suffix()
         print >> output,self.header_suffix()
         output.close()
         
     def gen_page(self,note=list(),num=0,public=True):
-        output = open(self.gen_public_link(note[0]),"w")
+        import os
+        import os.path
+        
+        page_file = "./" + self.gen_public_link(note[0])
+        page_dir = os.path.dirname(page_file)
+        
+        if not os.path.exists(page_dir):
+            os.makedirs(page_dir)
+
+        output = open(page_file,"w")
         print >> output,self.header_prefix(2,note[1].strip())
         print >> output,self.body_prefix()
         print >> output,self.body_menu(self.menus)
@@ -627,19 +735,14 @@ class OrgNote(object):
         else:
             print >> output,self.contain_prefix(['nopublic'],"标签: ")
         print >> output,self.contain_page(note[0],num,public)              # auto gen
-        print >> output,self.contain_sidebar()
-        print >> output,self.sidebar_latest(self.notes)            # auto gen
-        print >> output,self.sidebar_tags()
-        print >> output,self.sidebar_date()
-        print >> output,self.sidebar_weibo()
-        print >> output,self.sidebar_link()
+        print >> output,self.gen_sidebar()
         print >> output,self.contain_suffix()
         print >> output,self.header_suffix()
         output.close()
         
     def gen_public(self):
         for i,note in enumerate(self.notes):
-            self.gen_page(note,i)
+            self.gen_page(note,i,True)
         for i,note in enumerate(self.localnotes):
             self.gen_page(note,i,False)
 
@@ -648,29 +751,27 @@ class OrgNote(object):
         split index.html as page1,page2,page3...,so do not need display all notes in homepage
         """
         if num == 0:
-            output = open("index.html","w")
+            output = open("./" + self.blogroot + "index.html","w")
         else:
-            output = open("public/page"+str(num)+".html","w")
+            output = open("./" + self.public_dir + "page"+str(num)+".html","w")
 
-        print >> output,self.header_prefix(title=self.cfg.cfg["general"]["title"])
+        print >> output,self.header_prefix(title=self.title)
         print >> output,self.body_prefix()
         print >> output,self.body_menu(self.menus)
         print >> output,self.contain_prefix()    
         print >> output,self.contain_notes(self.notes[b_index:e_index],num,e_index)              # auto gen
-        print >> output,self.contain_sidebar()
-        print >> output,self.sidebar_latest(self.notes)            # auto gen
-        print >> output,self.sidebar_tags()
-        print >> output,self.sidebar_date()
-        print >> output,self.sidebar_weibo()
-        print >> output,self.sidebar_link()
+        print >> output,self.gen_sidebar()
         print >> output,self.contain_suffix()
         print >> output,self.header_suffix()
         output.close()
 
-    def gen_index(self,note_num=6):
+    def gen_index(self,note_num=None):
         """
         each split page hold `num` notes
         """
+
+        if note_num == None: 
+            note_num = self.per_page
 
         num = 0
         b_index = 0
@@ -690,78 +791,58 @@ class OrgNote(object):
             e_index = b_index + note_num
             
     def gen_about(self):
-        output = open("./public/about.html","w")
+        output = open("./" + self.public_dir + "about.html","w")
         print >> output,self.header_prefix(title="关于")
         print >> output,self.body_prefix()
         print >> output,self.body_menu(self.menus)
         print >> output,self.contain_prefix(["关于"],"")
         print >> output,self.contain_about()
-        print >> output,self.contain_sidebar()
-        print >> output,self.sidebar_latest(self.notes)
-        print >> output,self.sidebar_tags()
-        print >> output,self.sidebar_date()
-        print >> output,self.sidebar_weibo()
-        print >> output,self.sidebar_link()
+        print >> output,self.gen_sidebar()
         print >> output,self.contain_suffix()
         print >> output,self.header_suffix()
         output.close()
 
     def gen_minyi(self):
-        output = open("./public/minyi.html","w")
+        output = open("./" + self.public_dir + "minyi.html","w")
         print >> output,self.header_prefix(title="MinYi")
         print >> output,self.body_prefix()
         print >> output,self.body_menu(self.menus)
         print >> output,self.contain_prefix(["MinYi"],"")
         print >> output,self.contain_archive(self.minyi)
-        print >> output,self.contain_sidebar()
-        print >> output,self.sidebar_latest(self.notes)
-        print >> output,self.sidebar_tags()
-        print >> output,self.sidebar_date()
-        print >> output,self.sidebar_weibo()
-        print >> output,self.sidebar_link()
+        print >> output,self.gen_sidebar()
         print >> output,self.contain_suffix()
         print >> output,self.header_suffix()
         output.close()
 
     def gen_tags(self):
         for key in self.keywords:
-            output = open("./public/tags/" + key + ".html","w")
+            output = open("./" + self.public_dir + "tags/" + key + ".html","w")
             print >> output,self.header_prefix(title=key)
             print >> output,self.body_prefix()
             print >> output,self.body_menu(self.menus)
             print >> output,self.contain_prefix([key],"分类: ")
             #print >> output,self.contain_notes(__tags__[key])
             print >> output,self.contain_archive(self.tags[key])              # auto gen
-            print >> output,self.contain_sidebar()
-            print >> output,self.sidebar_latest(self.notes)
-            print >> output,self.sidebar_tags()
-            print >> output,self.sidebar_date()
-            print >> output,self.sidebar_weibo()
-            print >> output,self.sidebar_link()
+            print >> output,self.gen_sidebar()
             print >> output,self.contain_suffix()
             print >> output,self.header_suffix()
             output.close()
             
     def gen_timetags(self):
         for key in sorted(self.timetags.keys(),reverse=True):
-            output = open("./public/tags/" + key + ".html","w")
+            output = open("./" + self.public_dir + "tags/" + key + ".html","w")
             print >> output,self.header_prefix(title=key)
             print >> output,self.body_prefix()
             print >> output,self.body_menu(self.menus)
             print >> output,self.contain_prefix([key],"月份: ")
             print >> output,self.contain_archive(self.timetags[key])
-            print >> output,self.contain_sidebar()
-            print >> output,self.sidebar_latest(self.notes)
-            print >> output,self.sidebar_tags()
-            print >> output,self.sidebar_date()
-            print >> output,self.sidebar_weibo()
-            print >> output,self.sidebar_link()
+            print >> output,self.gen_sidebar()
             print >> output,self.contain_suffix()
             print >> output,self.header_suffix()
             output.close()
 
     def gen_nopublic(self):
-        output = open("./public/tags/nopublic.html","w")
+        output = open("./" + self.public_dir + "tags/nopublic.html","w")
         print >> output,self.header_prefix(title="nopublic")
         print >> output,self.body_prefix()
         print >> output,self.body_menu(self.menus)
@@ -808,8 +889,6 @@ class OrgNote(object):
         pubdate=time.strftime("%Y-%m-%d %a",pubdate)
         return pubdate
 
-
-
     def gen_category(self,link=""):
         """ Filter Keywords from HTML metadata """
     
@@ -823,9 +902,8 @@ class OrgNote(object):
         if len(keywords) > 0:
             return [i.strip() for i in keywords.split(",")]
         else:
-            return ["札记"]
+            return [self.default_tag]
 
-    
     def do_server(self,port="8080"):
         try:
             os.system("python -m SimpleHTTPServer %s" % port)
@@ -838,7 +916,6 @@ class OrgNote(object):
         os.system("git add .")
         os.system("git commit -m \"update\"")
         os.system("git push origin master")
-
 
     def do_generate(self):
         self.cfg.update()
@@ -862,8 +939,10 @@ class OrgNote(object):
         return util.to_page(notename)
 
     def do_publish(self,notename=""):
+        import os.path
         publish_list = self.dirs[0]
         nopublish_list = self.dirs[1]
+        notename = os.path.basename(notename).strip(".org").strip(".html")
         publish_line = util.publish_note(notename)
 
         nopublish_data = open(nopublish_list,"r").readlines()
@@ -871,13 +950,14 @@ class OrgNote(object):
 
         if not os.path.exists(publish_list):
             output = open(publish_list,"w")
-            self.scan()
-            for _note in reversed(sorted(self.notes_db.keys())):
-                publish_line = util.publish_note(self.notes_db[_note])
+            print >> output,publish_line
+            #self.scan()
+            #for _note in reversed(sorted(self.notes_db.keys())):
+            #    publish_line = util.publish_note(self.notes_db[_note])
                 
-                if publish_line in nopublish_data: 
-                    continue
-                print >> output,publish_line
+            #    if publish_line in nopublish_data: 
+            #        continue
+            #    print >> output,publish_line
             output.close()
         else:
             publish_line = util.publish_note(notename)
@@ -901,16 +981,19 @@ class OrgNote(object):
             output.close()
         print "publish done"
 
-    def scan(self,note_dir = "./notes"):
+    def scan(self,note_dir = None):
         """
         scan the note_dir, build a dict with notes
         """
+
+        if note_dir == None:
+            note_dir = "./" + self.source_dir
 
         for path,dirs,files in os.walk(note_dir):
             for _file in files:
                 if not _file.endswith(".org"):continue
                 _path = path + '/' + _file
-                if _path == "./notes/public.org" or _path == "./notes/nopublic.org": continue
+                if _path == "./" + self.source_dir + "/public.org" or _path == "./" + self.source_dir + "/nopublic.org": continue
                 if _path.endswith(".html"):continue
                 self.notes_db[_path] = _file
 
