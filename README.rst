@@ -1,7 +1,7 @@
 OrgNote: A simple blog based on org-mode
 =======================================
 
-[![Build Status](https://travis-ci.org/LeslieZhu/OrgNote/branches#)
+[![Build Status](https://travis-ci.org/LeslieZhu/OrgNote.svg?branch=v0.4.0)](https://travis-ci.org/LeslieZhu/OrgNote)
 
 
 
