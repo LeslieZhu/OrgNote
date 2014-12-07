@@ -97,9 +97,9 @@ def create_default_note(name="notes/HelloOrgNote.org"):
         return None
 
 
-def create_config_file(name="_config.ini"):
+def create_config_file(name="_config.yml"):
     """
-    init _config.ini config file
+    init _config.yml config file
     """
 
     import os
@@ -154,18 +154,20 @@ def main(args=None):
     # init files
     #create_emacs_init("init-orgnote.el")
     create_default_note("notes/HelloOrgNote.org")
-    create_config_file("_config.ini")
+    create_config_file("_config.yml")
     create_public_file("public.org")
     create_public_file("nopublic.org")
 
-    cmd = "git clone git@github.com:LeslieZhu/orgnote-theme-freemind.git theme/freemind"
-    os.system(cmd)
-    cmd = "rm -rf theme/freemind/.git"
-    os.system(cmd)
-    cmd = "git clone git@github.com:LeslieZhu/orgnote-emacs-el.git scripts/"
-    os.system(cmd)
-    cmd = "rm -rf scripts/.git"
-    os.system(cmd)
+    if not os.path.exists("theme/freemind"):
+        cmd = "git clone git@github.com:LeslieZhu/orgnote-theme-freemind.git theme/freemind"
+        os.system(cmd)
+        cmd = "rm -rf theme/freemind/.git"
+        os.system(cmd)
+    if not os.path.exists("scripts"):
+        cmd = "git clone git@github.com:LeslieZhu/orgnote-emacs-el.git scripts/"
+        os.system(cmd)
+        cmd = "rm -rf scripts/.git"
+        os.system(cmd)
 
 
 if __name__ == "__main__":

@@ -12,73 +12,97 @@ then use orgnote convert into new html with default theme.
 
 from __future__ import absolute_import
 
-import ConfigParser
+from yaml import load, dump
+
 
 class Config(object):
-    def __init__(self,cfgfile="_config.ini"):
+
+    _default_yml = """# OrgNote Configuration
+## Docs: http://lesliezhu.github.io/OrgNote/
+## Source: https://github.com/LeslieZhu/OrgNote
+
+# Site
+title: OrgNote
+subtitle: "A simple org-mode blog, write blog by org-mode in Emacs"
+description: "A simple org-mode blog, write blog by org-mode in Emacs"
+author: Leslie Zhu
+email:
+language: zh-CN
+
+# URL
+## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
+url: http://yoursite.com
+root: /
+permalink: :year/:month/:day/:title/
+tag_dir: tags
+archive_dir: archives
+
+# Directory
+source_dir: notes
+public_dir: public
+
+# Category & Tag
+default_tag: 札记
+tag_map:
+
+# Archives
+## 2: Enable pagination
+## 1: Disable pagination
+## 0: Fully Disable
+archive: 2
+category: 2
+tag: 2
+
+# Server
+port: 4000
+server_ip: 0.0.0.0
+
+# Pagination
+## Set per_page to 0 to disable pagination
+per_page: 10
+pagination_dir: page
+
+# duoshuo
+duoshuo_shortname:
+
+# Extensions
+theme: freemind
+exclude_generator:
+
+# Deployment
+deploy:
+  type: git
+"""
+
+    def __init__(self,cfgfile="_config.yml"):
         self.cfgfile = cfgfile
-        self.fp = ConfigParser.ConfigParser()
-        self.fp.optionxform = str
-        self.cfg = dict()
-
-        self.item_list = ["general",
-                          "menu_minyi","menu_archive","menu_about"
-                          ]
-        
-        self.init()
-        self.update()
-
-    def init(self):
-        self.cfg = {
-            "general": {
-                "title": "OrgNote",
-                "subtitle": "A simple org-mode blog, write blog by org-mode in Emacs",
-                "author": "Leslie Zhu",
-                "description":"A simple org-mode blog, write blog by org-mode in Emacs",
-                "keywords":"Emacs,Blog,OrgNote,org-mode,LeslieZhu",
-            },
-            "menu_minyi": {
-                "enable":True,
-                "display-name": "MinYi"
-            },
-            "menu_archive": {
-                "enable":True,
-                "display-name": "归档"
-            },                
-            "menu_about": {
-                "enable":True,
-                "display-name": "关于"
-            }
-        }
+        self.cfg = load(self._default_yml)
 
     def update(self):
         import os.path
-        
-        self.fp.read([self.cfgfile, os.path.expanduser('~/.orgnote.ini')])
-        for section in self.cfg.keys():
-            for option in self.cfg[section]:
-                if self.fp.has_option(section,option):
-                    self.cfg[section][option] = str(self.fp.get(section,option)).strip().replace("\"","")
+        if not os.path.exists(self.cfgfile):
+            self.default()
 
+        fp = open(self.cfgfile,"r")
+        self.cfg = load(fp)
+        fp.close()
+        
+    def dump(self):
+        self.update()
+        fp = open(self.cfgfile,"w")
+        dump(self.cfg,fp)
+        fp.close()
 
     def default(self):
-        self.update()
-        for section in self.item_list:#self.cfg.keys():
-            if not self.fp.has_section(section):
-                self.fp.add_section(section)
-            for option in self.cfg[section].keys():
-                self.fp.set(section,option,self.cfg[section][option])
-
-        self.fp.write(open(self.cfgfile,"w"))
+        fp = open(self.cfgfile,"w")
+        fp.write(self._default_yml)
+        fp.close()
 
     def display(self):
-        """display the config.ini contents"""
-        
-        for key in self.item_list:#self.cfg.keys():
-            print "[%s]" % key
-            for item in self.cfg[key].keys():
-                print "%s = %s " % (item,self.cfg[key][item])
-            print
+        """display the _config.yml contents"""
+        for key in  self.cfg:
+            print key,":",self.cfg[key]
+
         
 def main(args=None):
     cfg=Config()
