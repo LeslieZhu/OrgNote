@@ -1,18 +1,21 @@
 Quick Started
+==============
 
 
-At first, you should crate a **yourname.github.com.git** on `GitHub`:
+At first, you should crate a **yourname.github.com.git** on **GitHub**::
 
   $ git clone git@github.com:yourname/yourname.github.com.git
   $ cd yourname.github.com
   $ orgnote init
 
-Thus, update _config.yml configure file.
+Thus, update **_config.yml** configure file.
 
 
 
 Usage
+======
 
+::
    $ orgnote help
 
    Usage: orgnote <command>
