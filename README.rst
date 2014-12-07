@@ -13,7 +13,7 @@ OrgNote: A simple blog based on org-mode
 .. image:: https://travis-ci.org/LeslieZhu/OrgNote.svg?branch=master
    :target: https://travis-ci.org/LeslieZhu/OrgNote
 
-.. iamge:: https://pypip.in/egg/orgnote/badge.svg?style=flat
+.. image:: https://pypip.in/egg/orgnote/badge.svg?style=flat
 
 .. image:: https://pypip.in/wheel/orgnote/badge.svg?style=flat
 
