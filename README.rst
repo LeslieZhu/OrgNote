@@ -6,7 +6,7 @@ OrgNote: A simple blog based on org-mode
 .. image:: https://pypip.in/v/orgnote/badge.png
    :target: https://pypi.python.org/pypi/orgnote
 
-.. image:: https://travis-ci.org/LeslieZhu/OrgNote.svg?branch=v0.4.0
+.. image:: https://travis-ci.org/LeslieZhu/OrgNote.svg?branch=master
    :target: https://travis-ci.org/LeslieZhu/OrgNote
 
 Install
