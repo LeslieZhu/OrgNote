@@ -61,14 +61,24 @@ At first, you should crate a **yourname.github.com.git** on `GitHub`::
 Configure
 =========
 
-update `_config.ini` ,sample::
+update `_config.yml` ,sample::
  
-  [general]
-  title = OrgNote
-  subtitle = OrgNote
-  author = OrgNote
-  description = My information
-  keywords = My Blog keywords
+  # OrgNote Configuration
+  ## Docs: http://lesliezhu.github.io/OrgNote/
+  ## Source: https://github.com/LeslieZhu/OrgNote
+
+  # Site
+  title: OrgNote
+  subtitle: "A simple org-mode blog, write blog by org-mode in Emacs"
+
+  author: OrgNote
+  email: pythonisland@gmail.com
+  
+  language: zh-CN
+  
+  # About this blog
+  description: "Use OrgNote."
+  keywords: "OrgNote,Emacs,org-mode,blog,python,geek"
 
 Post Blog
 ==========
