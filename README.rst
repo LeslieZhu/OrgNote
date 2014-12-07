@@ -1,6 +1,10 @@
 OrgNote: A simple blog based on org-mode
 =======================================
 
+[![Build Status](https://travis-ci.org/LeslieZhu/OrgNote/branches#)
+
+
+
 Install
 ============
 

@@ -111,7 +111,7 @@ def create_config_file(name="_config.ini"):
     if not os.path.exists(_init_file):
         print "[info] create ",_init_file
         import orgnote.config
-        orgnote.config.Config().dump()
+        orgnote.config.Config().default()
 
 
 def create_public_file(name = "public.org"):

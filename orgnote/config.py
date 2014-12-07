@@ -61,7 +61,7 @@ class Config(object):
                     self.cfg[section][option] = str(self.fp.get(section,option)).strip().replace("\"","")
 
 
-    def dump(self):
+    def default(self):
         self.update()
         for section in self.item_list:#self.cfg.keys():
             if not self.fp.has_section(section):

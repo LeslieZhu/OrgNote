@@ -1,3 +1,10 @@
+v0.4.0:
+    - use yaml file as configure format
+    - more configure items
+    - public url format as year/month/date/
+    - gen template orgnote file from configure item
+    - configure subtitles
+
 v0.3.0:
     - all speciall can configure
     - code style and design more pythonic
