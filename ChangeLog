@@ -1,3 +1,12 @@
+2014-12-08  Leslie Zhu  <pythonisland@gmail.com>
+
+	* 0.4.0:
+	- use YAML configure file, not use .ini file anymore
+	- all speciall config read from YAML configure file
+	- the public url format with yeam/month/date
+	- auto publish the file user input, not publish all in backend
+	- the default org file init wiht configure options
+
 2014-11-24  Leslie Zhu  <pythonisland@gmail.com>
 
 	* 0.3.0: new design
