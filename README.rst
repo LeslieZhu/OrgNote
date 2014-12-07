@@ -1,13 +1,16 @@
 OrgNote: A simple blog based on org-mode
 =======================================
 
-
-
-.. image:: https://pypip.in/v/orgnote/badge.png
+.. image:: https://pypip.in/download/orgnote/badge.svg?style=flat
+.. image:: https://pypip.in/version/orgnote/badge.svg?style=flat
    :target: https://pypi.python.org/pypi/orgnote
-
+.. image:: https://pypip.in/py_versions/orgnote/badge.svg?style=flat
+.. image:: https://pypip.in/implementation/orgnote/badge.svg?style=flat
 .. image:: https://travis-ci.org/LeslieZhu/OrgNote.svg?branch=master
    :target: https://travis-ci.org/LeslieZhu/OrgNote
+.. iamge:: https://pypip.in/egg/orgnote/badge.svg?style=flat
+.. image:: https://pypip.in/wheel/orgnote/badge.svg?style=flat
+.. image:: https://pypip.in/license/orgnote/badge.svg?style=flat
 
 Install
 ============
