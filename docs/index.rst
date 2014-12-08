@@ -3,20 +3,23 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to OrgNote's documentation!
-===================================
+OrgNote
+==========
 
-Contents:
+`Github <https://github.com/LeslieZhu/OrgNote>`_ |
+`PyPI <https://pypi.python.org/pypi/orgnote>`_ 
+
+`OrgNote` 是一个基于Emacs的org-mode模式写博客的工具
+
+
+目录:
 
 .. toctree::
    :maxdepth: 2
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+   installing
+   quickstart
+   configuration.rst
+   usage
+   bashcompletion
+   news
