@@ -123,6 +123,11 @@ Usage
    version    Display version information
    
    For more help, you can check the docs:  http://orgnote.readthedocs.org/zh_CN/latest/
+
+Docs
+=======
+
+see http://orgnote.readthedocs.org/zh_CN/latest/
    
 OrgNote Bash Completion
 =======================

@@ -33,6 +33,8 @@ The usage of **orgnote**::
    help       Get help on a command
    version    Display version information
    
-   For more help, you can check the docs:  http://orgnote.readthedocs.org/zh_CN/latest/
+
+
+For more help, you can check the docs:  http://orgnote.readthedocs.org/zh_CN/latest/
 
 
