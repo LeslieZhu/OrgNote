@@ -54,6 +54,8 @@ The usage of **orgnote**::
    deploy     Deploy your website
    help       Get help on a command
    version    Display version information
+
+For more help, you can check the docs:  http://orgnote.readthedocs.org/zh_CN/latest/
 """
 
 setup(

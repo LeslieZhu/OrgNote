@@ -7,6 +7,9 @@ OrgNote: A simple blog based on org-mode
 .. image:: https://pypip.in/version/orgnote/badge.svg?style=flat
    :target: https://pypi.python.org/pypi/orgnote
 
+.. image:: https://readthedocs.org/projects/orgnote/badge/?version=latest
+   :target: http://orgnote.readthedocs.org/zh_CN/latest/
+
 .. image:: https://travis-ci.org/LeslieZhu/OrgNote.svg?branch=master
    :target: https://travis-ci.org/LeslieZhu/OrgNote
 
@@ -119,7 +122,7 @@ Usage
    help       Get help on a command
    version    Display version information
    
-   For more help, you can check the docs:  http://lesliezhu.github.io/OrgNote/
+   For more help, you can check the docs:  http://orgnote.readthedocs.org/zh_CN/latest/
    
 OrgNote Bash Completion
 =======================
