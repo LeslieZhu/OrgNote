@@ -18,7 +18,43 @@ def find_version(*file_paths):
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
 
-long_description = read('DESCRIPTION.rst')
+#long_description = read('DESCRIPTION.rst')
+long_description = """
+Quick Started
+==============
+
+
+At first, you should crate a **yourname.github.com.git** on **GitHub**::
+
+  $ git clone git@github.com:yourname/yourname.github.com.git
+  $ cd yourname.github.com
+  $ orgnote init
+
+Thus, update **_config.yml** configure file.
+
+
+
+Usage
+======
+
+The usage of **orgnote**::
+
+   $ orgnote help
+
+   Usage: orgnote <command>
+
+   Commands:
+   init       Create a new OrgNote folder
+   new        Create a new .org post
+   list       List this blog notes
+   status     Status of those notes
+   publish    Auto Publish a note
+   generate   Generate static files
+   server     Start the server
+   deploy     Deploy your website
+   help       Get help on a command
+   version    Display version information
+"""
 
 setup(
     name = "orgnote",
@@ -38,7 +74,9 @@ setup(
                },
                    
     package_data = {
-        '': ['*.py','_config.yml']
+        '': ['*.py'],
+        '':['_config.yml'],
+        '':['DESCRIPTION.rst']
     },
 
 
