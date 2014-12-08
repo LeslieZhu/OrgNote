@@ -80,7 +80,7 @@ def create_default_note(name="HelloOrgNote.org"):
 * Hello OrgNote
 
 [[https://github.com/LeslieZhu/OrgNote][OrgNote]] is a simple blog based on org-mode, enjoy it:)
-""" % (blog.language, blog.default_tag.encode('utf-8'), os.path.basename(name).strip(".org"),blog.author,blog.email,time.strftime("%Y/%m/%d",time.localtime()))
+""" % (blog.language, "札记", os.path.basename(name).strip(".org"),blog.author,blog.email,time.strftime("%Y/%m/%d",time.localtime()))
 
     
     _dirname = "./" + blog.source_dir + "/"+ time.strftime("%Y/%m/%d",time.localtime())
