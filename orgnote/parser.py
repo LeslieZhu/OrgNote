@@ -947,7 +947,9 @@ class OrgNote(object):
         import os.path
         publish_list = self.dirs[0]
         nopublish_list = self.dirs[1]
-        notename = os.path.basename(notename).strip(".org").strip(".html")
+
+        notename = os.path.basename(notename).replace(".org","").replace(".html","")
+
         publish_line = util.publish_note(notename)
 
         nopublish_data = open(nopublish_list,"r").readlines()
