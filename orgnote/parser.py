@@ -1052,7 +1052,7 @@ Commands:
   help       Get help on a command
   version    Display version information
     
-For more help, you can check the docs:  http://lesliezhu.github.io/OrgNote/
+For more help, you can check the docs:  http://orgnote.readthedocs.org/zh_CN/latest/
     """
 
     sys.exit()
