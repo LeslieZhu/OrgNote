@@ -68,7 +68,7 @@ setup(
 
 
     author = 'Leslie Zhu',
-    author_email = 'czhu@kdsglobal.com',
+    author_email = 'pythonisland@gmail.com',
     url = 'https://github.com/LeslieZhu/OrgNote',
 
     packages = find_packages(),
