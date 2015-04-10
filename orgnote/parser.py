@@ -23,6 +23,7 @@ sys.setdefaultencoding('utf-8')
 class OrgNote(object):
     def __init__(self):
         self.cfg = config.Config()
+        self.emacs_version = [int(i) for i in util.get_emacs_version()]
 
         self.notes_db = dict()
         self.notes = list()
@@ -285,13 +286,16 @@ class OrgNote(object):
             </h3>
             """ % (self.gen_public_link(item[0],self.public_dir),item[1],self.gen_date(item[0]))
 
-        
-            
-            #<div class="entry">
-            #<div class="row">
-            output += """
-            <div class="col-md-12">
-            """
+
+            if self.emacs_version[0] >= 24 and self.emacs_version[1] >= 4:
+                output += """<div class="col-md-12">"""
+            else:
+                output += """            
+                <div class="entry">
+                <div class="row">
+                <div class="col-md-12">
+                """
+                
 
         
             output += self.contain_note(item[0])
@@ -880,7 +884,7 @@ class OrgNote(object):
         for line in open(link).readlines():
             if "<p class=\"date\">" in line:
                 line = line.strip().replace("</p>","")
-                pubdate = line.split(" ")[-1]
+                pubdate = line.split(" ")[-1].strip()
                 break
             
             if "<meta name=\"generated\"" in line:
@@ -888,17 +892,19 @@ class OrgNote(object):
                 #pattern="([0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]|[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])"
                 pattern="\"([0-9].*[/-]?[0-9].*[/-]?[0-9].*)\""
                 try:
-                    pubdate=re.search(pattern,line).groups(1)[0]
+                    pubdate=re.search(pattern,line).groups(1)[0].strip()
+                    break
                 except Exception,e:
                     print e
                     sys.exit(-1)
                     break
+                
         if "/" in pubdate:
             try:
                 pubdate=time.strptime(pubdate, "%m/%d/%Y")
             except ValueError:
                 pubdate=time.strptime(pubdate, "%Y/%m/%d")
-            except exp,e:
+            except Exception,e:
                 print e
                 sys.exit(-1)
                 

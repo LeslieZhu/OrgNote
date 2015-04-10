@@ -64,3 +64,9 @@ def publish_note(notename=""):
         return None
     except Exception,ex:
         print str(ex)
+
+
+def get_emacs_version():
+    import os
+
+    return os.popen("emacs --version").readline().strip().split()[-1].split(".")
