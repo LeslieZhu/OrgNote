@@ -17,6 +17,9 @@ import json
 from orgnote import config
 from orgnote import util
 
+reload(sys)                    
+sys.setdefaultencoding('utf-8')
+
 class OrgNote(object):
     def __init__(self):
         self.cfg = config.Config()
@@ -283,9 +286,10 @@ class OrgNote(object):
             """ % (self.gen_public_link(item[0],self.public_dir),item[1],self.gen_date(item[0]))
 
         
+            
+            #<div class="entry">
+            #<div class="row">
             output += """
-            <div class="entry">
-            <div class="row">
             <div class="col-md-12">
             """
 
@@ -374,12 +378,21 @@ class OrgNote(object):
     def contain_page(self,link="",num=0, public=True):
         output = ""
         
-        data = open(link).read()
-        data = re.search("(<div id=\"content\">.*</div.).*</body>",data.replace('\n','TMD')) 
-        data = data.groups()[0]
+        alldata = open(link).read()
+        _title = re.search("(<h1 class=\"title\">.*</h1>)",alldata.replace('\n','TMD')).groups()[0]
         
-        data = data.replace(re.search(r'<div id="postamble">.*?</div>',data).group(),'')
-        data = data.replace('TMD','\n')
+        data = re.search("(<div id=\"content\">.*</div.).*</body>",alldata.replace('\n','TMD'))
+        data = data.groups()[0].replace('TMD','\n').replace(_title,"")
+        
+        postamble = re.search("(<div id=\"postamble\">.*</body>)",alldata.replace('\n','TMD'))
+        if postamble == None:
+            postamble = re.search("(<div id=\"postamble\" class=\"status\">.*</body>)",alldata.replace('\n','TMD'))
+            index = data.find("<div id=\"postamble\" class=\"status\">")
+        else:
+            postamble = postamble.groups()[0].replace('TMD','\n').replace("</body>","")
+            index = data.find("<div id=\"postamble\">")
+            
+        data = data[:index]# + gen_postamble()
 
         if public:
             self.archives.append([self.gen_public_link(self.notes[num][0],self.public_dir),"fa fa-file-o",self.notes[num][1].strip()])
@@ -433,10 +446,14 @@ class OrgNote(object):
         output = ""
         
         alldata = open(link).read()
-        
+        #data=re.search("(<div id=\"content\">.*</div.).*</body>",data.replace('\n','敏敏')).groups()[0].replace('敏敏','\n')
+
         data=re.search("(<div id=\"content\">.*<div id=\"outline-container-1\" class=\"outline-2\">).*</body>",alldata.replace('\n','TMD'))
+        if not data:
+            data=re.search("(<div id=\"content\">.*<div id=\"outline-container-sec-1\" class=\"outline-2\">).*</body>",alldata.replace('\n','TMD'))
+
         data2=re.search("(<div id=\"content\">.*<div class=\"ds-thread\"></div>).*</body>",alldata.replace('\n','TMD'))
-        data3=re.search("(<div id=\"content\">.*<div id=\"postamble\">).*</body>",alldata.replace('\n','TMD'))
+        data3=re.search("(<div id=\"content\">.*<div id=\"postamble\".*>).*</body>",alldata.replace('\n','TMD'))
         
         if data:
             data = data.groups()[0].replace('TMD','\n')
@@ -861,6 +878,11 @@ class OrgNote(object):
         """ Filter Publish data from HTML metadata>"""
 
         for line in open(link).readlines():
+            if "<p class=\"date\">" in line:
+                line = line.strip().replace("</p>","")
+                pubdate = line.split(" ")[-1]
+                break
+            
             if "<meta name=\"generated\"" in line:
                 line = line.strip()
                 #pattern="([0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]|[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])"
