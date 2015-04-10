@@ -124,6 +124,11 @@ Usage
    
    For more help, you can check the docs:  http://orgnote.readthedocs.org/zh_CN/latest/
 
+Emacs Version
+==============
+
+Tested via ``GNU Emacs 24.4.1``
+
 Docs
 =======
 
