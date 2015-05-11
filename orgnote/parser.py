@@ -64,7 +64,7 @@ class OrgNote(object):
 
         self.duoshuo_shortname = self.cfg.cfg.get("duoshuo_shortname",None)
 
-        self.default_tag = self.cfg.cfg.get("default_tag","札记")
+        self.default_tag = self.cfg.cfg.get("default_tag","默认")
 
         self.per_page = self.cfg.cfg.get("per_page",6)
 
@@ -514,7 +514,7 @@ class OrgNote(object):
         
         for archive in data:
             if len(archive) == 2:
-                newarchive = [self.public_dir + archive[0].split('/')[-1],'fa fa-file-o',archive[1]]
+                newarchive = [self.public_dir + '/'.join(archive[0].split('/')[2:]),'fa fa-file-o',archive[1]]
                 output += self.gen_href(newarchive)
             else:
                 output += self.gen_href(archive)
@@ -936,7 +936,7 @@ class OrgNote(object):
     
         keywords = ""
         for line in open(link).readlines():
-            if "<meta name=\"keywords\"" in line:
+            if "<meta name=\"keywords\"" in line or "<meta  name=\"keywords\"" in line:
                 line = line.strip()
                 keywords=re.search("content=\"(.*)\"",line).groups(1)[0].strip()
                 break

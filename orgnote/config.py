@@ -48,7 +48,7 @@ source_dir: notes
 
 
 # Category & Tag
-default_tag: "札记"
+default_tag: "默认"
 
 # Theme
 # the default is 'freemind' and it's only theme for OrgNote now
