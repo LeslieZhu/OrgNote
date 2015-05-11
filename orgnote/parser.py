@@ -106,6 +106,8 @@ class OrgNote(object):
         
         self.links = self.cfg.cfg.get("links",list())
 
+        self.__pagenames__ = {}
+
 
 
     def header_prefix(self,deep=1,title=""):
@@ -207,7 +209,14 @@ class OrgNote(object):
 
         return output
 
-    def contain_prefix(self,tags=[],name=""):
+    def contain_prefix(self,tags=[],name="",header_title=""):
+        if header_title == "":
+            _header_title  = self.subtitle
+        elif self.__pagenames__.has_key(header_title):
+            _header_title = self.__pagenames__[header_title]
+        else:
+            _header_title = header_title
+
         output =  """
         <div class="clearfix"></div>
         <div class="container">
@@ -223,7 +232,7 @@ class OrgNote(object):
         
         <div class="slogan">                        <!-- slogan begin -->
         <i class="fa fa-heart"></i>
-        """ % self.subtitle
+        """ % _header_title
 
         if not tags:
             output += "主页君: " + self.author
@@ -735,7 +744,7 @@ class OrgNote(object):
         print >> output,self.header_prefix(title="归档")
         print >> output,self.body_prefix()
         print >> output,self.body_menu(self.menus)
-        print >> output,self.contain_prefix(["归档"],"")
+        print >> output,self.contain_prefix(["归档"],"","归档")
         print >> output,self.contain_archive(self.archives)              # auto gen
         print >> output,self.gen_sidebar()
         print >> output,self.contain_suffix()
@@ -757,9 +766,9 @@ class OrgNote(object):
         print >> output,self.body_prefix()
         print >> output,self.body_menu(self.menus)
         if public:
-            print >> output,self.contain_prefix(self.page_tags[note[0]],"标签: ")
+            print >> output,self.contain_prefix(self.page_tags[note[0]],"标签: ",util.gen_title(note[0]))
         else:
-            print >> output,self.contain_prefix(['nopublic'],"标签: ")
+            print >> output,self.contain_prefix(['nopublic'],"标签: ",util.gen_title(note[0]))
         print >> output,self.contain_page(note[0],num,public)              # auto gen
         print >> output,self.gen_sidebar()
         print >> output,self.contain_suffix()
@@ -821,7 +830,7 @@ class OrgNote(object):
         print >> output,self.header_prefix(title="关于")
         print >> output,self.body_prefix()
         print >> output,self.body_menu(self.menus)
-        print >> output,self.contain_prefix(["关于"],"")
+        print >> output,self.contain_prefix(["关于"],"","关于")
         print >> output,self.contain_about()
         print >> output,self.gen_sidebar()
         print >> output,self.contain_suffix()
@@ -833,7 +842,7 @@ class OrgNote(object):
         print >> output,self.header_prefix(title="MinYi")
         print >> output,self.body_prefix()
         print >> output,self.body_menu(self.menus)
-        print >> output,self.contain_prefix(["MinYi"],"")
+        print >> output,self.contain_prefix(["MinYi"],"","MinYi")
         print >> output,self.contain_archive(self.minyi)
         print >> output,self.gen_sidebar()
         print >> output,self.contain_suffix()
@@ -846,7 +855,7 @@ class OrgNote(object):
             print >> output,self.header_prefix(title=key)
             print >> output,self.body_prefix()
             print >> output,self.body_menu(self.menus)
-            print >> output,self.contain_prefix([key],"分类: ")
+            print >> output,self.contain_prefix([key],"分类: ",key)
             #print >> output,self.contain_notes(__tags__[key])
             print >> output,self.contain_archive(self.tags[key])              # auto gen
             print >> output,self.gen_sidebar()
@@ -860,7 +869,7 @@ class OrgNote(object):
             print >> output,self.header_prefix(title=key)
             print >> output,self.body_prefix()
             print >> output,self.body_menu(self.menus)
-            print >> output,self.contain_prefix([key],"月份: ")
+            print >> output,self.contain_prefix([key],"月份: ",key)
             print >> output,self.contain_archive(self.timetags[key])
             print >> output,self.gen_sidebar()
             print >> output,self.contain_suffix()
@@ -872,7 +881,7 @@ class OrgNote(object):
         print >> output,self.header_prefix(title="nopublic")
         print >> output,self.body_prefix()
         print >> output,self.body_menu(self.menus)
-        print >> output,self.contain_prefix(["nopublic"],"分类: ")
+        print >> output,self.contain_prefix(["nopublic"],"分类: ","暂不公开")
         print >> output,self.contain_archive(self.localnotes)              # auto gen
         print >> output,self.contain_suffix()
         print >> output,self.header_suffix()
