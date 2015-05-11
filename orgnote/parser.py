@@ -311,10 +311,17 @@ class OrgNote(object):
 
             sub_title = sub_title = "<h1 class=\"title\">%s</h1>" % util.gen_title(item[0])
             output = output.replace(sub_title,"")
-            
-            output += """
-            </div> <!-- entry -->
-            """
+
+            if self.emacs_version[0] >= 24 and self.emacs_version[1] >= 4:
+                output += """
+                </div> <!-- col-md-12 -->
+                """
+            else:
+                output += """
+                </div> <!-- col-md-12 -->
+                </div> <!-- row -->
+                </div> <!-- entry -->
+                """
         
 
         if num == 0:
@@ -448,8 +455,8 @@ class OrgNote(object):
 
 
         output += data
-        output += "</div> <!-- col-md-12 -->"
-        output += "</div> <!-- row -->"
+        output += "</div> <!-- my-page -->"
+        output += "</div> <!-- col-md -->"
         
         return output
     
@@ -471,6 +478,7 @@ class OrgNote(object):
         if data:
             data = data.groups()[0].replace('TMD','\n')
             data = data.replace("<div id=\"outline-container-1\" class=\"outline-2\">","</div>")
+            data = data.replace("<div id=\"outline-container-sec-1\" class=\"outline-2\">","</div>")
             data = data.replace("#sec",self.gen_public_link(link,self.public_dir) + "#sec")
             output += data
         else:
@@ -496,9 +504,8 @@ class OrgNote(object):
         </footer>
         """ % self.gen_public_link(link,self.public_dir)
         
-        output += "</div> <!-- col-md-12 -->"
-        
-        output += "</div> <!-- row -->"
+        #output += "</div> <!-- contain -->"
+        #output += "</div> <!-- col-md-12 -->"
         
         return output
 
