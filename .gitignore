@@ -60,3 +60,8 @@ theme
 docs/_build/
 docs/_static/
 docs/_templates/
+_config.yml
+index.html
+notes
+public
+scripts
