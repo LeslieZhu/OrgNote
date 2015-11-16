@@ -17,7 +17,7 @@ import json
 from orgnote import config
 from orgnote import util
 
-reload(sys)
+reload(sys)                    
 sys.setdefaultencoding('utf-8')
 
 class OrgNote(object):
@@ -50,7 +50,7 @@ class OrgNote(object):
         self._keywords = self.cfg.cfg.get("keywords","OrgNote")
 
         self.language = self.cfg.cfg.get("language","zh-CN")
-
+        
         # blog option
         self.homepage = self.cfg.cfg.get("url","https://github.com/LeslieZhu/OrgNote")
 
@@ -69,16 +69,16 @@ class OrgNote(object):
         self.per_page = self.cfg.cfg.get("per_page",6)
 
         self.sidebar_show = self.cfg.cfg.get("sidebar_show",0)
-
+        
         self.sidebar_list = self.cfg.cfg.get("sidebar",list())
-
+        
         self.dirs = [self.source_dir + "/public.org", self.source_dir + "/nopublic.org"]
-
+        
         self.minyi = [
             [self.public_dir + "tags/nopublic.html","fa fa-link","暂不公开"]
         ]
-
-
+        
+        
         # menus
         self.menus = [
             [self.public_dir + "minyi.html","归档","fa fa-sitemap","MinYi"],
@@ -103,7 +103,7 @@ class OrgNote(object):
             _item = [self.public_dir + _url,menu["title"],menu["icon"],menu["title"]]
             self.menus.append(_item)
             self.menus_map[menu["title"]] = _url.strip(".html")
-
+        
         self.links = self.cfg.cfg.get("links",list())
 
         self.__pagenames__ = {}
@@ -114,12 +114,12 @@ class OrgNote(object):
         """
         gen the header of each html
         """
-
+        
         if deep == 1:
             path = "."
         elif deep == 2:
             path = ".."
-
+            
         return """
         <!DOCTYPE HTML>
         <html>
@@ -189,13 +189,13 @@ class OrgNote(object):
         """
 
         output = ""
-
+        
         output += """
         <div class="collapse navbar-collapse nav-menu">
         
         <ul class="nav navbar-nav">
         """
-
+    
         for menu in menus:
             output += self.gen_href(menu)
 
@@ -245,7 +245,7 @@ class OrgNote(object):
                 output += self.gen_tag_href(tag)
                 if tag != tags[-1]: output += " , "
 
-
+            
         output += """
         </div>                                     <!-- slogan end -->
         """
@@ -265,18 +265,18 @@ class OrgNote(object):
                 local  = False
                 if "- [[" in line: public = True
                 if "+ [[" in line: local  = True
-
+            
                 if public or local:
                     line = line.replace("]","")
                     line = line.split('[')[2:]
-
+                    
                     if line[0][0] == ".":
                         link = line[0]
                     else:
                         link = line[0]
-
+                        
                     name = line[1]
-
+            
                     if public:
                         self.notes += [[link,name]]
                     if local:
@@ -304,14 +304,13 @@ class OrgNote(object):
                 <div class="row">
                 <div class="col-md-12">
                 """
+                
 
-
-
+        
             output += self.contain_note(item[0])
 
             sub_title = sub_title = "<h1 class=\"title\">%s</h1>" % util.gen_title(item[0])
             output = output.replace(sub_title,"")
-
 
             if self.emacs_version[0] >= 24 and self.emacs_version[1] >= 4:
                 output += """
@@ -324,6 +323,7 @@ class OrgNote(object):
                 </div> <!-- entry -->
                 """
         
+
         if num == 0:
             prev_page = '<li class="prev disabled"><a><i class="fa fa-arrow-circle-o-left"></i>Newer</a></li>'
         elif num == 1:
@@ -349,13 +349,13 @@ class OrgNote(object):
         </center>
         </div>
         """ % (prev_page,self.public_dir,next_page)
-
+        
         output += self.duosuo()
-
+        
         output += """
         </div> <!-- mypage -->
         </div> <!-- col-md-9 -->
-        """
+        """ 
 
         return output
 
@@ -397,13 +397,13 @@ class OrgNote(object):
 
     def contain_page(self,link="",num=0, public=True):
         output = ""
-
+        
         alldata = open(link).read()
         _title = re.search("(<h1 class=\"title\">.*</h1>)",alldata.replace('\n','TMD')).groups()[0]
-
+        
         data = re.search("(<div id=\"content\">.*</div.).*</body>",alldata.replace('\n','TMD'))
         data = data.groups()[0].replace('TMD','\n').replace(_title,"")
-
+        
         postamble = re.search("(<div id=\"postamble\">.*</body>)",alldata.replace('\n','TMD'))
         if postamble == None:
             postamble = re.search("(<div id=\"postamble\" class=\"status\">.*</body>)",alldata.replace('\n','TMD'))
@@ -411,19 +411,19 @@ class OrgNote(object):
         else:
             postamble = postamble.groups()[0].replace('TMD','\n').replace("</body>","")
             index = data.find("<div id=\"postamble\">")
-
+            
         data = data[:index]# + gen_postamble()
 
         if public:
             self.archives.append([self.gen_public_link(self.notes[num][0],self.public_dir),"fa fa-file-o",self.notes[num][1].strip()])
-
+            
             if num == 0:
                 prev_page = '<li class="prev disabled"><a><i class="fa fa-arrow-circle-o-left"></i>上一页</a></li>'
             else:
                 prev_page = '<li class="prev"><a href="%s" class=alignright prev"><i class="fa fa-arrow-circle-o-left"></i>上一页</a></li>' % self.gen_prev(num)
-
+                
             if num == (len(self.notes) - 1):
-                next_page = '<li class="next disabled"><a><i class="fa fa-arrow-circle-o-right"></i>下一页</a></li>'
+                next_page = '<li class="next disabled"><a><i class="fa fa-arrow-circle-o-right"></i>下一页</a></li>' 
             else:
                 next_page = '<li class="next"><a href="%s" class="alignright next">下一页<i class="fa fa-arrow-circle-o-right"></i></a></li>' % self.gen_next(num)
 
@@ -443,7 +443,7 @@ class OrgNote(object):
         else:
             page_order = ""
 
-
+            
         if "</body>" in data:
             index = data.find("</body>")
             data = data[:index] + page_order + self.duosuo() + data[index:]
@@ -457,14 +457,14 @@ class OrgNote(object):
         output += data
         output += "</div> <!-- my-page -->"
         output += "</div> <!-- col-md -->"
-
+        
         return output
-
+    
     def contain_note(self,link=""):
         import re
-
+        
         output = ""
-
+        
         alldata = open(link).read()
         #data=re.search("(<div id=\"content\">.*</div.).*</body>",data.replace('\n','敏敏')).groups()[0].replace('敏敏','\n')
 
@@ -474,7 +474,7 @@ class OrgNote(object):
 
         data2=re.search("(<div id=\"content\">.*<div class=\"ds-thread\"></div>).*</body>",alldata.replace('\n','TMD'))
         data3=re.search("(<div id=\"content\">.*<div id=\"postamble\".*>).*</body>",alldata.replace('\n','TMD'))
-
+        
         if data:
             data = data.groups()[0].replace('TMD','\n')
             data = data.replace("<div id=\"outline-container-1\" class=\"outline-2\">","</div>")
@@ -493,7 +493,7 @@ class OrgNote(object):
             output += '</p>'.join(data)
             output += "</div>"
 
-
+        
 
         output +=  """
         <footer>
@@ -503,7 +503,6 @@ class OrgNote(object):
         <div class="clearfix"></div>
         </footer>
         """ % self.gen_public_link(link,self.public_dir)
-
         
         #output += "</div> <!-- contain -->"
         #output += "</div> <!-- col-md-12 -->"
@@ -511,7 +510,7 @@ class OrgNote(object):
         return output
 
     def contain_archive(self,data=list()):
-
+        
         output = ""
         output += """
         <!-- display as entry -->
@@ -519,7 +518,7 @@ class OrgNote(object):
         <div class="row">
         <div class="col-md-12">
         """
-
+        
         for archive in data:
             if len(archive) == 2:
                 newarchive = [self.public_dir + '/'.join(archive[0].split('/')[2:]),'fa fa-file-o',archive[1]]
@@ -532,14 +531,14 @@ class OrgNote(object):
         </div>
         </div>
         """
-
+        
         output += """
         </div> <!-- mypage -->
         </div> <!-- col-md-9 -->
         """
-
+        
         return output
-
+    
     def contain_about(self):
         """about me page"""
 
@@ -551,7 +550,7 @@ class OrgNote(object):
         <div class="row">
         <div class="col-md-12">
         """
-
+        
         if self.description:
             output += "<p>%s</p>" % self.description
         else:
@@ -563,7 +562,7 @@ class OrgNote(object):
         </div>
         </div>
         </div>             
-        """
+        """ 
 
         output += self.duosuo()
 
@@ -571,7 +570,7 @@ class OrgNote(object):
         </div> <!-- mypage -->
         </div> <!-- col-md-9 -->
         """
-
+        
         return output
 
     def duosuo(self):
@@ -595,7 +594,7 @@ class OrgNote(object):
                 </script>
                 <!-- Duoshuo Comment END -->
                 """ % self.duoshuo_shortname
-
+        
     def contain_sidebar(self):
         return """
         <div class="col-md-3">
@@ -603,15 +602,15 @@ class OrgNote(object):
         """
 
     def sidebar_tags(self):
-
+    
         output = ""
-
+        
         output += """
         <div class="widget">
         <h4>标签云</h4>
         <ul class="tag_box inline list-unstyled">
         """
-
+        
         for key in self.keywords:
             output += "<li><a href=\"%stags/%s.html\">%s<span>%s</span></a></li>" % (self.public_dir,key,key,len(self.tags[key]))
 
@@ -634,7 +633,7 @@ class OrgNote(object):
             output += "<li><a href=\"%stags/%s.html\">%s<span>%s</span></a></li>" % (self.public_dir,key,key,len(self.timetags[key]))
             tot += len(self.timetags[key])
         output += "<li><a href=\"%sarchive.html\">All<span>%s</span></a></li>" % (self.public_dir,tot)
-
+        
         output += """
         </ul>
         </div>
@@ -646,21 +645,21 @@ class OrgNote(object):
         each note layout: link,name
         """
         output = ""
-
+        
         output += """
         <div class="widget">
         <h4>最新文章</h4>
         <ul class="entry list-unstyled">
         """
-
+        
         for note in notes[:num]:
             output += "<li><a href=\"%s\"><i class=\"fa fa-file-o\"></i>%s</a></li>" % (self.gen_public_link(note[0].replace('"',""),self.public_dir),note[1])
-
+            
         output += """
         </ul>   
         </div> 
         """
-
+        
         return output
 
     def sidebar_weibo(self):
@@ -679,7 +678,7 @@ class OrgNote(object):
             output += """
             <li><a href="%s" title="%s" target="_blank"><i class="%s"></i>%s</a></li>
             """ % (_link["url"], _link["name"], _link["icon"], _link["name"])
-
+        
         output += """
         </ul>
         </div>
@@ -692,7 +691,7 @@ class OrgNote(object):
         </div> <!-- sidebar -->
         </div> <!-- col-md-3 -->
         """
-
+        
     def contain_suffix(self):
         return """
         </div> <!-- row-fluid -->
@@ -744,7 +743,7 @@ class OrgNote(object):
             output += self.end_sidebar()
         else:
             output = ""
-
+            
         return output
 
     def gen_archive(self):
@@ -758,14 +757,14 @@ class OrgNote(object):
         print >> output,self.contain_suffix()
         print >> output,self.header_suffix()
         output.close()
-
+        
     def gen_page(self,note=list(),num=0,public=True):
         import os
         import os.path
-
+        
         page_file = "./" + self.gen_public_link(note[0])
         page_dir = os.path.dirname(page_file)
-
+        
         if not os.path.exists(page_dir):
             os.makedirs(page_dir)
 
@@ -782,7 +781,7 @@ class OrgNote(object):
         print >> output,self.contain_suffix()
         print >> output,self.header_suffix()
         output.close()
-
+        
     def gen_public(self):
         for i,note in enumerate(self.notes):
             self.gen_page(note,i,True)
@@ -801,7 +800,7 @@ class OrgNote(object):
         print >> output,self.header_prefix(title=self.title)
         print >> output,self.body_prefix()
         print >> output,self.body_menu(self.menus)
-        print >> output,self.contain_prefix()
+        print >> output,self.contain_prefix()    
         print >> output,self.contain_notes(self.notes[b_index:e_index],num,e_index)              # auto gen
         print >> output,self.gen_sidebar()
         print >> output,self.contain_suffix()
@@ -813,7 +812,7 @@ class OrgNote(object):
         each split page hold `num` notes
         """
 
-        if note_num == None:
+        if note_num == None: 
             note_num = self.per_page
 
         num = 0
@@ -828,11 +827,11 @@ class OrgNote(object):
                 self.split_index(num,b_index,tot)
             else:
                 self.split_index(num,b_index,e_index)
-
+                
             num += 1
             b_index += note_num
             e_index = b_index + note_num
-
+            
     def gen_about(self):
         output = open("./" + self.public_dir + "about.html","w")
         print >> output,self.header_prefix(title="关于")
@@ -870,7 +869,7 @@ class OrgNote(object):
             print >> output,self.contain_suffix()
             print >> output,self.header_suffix()
             output.close()
-
+            
     def gen_timetags(self):
         for key in sorted(self.timetags.keys(),reverse=True):
             output = open("./" + self.public_dir + "tags/" + key + ".html","w")
@@ -894,7 +893,7 @@ class OrgNote(object):
         print >> output,self.contain_suffix()
         print >> output,self.header_suffix()
         output.close()
-
+    
     def gen_date(self,link=""):
         """ Filter Publish data from HTML metadata>"""
 
@@ -903,7 +902,7 @@ class OrgNote(object):
                 line = line.strip().replace("</p>","")
                 pubdate = line.split(" ")[-1].strip()
                 break
-
+            
             if "<meta name=\"generated\"" in line:
                 line = line.strip()
                 #pattern="([0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]|[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])"
@@ -915,7 +914,7 @@ class OrgNote(object):
                     print e
                     sys.exit(-1)
                     break
-
+                
         if "/" in pubdate:
             try:
                 pubdate=time.strptime(pubdate, "%m/%d/%Y")
@@ -924,7 +923,7 @@ class OrgNote(object):
             except Exception,e:
                 print e
                 sys.exit(-1)
-
+                
         elif "-" in pubdate:
             try:
                 pubdate=time.strptime(pubdate, "%Y-%m-%d")
@@ -941,7 +940,7 @@ class OrgNote(object):
 
     def gen_category(self,link=""):
         """ Filter Keywords from HTML metadata """
-
+    
         keywords = ""
         for line in open(link).readlines():
             if "<meta name=\"keywords\"" in line or "<meta  name=\"keywords\"" in line:
@@ -961,11 +960,11 @@ class OrgNote(object):
             print str(ex)
             usage()
 
-    def do_deploy(self, branch="master"):
+    def do_deploy(self,branch="master"):
         import os
         os.system("git add .")
         os.system("git commit -m \"update\"")
-        os.system("git push origin %s"%branch)
+        os.system("git push origin %s" % (branch,))
 
     def do_generate(self):
         self.cfg.update()
@@ -980,7 +979,7 @@ class OrgNote(object):
         self.gen_tags()
         self.gen_timetags()
         self.gen_nopublic()
-        print "notes generate done"
+        print "notes generate done" 
 
     def do_new(self,notename=""):
         return util.add_note(notename)
@@ -1006,7 +1005,7 @@ class OrgNote(object):
             #self.scan()
             #for _note in reversed(sorted(self.notes_db.keys())):
             #    publish_line = util.publish_note(self.notes_db[_note])
-
+                
             #    if publish_line in nopublish_data: 
             #        continue
             #    print >> output,publish_line
@@ -1027,7 +1026,7 @@ class OrgNote(object):
             output = open(publish_list,"w")
             print >> output,publish_line
             for line in data:
-                if line in nopublish_data:
+                if line in nopublish_data: 
                     continue
                 print >> output,line
             output.close()
@@ -1058,16 +1057,16 @@ class OrgNote(object):
             print _note
 
     def do_status(self):
-
+        
         publish_list = self.dirs[0]
         nopublish_list = self.dirs[1]
-
+        
         publish_data = open(publish_list,"r").readlines()
         publish_data = [i.strip() for i in publish_data]
 
         nopublish_data = open(nopublish_list,"r").readlines()
         nopublish_data = [i.strip().replace("+ [[","- [[") for i in nopublish_data]
-
+        
         all_publish = True
         self.scan()
         for _note in reversed(sorted(self.notes_db.keys())):
@@ -1078,12 +1077,12 @@ class OrgNote(object):
 
         if all_publish:
             print "all notes published!"
-
-
+            
+        
 
 def usage():
     import sys
-
+    
     print """
 Usage: orgnote <command>
 
@@ -1103,7 +1102,7 @@ For more help, you can check the docs:  http://orgnote.readthedocs.org/zh_CN/lat
     """
 
     sys.exit()
-
+            
 
 
 
