@@ -1,6 +1,8 @@
 OrgNote: A simple blog based on org-mode
 =======================================
 
+.. image:: https://badges.gitter.im/LeslieZhu/OrgNote.svg)
+   :target: https://gitter.im/LeslieZhu/OrgNote?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge
 .. image:: https://pypip.in/download/orgnote/badge.svg?style=flat
    :target: https://pypi.python.org/pypi/orgnote
 
