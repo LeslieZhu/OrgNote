@@ -154,3 +154,8 @@ Enjoy it! :)
 
 
 
+
+
+.. image:: https://badges.gitter.im/LeslieZhu/OrgNote.svg
+   :alt: Join the chat at https://gitter.im/LeslieZhu/OrgNote
+   :target: https://gitter.im/LeslieZhu/OrgNote?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
