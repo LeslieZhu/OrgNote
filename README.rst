@@ -1,8 +1,6 @@
 OrgNote: A simple blog based on org-mode
 =======================================
 
-.. image:: https://badges.gitter.im/LeslieZhu/OrgNote.svg)
-   :target: https://gitter.im/LeslieZhu/OrgNote?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge
 .. image:: https://pypip.in/download/orgnote/badge.svg?style=flat
    :target: https://pypi.python.org/pypi/orgnote
 
@@ -34,6 +32,11 @@ OrgNote: A simple blog based on org-mode
    
 .. image:: https://pypip.in/license/orgnote/badge.svg?style=flat
    :target: https://pypi.python.org/pypi/orgnote
+
+.. image:: https://badges.gitter.im/LeslieZhu/OrgNote.svg
+   :alt: Join the chat at https://gitter.im/LeslieZhu/OrgNote
+   :target: https://gitter.im/LeslieZhu/OrgNote?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+         
 
 Install
 ============
@@ -149,13 +152,3 @@ More
 - sample: http://lesliezhu.github.io/
 
 Enjoy it! :)
-
-
-
-
-
-
-
-.. image:: https://badges.gitter.im/LeslieZhu/OrgNote.svg
-   :alt: Join the chat at https://gitter.im/LeslieZhu/OrgNote
-   :target: https://gitter.im/LeslieZhu/OrgNote?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
