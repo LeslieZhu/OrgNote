@@ -30,7 +30,7 @@ def to_page(notename=""):
     import os
     try:
         emacs_version = [int(i) for i in get_emacs_version()]
-        if emacs_version[0] >= 24 and emacs_version[1] >= 4:
+        if emacs_version[0] >= 24 and emacs_version[1] >= 3:
             cmd = "emacs -l scripts/init-orgnote.el --batch %s --funcall org-html-export-to-html 2>/dev/null" % notename
         else:
             cmd = "emacs -l scripts/init-orgnote.el --batch %s --funcall org-export-as-html 2>/dev/null" % notename
