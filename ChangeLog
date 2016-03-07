@@ -1,3 +1,7 @@
+2016-03-07  Leslie Zhu  <pythonisland@gmail.com>
+
+	* orgnote/util.py: update the note file glob regex
+
 2014-12-08  Leslie Zhu  <pythonisland@gmail.com>
 
 	* 0.4.0:

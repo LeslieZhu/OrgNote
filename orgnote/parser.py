@@ -933,6 +933,7 @@ class OrgNote(object):
                 print e
                 sys.exit(-1)
         else:
+            print link,pubdate
             pubdate=time.strptime(pubdate, "%Y%m%d")
 
         pubdate=time.strftime("%Y-%m-%d %a",pubdate)
@@ -992,9 +993,10 @@ class OrgNote(object):
         publish_list = self.dirs[0]
         nopublish_list = self.dirs[1]
 
-        notename = os.path.basename(notename).replace(".org","").replace(".html","")
+        #notename = os.path.basename(notename).replace(".org","").replace(".html","")
 
         publish_line = util.publish_note(notename)
+        print publish_line
 
         nopublish_data = open(nopublish_list,"r").readlines()
         nopublish_data = [i.strip().replace("+ [[","- [[") for i in nopublish_data]

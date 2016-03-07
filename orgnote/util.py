@@ -59,8 +59,13 @@ def add_note(notename=""):
 def publish_note(notename=""):
     try:
         import glob,os.path
-        if notename.endswith(".org"): notename = notename[:-4]
-        for _file in reversed(sorted(glob.glob("./notes/????/??/??/%s.org" % notename))):
+        #if notename.endswith(".org"): notename = notename[:-4]
+        if notename.startswith("./notes"):
+            glob_re = notename
+        else:
+            glob_re = "./notes/????/??/??/%s" % os.path.basename(notename)
+
+        for _file in reversed(sorted(glob.glob(glob_re))):
             _html = _file.replace(".org",".html")
             #if not os.path.exists(_html):
             to_page(_file)
