@@ -73,6 +73,7 @@ duoshuo_shortname:
 ### sidebar_latest,sidebar_tags,sidebar_time,sidebar_weibo,sidebar_link
 
 sidebar_show: 1
+sidebar_contact: ""
 sidebar:
   - sidebar_latest
   - sidebar_tags

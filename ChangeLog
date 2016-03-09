@@ -1,3 +1,8 @@
+2016-03-09  Leslie Zhu  <pythonisland@gmail.com>
+
+	* orgnote/parser.py: sort the links in _config.yml
+	* orgnote/config.py: add sidebar_contact configure item
+
 2016-03-07  Leslie Zhu  <pythonisland@gmail.com>
 
 	* orgnote/util.py: update the note file glob regex

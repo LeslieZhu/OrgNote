@@ -69,7 +69,7 @@ class OrgNote(object):
         self.per_page = self.cfg.cfg.get("per_page",6)
 
         self.sidebar_show = self.cfg.cfg.get("sidebar_show",0)
-        
+        self._sidebar_contact = self.cfg.cfg.get("sidebar_contact","")
         self.sidebar_list = self.cfg.cfg.get("sidebar",list())
         
         self.dirs = [self.source_dir + "/public.org", self.source_dir + "/nopublic.org"]
@@ -578,29 +578,38 @@ class OrgNote(object):
             return """
             """
         else:
-                return """
-                <!-- Duoshuo Comment BEGIN -->
-                <div class="ds-thread"></div>
-                <script type="text/javascript">
-                var duoshuoQuery = {short_name:"%s"};
-                (function() {
-                var ds = document.createElement('script');
-                ds.type = 'text/javascript';ds.async = true;
-                ds.src = 'http://static.duoshuo.com/embed.js';
-                ds.charset = 'UTF-8';
-                (document.getElementsByTagName('head')[0]
-                || document.getElementsByTagName('body')[0]).appendChild(ds);
-                })();
-                </script>
-                <!-- Duoshuo Comment END -->
-                """ % self.duoshuo_shortname
+            return """
+            <!-- Duoshuo Comment BEGIN -->
+            <div class="ds-thread"></div>
+            <script type="text/javascript">
+            var duoshuoQuery = {short_name:"%s"};
+            (function() {
+            var ds = document.createElement('script');
+            ds.type = 'text/javascript';ds.async = true;
+            ds.src = 'http://static.duoshuo.com/embed.js';
+            ds.charset = 'UTF-8';
+            (document.getElementsByTagName('head')[0]
+            || document.getElementsByTagName('body')[0]).appendChild(ds);
+            })();
+            </script>
+            <!-- Duoshuo Comment END -->
+            """ % self.duoshuo_shortname
         
     def contain_sidebar(self):
         return """
         <div class="col-md-3">
         <div id="sidebar">
         """
-
+    def sidebar_contact(self):
+        return """
+        <div class="widget">
+        <h4>联系方式</h4>
+        <ul class="entry list-unstyled">
+        <li>%s</li>
+        </ul>
+        </div>
+        """ % self._sidebar_contact
+    
     def sidebar_tags(self):
     
         output = ""
@@ -673,7 +682,7 @@ class OrgNote(object):
         <ul class="entry list-unstyled">
         """
 
-        for key in self.links:
+        for key in sorted(self.links):
             _link = self.links[key]
             output += """
             <li><a href="%s" title="%s" target="_blank"><i class="%s"></i>%s</a></li>
@@ -729,6 +738,8 @@ class OrgNote(object):
 
         if self.sidebar_show == 1:
             output = self.contain_sidebar()
+            if self._sidebar_contact:
+                output += self.sidebar_contact()
             for _sidebar in self.sidebar_list:
                 if _sidebar == "sidebar_latest":
                     output += self.sidebar_latest(self.notes)
