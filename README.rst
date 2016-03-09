@@ -1,6 +1,12 @@
 OrgNote: A simple blog based on org-mode
 =======================================
 
+.. image:: https://img.shields.io/pypi/v/orgnote.svg
+   :target: https://pypi.python.org/pypi/orgnote
+
+.. image:: https://img.shields.io/pypi/dm/orgnote.svg
+   :target: https://pypi.python.org/pypi/orgnote
+                       
 .. image:: https://readthedocs.org/projects/orgnote/badge/?version=latest
    :target: http://orgnote.readthedocs.org/zh_CN/latest/
 
