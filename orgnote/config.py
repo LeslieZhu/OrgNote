@@ -77,6 +77,7 @@ sidebar_contact: ""
 sidebar:
   - sidebar_latest
   - sidebar_tags
+  - sidebar_duoshuo
   - sidebar_time
   - sidebar_link
 
