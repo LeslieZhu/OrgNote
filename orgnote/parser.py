@@ -1086,12 +1086,13 @@ class OrgNote(object):
             note_dir = "./" + self.source_dir
 
         for path,dirs,files in os.walk(note_dir):
+            if dirs: continue
             for _file in files:
                 if not _file.endswith(".org"):continue
                 _path = path + '/' + _file
                 if _path == "./" + self.source_dir + "/public.org" or _path == "./" + self.source_dir + "/nopublic.org": continue
                 if _path.endswith(".html"):continue
-                self.notes_db[_path] = _file
+                self.notes_db[_path] = _path #_file
 
     def do_list(self):
         """

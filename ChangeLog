@@ -1,3 +1,7 @@
+2016-03-10  Leslie Zhu  <pythonisland@gmail.com>
+
+	* orgnote/parser.py (OrgNote.scan): update note filename in scan function
+
 2016-03-09  Leslie Zhu  <pythonisland@gmail.com>
 
 	* orgnote/parser.py: sort the links in _config.yml
