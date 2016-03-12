@@ -71,8 +71,8 @@ def publish_note(notename=""):
 
         for _file in reversed(sorted(glob.glob(glob_re))):
             _html = _file.replace(".org",".html")
-            #if not os.path.exists(_html):
-            to_page(_file)
+            if not os.path.exists(_html):
+                to_page(_file)
             _title = gen_title(_html)
             return "- [[%s][%s]]" % (_html,_title)
         return None
