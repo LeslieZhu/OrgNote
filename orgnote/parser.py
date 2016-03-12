@@ -1010,9 +1010,33 @@ class OrgNote(object):
         os.system("git commit -m \"update\"")
         os.system("git push origin %s" % (branch,))
 
-    def do_generate(self):
+    def do_generate(self,batch=""):
         self.cfg.update()
         self.gen_notes(self.dirs)
+
+        # In emacs batch mode, use scripts/init-orgnote.el
+        # can generate highlight code in html
+        # this will force generate all raw-html again in
+        # emacs batch mode, work as a backed feature.
+        # 
+        # all:  re-generate all notes's raw-html file
+        # xxx.org:  re-generate the note's raw-html file
+        # num:  re-generate last num notes's raw-html file
+        # blank: ignore raw-html re-generate step
+        # 
+        if batch == "all":
+            notes = [note[0].replace('.html','.org') for note in self.notes]
+            for note in notes:
+                self.do_page(note)
+        elif batch.endswith('.org'):
+            self.do_page(batch)
+        elif batch.isdigit():
+            notes = [note[0].replace('.html','.org') for note in self.notes]
+            for note in notes[:int(batch)]:
+                self.do_page(note)
+        else:
+            pass
+        
         self.gen_tag_list()
         self.gen_timetag_list()
         self.gen_public()
@@ -1185,6 +1209,8 @@ def main(args=None):
             blog.do_new(sys.argv[2])
         elif sys.argv[1] == "publish":
             blog.do_publish(sys.argv[2])
+        elif sys.argv[1] == "generate":
+            blog.do_generate(sys.argv[2])
         elif sys.argv[1] == "deploy":
             blog.do_deploy(sys.argv[2])
         else:

@@ -27,7 +27,7 @@ def gen_title(link=""):
 
 
 def to_page(notename=""):
-    import os
+    import os,os.path
     try:
         emacs_version = [int(i) for i in get_emacs_version()]
         if emacs_version[0] >= 24 and emacs_version[1] >= 3:
@@ -35,7 +35,11 @@ def to_page(notename=""):
         else:
             cmd = "emacs -l scripts/init-orgnote.el --batch %s --funcall org-export-as-html 2>/dev/null" % notename
         os.system(cmd)
-        #print "%s generated" % notename.replace('.org','.html')
+        html_file = notename.replace('.org','.html')
+        if os.path.exists(html_file):
+            print "%s generated" % html_file
+        else:
+            print "%s generat FAILED" % html_file
     except Exception,ex:
         print str(ex)
 
