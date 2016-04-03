@@ -108,6 +108,9 @@ setup(
 
     install_requires = [
         "PyYAML==3.11",
+	"Pygments==2.1.3",
+	"beautifulsoup4==4.4.1",
+	"bs4==0.0.1",
     ]
 
     #extras_require={

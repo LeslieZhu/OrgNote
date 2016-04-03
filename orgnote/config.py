@@ -54,6 +54,11 @@ default_tag: "默认"
 # the default is 'freemind' and it's only theme for OrgNote now
 theme: freemind
 
+# css highlight
+# the defaulit is 'default'
+# pygments: manni igor xcode vim autumn vs rrt native perldoc borland tango
+# emacs friendly monokai paraiso-dark colorful murphy bw pastie paraiso-light trac default fruity 
+css_highlight: default
 
 # Pagination
 ## the note num of each page

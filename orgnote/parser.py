@@ -63,6 +63,7 @@ class OrgNote(object):
         self.public_dir = self.blogroot + self.cfg.cfg.get("public_dir","public") + "/"
 
         self.theme = self.cfg.cfg.get("theme","freemind")
+        self.css_highlight = self.cfg.cfg.get("css_highlight","default")
 
         self.duoshuo_shortname = self.cfg.cfg.get("duoshuo_shortname",None)
 
@@ -143,13 +144,16 @@ class OrgNote(object):
         <link rel="stylesheet" href="%stheme/%s/css/font-awesome.css" media="screen" type="text/css">
         <link rel="stylesheet" href="%stheme/%s/css/style.css" media="screen" type="text/css">
         <link rel="stylesheet" href="%stheme/%s/css/highlight.css" media="screen" type="text/css">
+        <link rel="stylesheet" href="%stheme/%s/css/%s-highlight.css" media="screen" type="text/css">
         </head>
         """ % (self.title, self.author, self.description, self.title,self._keywords,
                self.blogroot,
                self.blogroot,self.theme,
                self.blogroot,self.theme,
                self.blogroot,self.theme,
-               self.blogroot,self.theme)
+               self.blogroot,self.theme,
+               self.blogroot,self.theme,self.css_highlight
+        )
 
     def body_prefix(self):
         return """
@@ -409,8 +413,17 @@ class OrgNote(object):
         html_data = BeautifulSoup(open(link,"r").read(),"html.parser")
         
         _title = html_data.find('h1',{'class':'title'}).text
-        data = str(html_data.find('div',{'id':'content'})).replace('<h1 class="title">%s</h1>' % (_title),"")
+        content_data = html_data.find('div',{'id':'content'})
+        content_data_text = str(content_data)
 
+        src_data = content_data.find_all('div',{'class':'org-src-container'})
+        for src_tag in src_data:
+            # src-python
+            src_lang = src_tag.find('pre').attrs['class'][-1].split('-')[-1]
+            src_code = src_tag.text
+            new_src = get_hightlight_src(src_code,src_lang)
+            content_data_text = content_data_text.replace(str(src_tag),new_src)
+            
         if public:
             self.archives.append([self.gen_public_link(self.notes[num][0],self.public_dir),"fa fa-file-o",self.notes[num][1].strip()])
             
@@ -440,18 +453,9 @@ class OrgNote(object):
         else:
             page_order = ""
 
-            
-        if "</body>" in data:
-            index = data.find("</body>")
-            data = data[:index] + page_order + self.duosuo() + data[index:]
-        elif "<div id=\"postamble\"" in data:
-            index = data.find("<div id=\"postamble\"")
-            data = data[:index] + page_order + self.duosuo() + data[index:]
-        else:
-            data = data + page_order + self.duosuo()
-
-
-        output += data
+        without_title_data = content_data_text.replace('<h1 class="title">%s</h1>' % (_title),"")
+        new_data = without_title_data + page_order + self.duosuo()
+        output += new_data
         output += "</div> <!-- my-page -->"
         output += "</div> <!-- col-md -->"
         

@@ -1,3 +1,8 @@
+2016-04-03  Leslie Zhu  <pythonisland@gmail.com>
+
+	* orgnote/parser.py (OrgNote.contain_page): use bs4 html parser
+	(OrgNote.contain_page): use pygments code highlight
+
 2016-03-12  Leslie Zhu  <pythonisland@gmail.com>
 
 	* orgnote/parser.py (OrgNote.do_generate):
