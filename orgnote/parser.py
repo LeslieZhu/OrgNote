@@ -14,8 +14,10 @@ from __future__ import absolute_import
 
 import re,time,sys,os
 import json
+from bs4 import BeautifulSoup
 from orgnote import config
 from orgnote import util
+from orgnote.colorsrc import get_hightlight_src
 
 reload(sys)                    
 sys.setdefaultencoding('utf-8')
@@ -372,6 +374,11 @@ class OrgNote(object):
             return self.gen_public_link(self.notes[num+1][0],self.public_dir)
 
     def gen_tag_list(self,public=True):
+        """
+        - self.keywords is a list of all keywords
+        - self.tags is a dict, a keyword's value is a list, each item is a [notefile,notetitle]
+        """
+        
         if not public: return
         for num,link in enumerate(self.notes):
             keywords = self.gen_category(link[0])
@@ -383,7 +390,8 @@ class OrgNote(object):
                     self.keywords.append(key)
                 if not self.tags.has_key(key):
                     self.tags[key] = list()
-                else: pass
+                else:
+                    pass
 
                 self.tags[key].append([link[0], link[1].strip()])
 
@@ -397,22 +405,11 @@ class OrgNote(object):
 
     def contain_page(self,link="",num=0, public=True):
         output = ""
+
+        html_data = BeautifulSoup(open(link,"r").read(),"html.parser")
         
-        alldata = open(link).read()
-        _title = re.search("(<h1 class=\"title\">.*</h1>)",alldata.replace('\n','TMD')).groups()[0]
-        
-        data = re.search("(<div id=\"content\">.*</div.).*</body>",alldata.replace('\n','TMD'))
-        data = data.groups()[0].replace('TMD','\n').replace(_title,"")
-        
-        postamble = re.search("(<div id=\"postamble\">.*</body>)",alldata.replace('\n','TMD'))
-        if postamble == None:
-            postamble = re.search("(<div id=\"postamble\" class=\"status\">.*</body>)",alldata.replace('\n','TMD'))
-            index = data.find("<div id=\"postamble\" class=\"status\">")
-        else:
-            postamble = postamble.groups()[0].replace('TMD','\n').replace("</body>","")
-            index = data.find("<div id=\"postamble\">")
-            
-        data = data[:index]# + gen_postamble()
+        _title = html_data.find('h1',{'class':'title'}).text
+        data = str(html_data.find('div',{'id':'content'})).replace('<h1 class="title">%s</h1>' % (_title),"")
 
         if public:
             self.archives.append([self.gen_public_link(self.notes[num][0],self.public_dir),"fa fa-file-o",self.notes[num][1].strip()])
@@ -447,8 +444,8 @@ class OrgNote(object):
         if "</body>" in data:
             index = data.find("</body>")
             data = data[:index] + page_order + self.duosuo() + data[index:]
-        elif "<div id=\"postamble\">" in data:
-            index = data.find("<div id=\"postamble\">")
+        elif "<div id=\"postamble\"" in data:
+            index = data.find("<div id=\"postamble\"")
             data = data[:index] + page_order + self.duosuo() + data[index:]
         else:
             data = data + page_order + self.duosuo()
@@ -939,24 +936,17 @@ class OrgNote(object):
     
     def gen_date(self,link=""):
         """ Filter Publish data from HTML metadata>"""
+        
+        html_data = BeautifulSoup(open(link,"r").read(),"html.parser")
 
-        for line in open(link).readlines():
-            if "<p class=\"date\">" in line:
-                line = line.strip().replace("</p>","")
-                pubdate = line.split(" ")[-1].strip()
-                break
-            
-            if "<meta name=\"generated\"" in line:
-                line = line.strip()
-                #pattern="([0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]|[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])"
-                pattern="\"([0-9].*[/-]?[0-9].*[/-]?[0-9].*)\""
-                try:
-                    pubdate=re.search(pattern,line).groups(1)[0].strip()
-                    break
-                except Exception,e:
-                    print e
-                    sys.exit(-1)
-                    break
+        date_tag = html_data.find('p',{'class':'date'})
+
+        if not date_tag:
+            date_tag = html_data.find('meta',{'name':'generated'})
+
+        if date_tag:
+            pubdate = date_tag.contents[0].split(':')[-1].strip()
+        
                 
         if "/" in pubdate:
             try:
@@ -984,19 +974,16 @@ class OrgNote(object):
 
     def gen_category(self,link=""):
         """ Filter Keywords from HTML metadata """
-    
-        keywords = ""
-        for line in open(link).readlines():
-            if "<meta name=\"keywords\"" in line or "<meta  name=\"keywords\"" in line:
-                line = line.strip()
-                keywords=re.search("content=\"(.*)\"",line).groups(1)[0].strip()
-                break
 
-        if len(keywords) > 0:
+        html_data = BeautifulSoup(open(link,"r").read(),"html.parser")
+        keywords_list = html_data.findAll('meta',{'name':'keywords'})
+
+        if keywords_list and keywords_list[0].attrs.has_key('content'):
+            keywords = keywords_list[0].attrs['content']
             return [i.strip() for i in keywords.split(",")]
         else:
             return [self.default_tag]
-
+        
     def do_server(self,port="8080"):
         try:
             os.system("python -m SimpleHTTPServer %s" % port)
