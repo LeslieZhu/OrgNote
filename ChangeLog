@@ -1,3 +1,18 @@
+2016-03-12  Leslie Zhu  <pythonisland@gmail.com>
+
+	* orgnote/parser.py (OrgNote.do_generate):
+
+	In emacs batch mode, use scripts/init-orgnote.el
+	can generate highlight code in htm
+	this will force generate all raw-html again in
+	emacs batch mode, work as a backed feature.
+
+	generate options:
+	all:  re-generate all notes's raw-html file
+	xxx.org:  re-generate the note's raw-html file
+	num:  re-generate last num notes's raw-html file
+	blank: ignore raw-html re-generate step
+
 2016-03-10  Leslie Zhu  <pythonisland@gmail.com>
 
 	* orgnote/parser.py (OrgNote.scan): update note filename in scan function
