@@ -68,6 +68,8 @@ class OrgNote(object):
         self.duoshuo_shortname = self.cfg.cfg.get("duoshuo_shortname",None)
 
         self.default_tag = self.cfg.cfg.get("default_tag","默认")
+        self.nopublic_tag = self.cfg.cfg.get("nopublic_tag","暂不公开")
+
 
         self.per_page = self.cfg.cfg.get("per_page",6)
 
@@ -78,7 +80,8 @@ class OrgNote(object):
         self.dirs = [self.source_dir + "/public.org", self.source_dir + "/nopublic.org"]
         
         self.minyi = [
-            [self.public_dir + "tags/nopublic.html","fa fa-link","暂不公开"]
+            #[self.public_dir + "tags/nopublic.html","fa fa-link",self.nopublic_tag]
+            [self.public_dir + "tags/" + self.nopublic_tag + ".html","fa fa-link",self.nopublic_tag]
         ]
         
         
@@ -819,7 +822,7 @@ class OrgNote(object):
         if public:
             print >> output,self.contain_prefix(self.page_tags[note[0]],"标签: ",util.gen_title(note[0]))
         else:
-            print >> output,self.contain_prefix(['nopublic'],"标签: ",util.gen_title(note[0]))
+            print >> output,self.contain_prefix([self.nopublic_tag],"标签: ",util.gen_title(note[0]))
         print >> output,self.contain_page(note[0],num,public)              # auto gen
         print >> output,self.gen_sidebar()
         print >> output,self.contain_suffix()
@@ -928,11 +931,11 @@ class OrgNote(object):
             output.close()
 
     def gen_nopublic(self):
-        output = open("./" + self.public_dir + "tags/nopublic.html","w")
-        print >> output,self.header_prefix(title="nopublic")
+        output = open("./" + self.public_dir + "tags/" + self.nopublic_tag + ".html","w")
+        print >> output,self.header_prefix(title=self.nopublic_tag)
         print >> output,self.body_prefix()
         print >> output,self.body_menu(self.menus)
-        print >> output,self.contain_prefix(["nopublic"],"分类: ","暂不公开")
+        print >> output,self.contain_prefix([self.nopublic_tag],"分类: ",self.nopublic_tag)
         print >> output,self.contain_archive(self.localnotes)              # auto gen
         print >> output,self.contain_suffix()
         print >> output,self.header_suffix()

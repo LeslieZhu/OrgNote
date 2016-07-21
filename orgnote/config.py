@@ -50,6 +50,9 @@ source_dir: notes
 # Category & Tag
 default_tag: "默认"
 
+# Nopublic Tab
+nopublic_tag: "暂不公开"
+
 # Theme
 # the default is 'freemind' and it's only theme for OrgNote now
 theme: freemind
