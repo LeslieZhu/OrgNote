@@ -12,7 +12,7 @@ then use orgnote convert into new html with default theme.
 
 from __future__ import absolute_import
 
-from yaml import load, dump
+from yaml import load, dump,FullLoader
 import os,os.path
 
 
@@ -107,7 +107,7 @@ links:
         self.cfg = dict()
         
         if not os.path.exists(self.cfgfile):
-            self.cfg = load(self._default_yml)
+            self.cfg = load(self._default_yml,Loader=FullLoader)
         else:
             self.update()
 
@@ -117,7 +117,7 @@ links:
             self.default()
 
         fp = open(self.cfgfile,"r")
-        self.cfg.update(load(fp))
+        self.cfg.update(load(fp,Loader=FullLoader))
         fp.close()
         
     def dump(self):
