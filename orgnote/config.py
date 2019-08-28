@@ -19,7 +19,7 @@ import os,os.path
 class Config(object):
 
     _default_yml = """# OrgNote Configuration
-## Docs: http://lesliezhu.github.io/OrgNote/
+## Docs: https://orgnote.readthedocs.io/zh_CN/latest/
 ## Source: https://github.com/LeslieZhu/OrgNote
 
 # Site
@@ -93,7 +93,7 @@ sidebar:
 # links, each link should setting url,name,icon
 links:
   link1:
-    url: http://lesliezhu.github.com
+    url: http://lesliezhu.com
     name: Leslie Zhu
     icon: fa fa-github
   link2:

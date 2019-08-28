@@ -264,7 +264,8 @@ class OrgNote(object):
 
     def contain_prefix_end(self,link=""):
         output = ""
-        if link.endswith(".html"):            
+        if link.endswith(".html"):
+            print(link)
             output += "<span class='date'>由「"
             output += "<a href=\"%s%s.html\"><i class=\"%s\"></i>%s</a>" % (self.public_dir,self.menus_map["关于"],"作者",self.author)
             output += "」创作于%s</span>" % self.gen_date(link)
