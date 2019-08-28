@@ -451,9 +451,9 @@ class OrgNote(object):
         </ul>
         </div>
         """ % (self.author,self.homepage,
-               self.gen_public_link(self.notes[num-1][0],self.public_dir),
-               self.notes[num-1][1],self.homepage,
-               self.gen_public_link(self.notes[num-1][0],self.public_dir))
+               self.gen_public_link(self.notes[num][0],self.public_dir),
+               self.notes[num][1],self.homepage,
+               self.gen_public_link(self.notes[num][0],self.public_dir))
 
         return output
 
@@ -532,14 +532,21 @@ class OrgNote(object):
             new_src = get_hightlight_src(src_code,src_lang)
             content_data_text = content_data_text.replace(str(src_tag),new_src)
 
-        new_data = content_data_text.replace('<h1 class="title">%s</h1>' % (_title),"")
-        new_data = '</p>'.join(new_data.split('</p>')[:5])
-        new_data += '''
-        </p>
-        </div>
-        </div>
-        </div>
-        '''
+        content_data_text = content_data_text.replace('<h1 class="title">%s</h1>' % (_title),"")
+        new_data = content_data_text.split('</p>')
+        p_num = len(new_data)
+
+        if p_num > 5:
+            new_data = '</p>'.join(new_data[:5])
+            new_data += '''
+            </p>
+            </div>
+            </div>
+            </div>
+            '''
+        else:
+            new_data = '</p>'.join(new_data)
+
 
         output += new_data
 
