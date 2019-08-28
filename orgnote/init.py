@@ -9,7 +9,7 @@ email: pythonisland@gmail.com
 Write note by Emacs with org-mode, and convert .org file into .html file,
 then use orgnote convert into new html with default theme.
 """
-
+from __future__ import print_function
 from __future__ import absolute_import
 
 def create_emacs_init(initfile="init-orgnote.el"):
@@ -37,9 +37,9 @@ def create_emacs_init(initfile="init-orgnote.el"):
         os.mkdir(_dirname)
 
     if not os.path.exists(_init_file):
-        print "[info] create ",_init_file
+        print("[info] create ",_init_file)
         output = open(_init_file,"w")
-        print >> output,_data
+        print(_data,file=output)
         output.close()
 
 def create_default_note(name="HelloOrgNote.org"):
@@ -90,13 +90,13 @@ def create_default_note(name="HelloOrgNote.org"):
         os.makedirs(_dirname)
 
     if not os.path.exists(_init_file):
-        print "[info] create ",_init_file
+        print("[info] create ",_init_file)
         output = open(_init_file,"w")
-        print >> output,_data
+        print(_data,file=output)
         output.close()
         return _init_file
     elif "HelloOrgNote.org" not in _init_file:
-        print "File %s already exists, please use a new name!" % _init_file
+        print("File %s already exists, please use a new name!" % _init_file)
         return None
 
 
@@ -112,7 +112,7 @@ def create_config_file(name="_config.yml"):
     _init_file = _dir + name
 
     if not os.path.exists(_init_file):
-        print "[info] create ",_init_file
+        print("[info] create ",_init_file)
         import orgnote.config
         orgnote.config.Config().default()
 
@@ -139,9 +139,9 @@ def create_public_file(name = "public.org"):
         os.mkdir(_dir)
 
     if not os.path.exists(_init_file):
-        print "[info] create ",_init_file
+        print("[info] create ",_init_file)
         output = open(_init_file,"w")
-        print >> output,_data
+        print(_data,file=output)
         output.close()
     
 
@@ -161,7 +161,7 @@ def main(args=None):
 
     for target in target_list:
         if not os.path.exists(target):
-            print "[info] create ",target
+            print("[info] create ",target)
             os.mkdir(target)
 
     # init files

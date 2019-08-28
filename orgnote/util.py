@@ -37,11 +37,11 @@ def to_page(notename=""):
         os.system(cmd)
         html_file = notename.replace('.org','.html')
         if os.path.exists(html_file):
-            print "%s generated" % html_file
+            print("%s generated" % html_file)
         else:
-            print "%s generat FAILED" % html_file
-    except Exception,ex:
-        print str(ex)
+            print("%s generat FAILED" % html_file)
+    except Exception as ex:
+        print(str(ex))
 
 
 def add_note(notename=""):
@@ -53,11 +53,11 @@ def add_note(notename=""):
             import orgnote.init
             note_name = orgnote.init.create_default_note(notename)
             if note_name != None:
-                print "%s init done" % note_name
+                print("%s init done" % note_name)
         else:
-            print "%s exists, please use other name or delete it" % notename
-    except Exception,ex:
-        print str(ex)
+            print("%s exists, please use other name or delete it" % notename)
+    except Exception as ex:
+        print(str(ex))
 
             
 def publish_note(notename=""):
@@ -76,8 +76,8 @@ def publish_note(notename=""):
             _title = gen_title(_html)
             return "- [[%s][%s]]" % (_html,_title)
         return None
-    except Exception,ex:
-        print str(ex)
+    except Exception as ex:
+        print(str(ex))
 
 
 def get_emacs_version():

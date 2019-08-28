@@ -10,6 +10,7 @@ Write note by Emacs with org-mode, and convert .org file into .html file,
 then use orgnote convert into new html with default theme.
 """
 
+from __future__ import print_function
 from __future__ import absolute_import
 
 import re,time,sys,os
@@ -19,8 +20,13 @@ from orgnote import config
 from orgnote import util
 from orgnote.colorsrc import get_hightlight_src
 
-reload(sys)                    
-sys.setdefaultencoding('utf-8')
+
+if sys.version_info.major == 3:
+    from imp import reload
+    reload(sys)
+else:
+    reload(sys)                    
+    sys.setdefaultencoding('utf-8')
 
 class OrgNote(object):
     def __init__(self):
@@ -221,7 +227,7 @@ class OrgNote(object):
     def contain_prefix(self,tags=[],name="",header_title=""):
         if header_title == "":
             _header_title  = self.subtitle
-        elif self.__pagenames__.has_key(header_title):
+        elif header_title in self.__pagenames__.keys():
             _header_title = self.__pagenames__[header_title]
         else:
             _header_title = header_title
@@ -395,7 +401,7 @@ class OrgNote(object):
             for key in keywords:
                 if key not in self.keywords:
                     self.keywords.append(key)
-                if not self.tags.has_key(key):
+                if key not in self.tags.keys():
                     self.tags[key] = list()
                 else:
                     pass
@@ -407,7 +413,7 @@ class OrgNote(object):
         for num,link in enumerate(self.notes):
             # save each page in a yymm dict
             yyyymm = ''.join(self.gen_date(link[0]).split('-')[:2])
-            if not self.timetags.has_key(yyyymm):self.timetags[yyyymm] = list()
+            if yyyymm not in self.timetags.keys():self.timetags[yyyymm] = list()
             self.timetags[yyyymm].append(link)
 
     def contain_page(self,link="",num=0, public=True):
@@ -795,14 +801,15 @@ class OrgNote(object):
 
     def gen_archive(self):
         output = open("./" + self.public_dir + "archive.html","w")
-        print >> output,self.header_prefix(title="归档")
-        print >> output,self.body_prefix()
-        print >> output,self.body_menu(self.menus)
-        print >> output,self.contain_prefix(["归档"],"","归档")
-        print >> output,self.contain_archive(self.archives)              # auto gen
-        print >> output,self.gen_sidebar()
-        print >> output,self.contain_suffix()
-        print >> output,self.header_suffix()
+        print(self.header_prefix(title="归档"),file=output)
+        print(self.body_prefix(),file=output)
+        print(self.body_menu(self.menus),file=output)
+        print(self.contain_prefix(["归档"],"","归档"),file=output)
+        print(self.contain_archive(self.archives),file=output)              # auto gen
+        print(self.gen_sidebar(),file=output)
+        print(self.contain_suffix(),file=output)
+        print(self.header_suffix(),file=output)
+            
         output.close()
         
     def gen_page(self,note=list(),num=0,public=True):
@@ -816,17 +823,18 @@ class OrgNote(object):
             os.makedirs(page_dir)
 
         output = open(page_file,"w")
-        print >> output,self.header_prefix(2,note[1].strip())
-        print >> output,self.body_prefix()
-        print >> output,self.body_menu(self.menus)
+        print(self.header_prefix(2,note[1].strip()),file=output)
+        print(self.body_prefix(),file=output)
+        print(self.body_menu(self.menus),file=output)
         if public:
-            print >> output,self.contain_prefix(self.page_tags[note[0]],"标签: ",util.gen_title(note[0]))
+            print(self.contain_prefix(self.page_tags[note[0]],"标签: ",util.gen_title(note[0])),file=output)
         else:
-            print >> output,self.contain_prefix([self.nopublic_tag],"标签: ",util.gen_title(note[0]))
-        print >> output,self.contain_page(note[0],num,public)              # auto gen
-        print >> output,self.gen_sidebar()
-        print >> output,self.contain_suffix()
-        print >> output,self.header_suffix()
+            print(self.contain_prefix([self.nopublic_tag],"标签: ",util.gen_title(note[0])),file=output)
+        print(self.contain_page(note[0],num,public),file=output)              # auto gen
+        print(self.gen_sidebar(),file=output)
+        print(self.contain_suffix(),file=output)
+        print(self.header_suffix(),file=output)
+
         output.close()
         
     def gen_public(self):
@@ -844,14 +852,15 @@ class OrgNote(object):
         else:
             output = open("./" + self.public_dir + "page"+str(num)+".html","w")
 
-        print >> output,self.header_prefix(title=self.title)
-        print >> output,self.body_prefix()
-        print >> output,self.body_menu(self.menus)
-        print >> output,self.contain_prefix()    
-        print >> output,self.contain_notes(self.notes[b_index:e_index],num,e_index)              # auto gen
-        print >> output,self.gen_sidebar()
-        print >> output,self.contain_suffix()
-        print >> output,self.header_suffix()
+        print(self.header_prefix(title=self.title),file=output)
+        print(self.body_prefix(),file=output)
+        print(self.body_menu(self.menus),file=output)
+        print(self.contain_prefix(),file=output)
+        print(self.contain_notes(self.notes[b_index:e_index],num,e_index),file=output)              # auto gen
+        print(self.gen_sidebar(),file=output)
+        print(self.contain_suffix(),file=output)
+        print(self.header_suffix(),file=output)
+            
         output.close()
 
     def gen_index(self,note_num=None):
@@ -881,64 +890,66 @@ class OrgNote(object):
             
     def gen_about(self):
         output = open("./" + self.public_dir + "about.html","w")
-        print >> output,self.header_prefix(title="关于")
-        print >> output,self.body_prefix()
-        print >> output,self.body_menu(self.menus)
-        print >> output,self.contain_prefix(["关于"],"","关于")
-        print >> output,self.contain_about()
-        print >> output,self.gen_sidebar()
-        print >> output,self.contain_suffix()
-        print >> output,self.header_suffix()
+        print(self.header_prefix(title="关于"),file=output)
+        print(self.body_prefix(),file=output)
+        print(self.body_menu(self.menus),file=output)
+        print(self.contain_prefix(["关于"],"","关于"),file=output)
+        print(self.contain_about(),file=output)
+        print(self.gen_sidebar(),file=output)
+        print(self.contain_suffix(),file=output)
+        print(self.header_suffix(),file=output)
+            
         output.close()
 
     def gen_minyi(self):
         output = open("./" + self.public_dir + "minyi.html","w")
-        print >> output,self.header_prefix(title="MinYi")
-        print >> output,self.body_prefix()
-        print >> output,self.body_menu(self.menus)
-        print >> output,self.contain_prefix(["MinYi"],"","MinYi")
-        print >> output,self.contain_archive(self.minyi)
-        print >> output,self.gen_sidebar()
-        print >> output,self.contain_suffix()
-        print >> output,self.header_suffix()
+        print(self.header_prefix(title="MinYi"),file=output)
+        print(self.body_prefix(),file=output)
+        print(self.body_menu(self.menus),file=output)
+        print(self.contain_prefix(["MinYi"],"","MinYi"),file=output)
+        print(self.contain_archive(self.minyi),file=output)
+        print(self.gen_sidebar(),file=output)
+        print(self.contain_suffix(),file=output)
+        print(self.header_suffix(),file=output)
+            
         output.close()
 
     def gen_tags(self):
         for key in self.keywords:
             output = open("./" + self.public_dir + "tags/" + key + ".html","w")
-            print >> output,self.header_prefix(title=key)
-            print >> output,self.body_prefix()
-            print >> output,self.body_menu(self.menus)
-            print >> output,self.contain_prefix([key],"分类: ",key)
-            #print >> output,self.contain_notes(__tags__[key])
-            print >> output,self.contain_archive(self.tags[key])              # auto gen
-            print >> output,self.gen_sidebar()
-            print >> output,self.contain_suffix()
-            print >> output,self.header_suffix()
+            print(self.header_prefix(title=key),file=output)
+            print(self.body_prefix(),file=output)
+            print(self.body_menu(self.menus),file=output)
+            print(self.contain_prefix([key],"分类: ",key),file=output)
+            #print(self.contain_notes(__tags__[key]),file=output)
+            print(self.contain_archive(self.tags[key]),file=output)              # auto gen
+            print(self.gen_sidebar(),file=output)
+            print(self.contain_suffix(),file=output)
+            print(self.header_suffix(),file=output)
             output.close()
             
     def gen_timetags(self):
         for key in sorted(self.timetags.keys(),reverse=True):
             output = open("./" + self.public_dir + "tags/" + key + ".html","w")
-            print >> output,self.header_prefix(title=key)
-            print >> output,self.body_prefix()
-            print >> output,self.body_menu(self.menus)
-            print >> output,self.contain_prefix([key],"月份: ",key)
-            print >> output,self.contain_archive(self.timetags[key])
-            print >> output,self.gen_sidebar()
-            print >> output,self.contain_suffix()
-            print >> output,self.header_suffix()
+            print(self.header_prefix(title=key),file=output)
+            print(self.body_prefix(),file=output)
+            print(self.body_menu(self.menus),file=output)
+            print(self.contain_prefix([key],"月份: ",key),file=output)
+            print(self.contain_archive(self.timetags[key]),file=output)
+            print(self.gen_sidebar(),file=output)
+            print(self.contain_suffix(),file=output)
+            print(self.header_suffix(),file=output)
             output.close()
 
     def gen_nopublic(self):
         output = open("./" + self.public_dir + "tags/" + self.nopublic_tag + ".html","w")
-        print >> output,self.header_prefix(title=self.nopublic_tag)
-        print >> output,self.body_prefix()
-        print >> output,self.body_menu(self.menus)
-        print >> output,self.contain_prefix([self.nopublic_tag],"分类: ",self.nopublic_tag)
-        print >> output,self.contain_archive(self.localnotes)              # auto gen
-        print >> output,self.contain_suffix()
-        print >> output,self.header_suffix()
+        print(self.header_prefix(title=self.nopublic_tag),file=output)
+        print(self.body_prefix(),file=output)
+        print(self.body_menu(self.menus),file=output)
+        print(self.contain_prefix([self.nopublic_tag],"分类: ",self.nopublic_tag),file=output)
+        print(self.contain_archive(self.localnotes),file=output)              # auto gen
+        print(self.contain_suffix(),file=output)
+        print(self.header_suffix(),file=output)
         output.close()
     
     def gen_date(self,link=""):
@@ -960,8 +971,8 @@ class OrgNote(object):
                 pubdate=time.strptime(pubdate, "%m/%d/%Y")
             except ValueError:
                 pubdate=time.strptime(pubdate, "%Y/%m/%d")
-            except Exception,e:
-                print e
+            except Exception as e:
+                print(e)
                 sys.exit(-1)
                 
         elif "-" in pubdate:
@@ -969,11 +980,11 @@ class OrgNote(object):
                 pubdate=time.strptime(pubdate, "%Y-%m-%d")
             except ValueError:
                 pubdate=time.strptime(pubdate, "%m-%d-%Y")
-            except exp,e:
-                print e
+            except Exception as e:
+                print(e)
                 sys.exit(-1)
         else:
-            print link,pubdate
+            print(link,pubdate)
             pubdate=time.strptime(pubdate, "%Y%m%d")
 
         pubdate=time.strftime("%Y-%m-%d %a",pubdate)
@@ -985,17 +996,21 @@ class OrgNote(object):
         html_data = BeautifulSoup(open(link,"r").read(),"html.parser")
         keywords_list = html_data.findAll('meta',{'name':'keywords'})
 
-        if keywords_list and keywords_list[0].attrs.has_key('content'):
+        if keywords_list and 'content' in keywords_list[0].attrs.keys():
             keywords = keywords_list[0].attrs['content']
             return [i.strip() for i in keywords.split(",")]
         else:
             return [self.default_tag]
         
     def do_server(self,port="8080"):
+        import sys
         try:
-            os.system("python -m SimpleHTTPServer %s" % port)
-        except Exception,ex:
-            print str(ex)
+            if sys.version_info.major == 2:
+                os.system("python -m SimpleHTTPServer %s" % port)
+            else:
+                os.system("python -m http.server %s" % port)
+        except Exception as ex:
+            print(str(ex))
             usage()
 
     def do_deploy(self,branch="master"):
@@ -1041,7 +1056,7 @@ class OrgNote(object):
         self.gen_tags()
         self.gen_timetags()
         self.gen_nopublic()
-        print "notes generate done" 
+        print("notes generate done")
 
     def do_new(self,notename=""):
         return util.add_note(notename)
@@ -1057,43 +1072,43 @@ class OrgNote(object):
         #notename = os.path.basename(notename).replace(".org","").replace(".html","")
 
         publish_line = util.publish_note(notename)
-        print publish_line
+        print(publish_line)
 
         nopublish_data = open(nopublish_list,"r").readlines()
         nopublish_data = [i.strip().replace("+ [[","- [[") for i in nopublish_data]
 
         if not os.path.exists(publish_list):
             output = open(publish_list,"w")
-            print >> output,publish_line
+            print(publish_line,file=output)
             #self.scan()
             #for _note in reversed(sorted(self.notes_db.keys())):
             #    publish_line = util.publish_note(self.notes_db[_note])
                 
             #    if publish_line in nopublish_data: 
             #        continue
-            #    print >> output,publish_line
+            #    print(publish_line,file=output)
             output.close()
         else:
             publish_line = util.publish_note(notename)
 
             if publish_line == None:
-                print "ERROR: Can not publish note: %s, are you sure it exists?" % notename
+                print("ERROR: Can not publish note: %s, are you sure it exists?" % notename)
                 return
 
             data = open(publish_list,"r").readlines()
             data = [i.strip() for i in data]
 
             if publish_line in data or publish_line in nopublish_data:
-                print "publish done"
+                print("publish done")
                 return
             output = open(publish_list,"w")
-            print >> output,publish_line
+            print(publish_line,file=output)
             for line in data:
                 if line in nopublish_data: 
                     continue
-                print >> output,line
+                print(line,file=output)
             output.close()
-        print "publish done"
+        print("publish done")
 
     def scan(self,note_dir = None):
         """
@@ -1118,7 +1133,7 @@ class OrgNote(object):
         """
         self.scan()
         for _note in reversed(sorted(self.notes_db.keys())):
-            print _note
+            print(_note)
 
     def do_status(self):
         
@@ -1136,18 +1151,18 @@ class OrgNote(object):
         for _note in reversed(sorted(self.notes_db.keys())):
             publish_line = util.publish_note(self.notes_db[_note])
             if publish_line not in publish_data and publish_line not in nopublish_data:
-                print "%s not publish yet!" % _note
+                print("%s not publish yet!" % _note)
                 all_publish = False
 
         if all_publish:
-            print "all notes published!"
+            print("all notes published!")
             
         
 
 def usage():
     import sys
     
-    print """
+    print("""
 Usage: orgnote <command>
 
 Commands:
@@ -1163,7 +1178,7 @@ Commands:
   version    Display version information
     
 For more help, you can check the docs:  http://orgnote.readthedocs.org/zh_CN/latest/
-    """
+    """)
 
     sys.exit()
             
@@ -1182,12 +1197,12 @@ def main(args=None):
         if sys.argv[1] == "server":
             blog.do_server()
         elif sys.argv[1] == "init":
-            print "init...."
+            print("init....")
             orgnote.init.main()
         elif sys.argv[1] == "deploy":
             blog.do_deploy()
         elif sys.argv[1] == "version":
-            print orgnote.__version__
+            print(orgnote.__version__)
         elif sys.argv[1] == "generate":
             blog.do_generate()
         elif sys.argv[1] == "list":
