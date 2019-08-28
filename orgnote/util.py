@@ -27,8 +27,9 @@ def to_page(notename=""):
     import os,os.path
     try:
         emacs_version = [int(i) for i in get_emacs_version()]
-        if emacs_version[0] >= 24 and emacs_version[1] >= 3:
-            cmd = "emacs -l scripts/init-orgnote.el --batch %s --funcall org-html-export-to-html 2>/dev/null" % notename
+        if emacs_version[0] >= 24:
+            cmd = "emacs -l scripts/ox-html.el --batch %s --funcall org-html-export-to-html 2>/dev/null" % notename
+            #cmd = "emacs -l scripts/init-orgnote.el --batch %s --funcall org-html-export-to-html 2>/dev/null" % notename
         else:
             cmd = "emacs -l scripts/init-orgnote.el --batch %s --funcall org-export-as-html 2>/dev/null" % notename
         os.system(cmd)
