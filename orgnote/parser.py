@@ -73,8 +73,8 @@ class OrgNote(object):
 
         self.duoshuo_shortname = self.cfg.cfg.get("duoshuo_shortname",None)
 
-        self.default_tag = self.cfg.cfg.get("default_tag","默认")
-        self.nopublic_tag = self.cfg.cfg.get("nopublic_tag","暂不公开")
+        self.default_tag = self.cfg.cfg.get("default_tag", u"默认")
+        self.nopublic_tag = self.cfg.cfg.get("nopublic_tag",u"暂不公开")
 
 
         self.per_page = self.cfg.cfg.get("per_page",6)
@@ -311,7 +311,7 @@ class OrgNote(object):
             """ % (self.gen_public_link(item[0],self.public_dir),item[1],self.gen_date(item[0]))
 
 
-            if self.emacs_version[0] >= 24 and self.emacs_version[1] >= 4:
+            if self.emacs_version[0] >= 24: # and self.emacs_version[1] >= 4:
                 output += """<div class="col-md-12">"""
             else:
                 output += """            
@@ -327,7 +327,7 @@ class OrgNote(object):
             sub_title = sub_title = "<h1 class=\"title\">%s</h1>" % util.gen_title(item[0])
             output = output.replace(sub_title,"")
 
-            if self.emacs_version[0] >= 24 and self.emacs_version[1] >= 4:
+            if self.emacs_version[0] >= 24:# and self.emacs_version[1] >= 4:
                 output += """
                 </div> <!-- col-md-12 -->
                 """
@@ -474,36 +474,32 @@ class OrgNote(object):
         import re
         
         output = ""
-        
-        alldata = open(link).read()
-        #data=re.search("(<div id=\"content\">.*</div.).*</body>",data.replace('\n','敏敏')).groups()[0].replace('敏敏','\n')
 
-        data=re.search("(<div id=\"content\">.*<div id=\"outline-container-1\" class=\"outline-2\">).*</body>",alldata.replace('\n','TMD'))
-        if not data:
-            data=re.search("(<div id=\"content\">.*<div id=\"outline-container-sec-1\" class=\"outline-2\">).*</body>",alldata.replace('\n','TMD'))
+        html_data = BeautifulSoup(open(link,"r").read(),"html.parser")
 
-        data2=re.search("(<div id=\"content\">.*<div class=\"ds-thread\"></div>).*</body>",alldata.replace('\n','TMD'))
-        data3=re.search("(<div id=\"content\">.*<div id=\"postamble\".*>).*</body>",alldata.replace('\n','TMD'))
-        
-        if data:
-            data = data.groups()[0].replace('TMD','\n')
-            data = data.replace("<div id=\"outline-container-1\" class=\"outline-2\">","</div>")
-            data = data.replace("<div id=\"outline-container-sec-1\" class=\"outline-2\">","</div>")
-            data = data.replace("#sec",self.gen_public_link(link,self.public_dir) + "#sec")
-            output += data
-        else:
-            if data2:
-                data = data2
-            elif data3:
-                data = data3
+        _title = html_data.find('h1',{'class':'title'}).text
+        content_data = html_data.find('div',{'id':'content'})
+        content_data_text = str(content_data)
 
-            data = data.groups()[0].replace('TMD','\n')
-            data = data.replace('TMD','\n')
-            data = data.split('</p>')[:5]
-            output += '</p>'.join(data)
-            output += "</div>"
+        src_data = content_data.find_all('div',{'class':'org-src-container'})
+        for src_tag in src_data:
+            # src-python
+            src_lang = src_tag.find('pre').attrs['class'][-1].split('-')[-1]
+            src_code = src_tag.text
+            new_src = get_hightlight_src(src_code,src_lang)
+            content_data_text = content_data_text.replace(str(src_tag),new_src)
 
-        
+        new_data = content_data_text.replace('<h1 class="title">%s</h1>' % (_title),"")
+        new_data = '</p>'.join(new_data.split('</p>')[:5])
+        new_data += '''
+        </p>
+        </div>
+        </div>
+        </div>
+        '''
+
+        output += new_data
+
 
         output +=  """
         <footer>

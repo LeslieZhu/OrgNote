@@ -11,18 +11,15 @@ then use orgnote convert into new html with default theme.
 """
 
 from __future__ import absolute_import
+from bs4 import BeautifulSoup
 
 
 def gen_title(link=""):
     """ Filter Title from HTML metadata """
 
     import re
-    title = ""
-    for line in open(link).readlines():
-        if "<title>" in line:
-            line = line.strip()
-            title=re.match("<title>(.*)</title>",line).groups(1)[0]
-            break
+    html_data = BeautifulSoup(open(link,"r").read(),"html.parser")
+    title = html_data.find('h1',{'class':'title'}).text
     return title
 
 
