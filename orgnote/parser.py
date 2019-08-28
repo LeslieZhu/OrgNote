@@ -251,7 +251,7 @@ class OrgNote(object):
 
         if not tags:
             output += "主页君: " + self.author
-        elif len(tags) == 1:
+        elif len(tags) == 1 and tags[0] in self.tags:
             output += name
             output += self.gen_tag_href(tags[0])
         else:
@@ -260,6 +260,18 @@ class OrgNote(object):
                 output += self.gen_tag_href(tag)
                 if tag != tags[-1]: output += " , "
 
+        return output
+
+    def contain_prefix_end(self,link=""):
+        output = ""
+        if link.endswith(".html"):            
+            output += "<span class='date'>由「"
+            output += "<a href=\"%s%s.html\"><i class=\"%s\"></i>%s</a>" % (self.public_dir,self.menus_map["关于"],"作者",self.author)
+            output += "」创作于%s</span>" % self.gen_date(link)
+            #output += "<a href=\"%s%s.html\"><i class=\"%s\"></i>%s</a>" % (self.public_dir,self.menus_map["关于"],"作者",self.author)
+            #output += "<span class='date'>创作于%s</span>" % self.gen_date(link)
+        else:
+            pass
             
         output += """
         </div>                                     <!-- slogan end -->
@@ -416,6 +428,34 @@ class OrgNote(object):
             if yyyymm not in self.timetags.keys():self.timetags[yyyymm] = list()
             self.timetags[yyyymm].append(link)
 
+
+
+    def copyright(self,num=""):
+        output = """
+        <hr>
+        <div id="post-copyright">
+        <ul class="post-copyright">
+        <li class="post-copyright-author">
+        <strong>本文作者：</strong>
+        %s
+        </li>
+        <li class="post-copyright-link">
+        <strong>本文链接：</strong>
+        <a href="%s/%s" title="%s">%s/%s</a>
+        </li>
+        <li class="post-copyright-license">
+        <strong>版权声明： </strong>
+        本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+        </li>
+        </ul>
+        </div>
+        """ % (self.author,self.homepage,
+               self.gen_public_link(self.notes[num-1][0],self.public_dir),
+               self.notes[num-1][1],self.homepage,
+               self.gen_public_link(self.notes[num-1][0],self.public_dir))
+
+        return output
+
     def contain_page(self,link="",num=0, public=True):
         output = ""
 
@@ -424,6 +464,8 @@ class OrgNote(object):
         _title = html_data.find('h1',{'class':'title'}).text
         content_data = html_data.find('div',{'id':'content'})
         content_data_text = str(content_data)
+        content_data_text += self.copyright(num)
+        
 
         src_data = content_data.find_all('div',{'class':'org-src-container'})
         for src_tag in src_data:
@@ -801,6 +843,7 @@ class OrgNote(object):
         print(self.body_prefix(),file=output)
         print(self.body_menu(self.menus),file=output)
         print(self.contain_prefix(["归档"],"","归档"),file=output)
+        print(self.contain_prefix_end(),file=output)
         print(self.contain_archive(self.archives),file=output)              # auto gen
         print(self.gen_sidebar(),file=output)
         print(self.contain_suffix(),file=output)
@@ -826,6 +869,7 @@ class OrgNote(object):
             print(self.contain_prefix(self.page_tags[note[0]],"标签: ",util.gen_title(note[0])),file=output)
         else:
             print(self.contain_prefix([self.nopublic_tag],"标签: ",util.gen_title(note[0])),file=output)
+        print(self.contain_prefix_end(note[0]),file=output)
         print(self.contain_page(note[0],num,public),file=output)              # auto gen
         print(self.gen_sidebar(),file=output)
         print(self.contain_suffix(),file=output)
@@ -852,6 +896,7 @@ class OrgNote(object):
         print(self.body_prefix(),file=output)
         print(self.body_menu(self.menus),file=output)
         print(self.contain_prefix(),file=output)
+        print(self.contain_prefix_end(),file=output)
         print(self.contain_notes(self.notes[b_index:e_index],num,e_index),file=output)              # auto gen
         print(self.gen_sidebar(),file=output)
         print(self.contain_suffix(),file=output)
@@ -890,6 +935,7 @@ class OrgNote(object):
         print(self.body_prefix(),file=output)
         print(self.body_menu(self.menus),file=output)
         print(self.contain_prefix(["关于"],"","关于"),file=output)
+        print(self.contain_prefix_end(),file=output)
         print(self.contain_about(),file=output)
         print(self.gen_sidebar(),file=output)
         print(self.contain_suffix(),file=output)
@@ -903,6 +949,7 @@ class OrgNote(object):
         print(self.body_prefix(),file=output)
         print(self.body_menu(self.menus),file=output)
         print(self.contain_prefix(["MinYi"],"","MinYi"),file=output)
+        print(self.contain_prefix_end(),file=output)
         print(self.contain_archive(self.minyi),file=output)
         print(self.gen_sidebar(),file=output)
         print(self.contain_suffix(),file=output)
@@ -917,6 +964,7 @@ class OrgNote(object):
             print(self.body_prefix(),file=output)
             print(self.body_menu(self.menus),file=output)
             print(self.contain_prefix([key],"分类: ",key),file=output)
+            print(self.contain_prefix_end(),file=output)
             #print(self.contain_notes(__tags__[key]),file=output)
             print(self.contain_archive(self.tags[key]),file=output)              # auto gen
             print(self.gen_sidebar(),file=output)
@@ -931,6 +979,7 @@ class OrgNote(object):
             print(self.body_prefix(),file=output)
             print(self.body_menu(self.menus),file=output)
             print(self.contain_prefix([key],"月份: ",key),file=output)
+            print(self.contain_prefix_end(),file=output)
             print(self.contain_archive(self.timetags[key]),file=output)
             print(self.gen_sidebar(),file=output)
             print(self.contain_suffix(),file=output)
@@ -943,6 +992,7 @@ class OrgNote(object):
         print(self.body_prefix(),file=output)
         print(self.body_menu(self.menus),file=output)
         print(self.contain_prefix([self.nopublic_tag],"分类: ",self.nopublic_tag),file=output)
+        print(self.contain_prefix_end(),file=output)
         print(self.contain_archive(self.localnotes),file=output)              # auto gen
         print(self.contain_suffix(),file=output)
         print(self.header_suffix(),file=output)
