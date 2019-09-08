@@ -1091,7 +1091,7 @@ class OrgNote(object):
             notes = [note[0].replace('.html','.org') for note in self.notes]
             for note in notes:
                 self.do_page(note)
-        elif batch.endswith('.org'):
+        elif batch.endswith('.org') or batch.endswith('.md'):
             self.do_page(batch)
         elif batch.isdigit():
             notes = [note[0].replace('.html','.org') for note in self.notes]
@@ -1116,7 +1116,19 @@ class OrgNote(object):
         return util.add_note(notename)
 
     def do_page(self,notename=""):
-        return util.to_page(notename)
+        if notename.endswith(".org") and not os.path.exist(notename):
+            notename = notename.replace(".org",".md")
+        elif notename.endswith(".md") and not os.path.exist(notename):
+            notename = notename.replace(".md",".org")
+        else:
+            pass
+
+        if notename.endswith(".org"):
+            return util.to_page(notename)
+        elif notename.endswith(".md"):
+            return util.to_page_mk(notename)
+        else:
+            pass
 
     def do_publish(self,notename=""):
         import os.path
@@ -1175,7 +1187,7 @@ class OrgNote(object):
         for path,dirs,files in os.walk(note_dir):
             if dirs: continue
             for _file in files:
-                if not _file.endswith(".org"):continue
+                if not _file.endswith(".org") and not _file.endswith(".md"):continue
                 _path = path + '/' + _file
                 if _path == "./" + self.source_dir + "/public.org" or _path == "./" + self.source_dir + "/nopublic.org": continue
                 if _path.endswith(".html"):continue

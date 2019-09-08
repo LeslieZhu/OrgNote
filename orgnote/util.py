@@ -22,6 +22,27 @@ def gen_title(link=""):
     title = html_data.find('h1',{'class':'title'}).text
     return title
 
+def to_page_mk(notename=""):
+    '''
+    convert markdown to html
+    '''
+    import os
+    import markdown
+    import codecs
+
+    css = '''
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+</style>
+'''
+    print(notename)
+    input_file = codecs.open(notename, mode="r", encoding="utf-8")
+    text = input_file.read()
+    print(text)
+    html = markdown.markdown(text)
+
+    output_file = codecs.open(notename.replace(".md",".html"), "w",encoding="utf-8",errors="xmlcharrefreplace")
+    output_file.write(css+html)
 
 def to_page(notename=""):
     import os,os.path
@@ -35,11 +56,11 @@ def to_page(notename=""):
         os.system(cmd)
         html_file = notename.replace('.org','.html')
         if os.path.exists(html_file):
-            print("%s generated" % html_file)
+            print("==> %s generated" % html_file)
         else:
-            print("%s generat FAILED" % html_file)
+            print("==> %s generat FAILED" % html_file)
     except Exception as ex:
-        print(str(ex))
+        print(">>>>>",str(ex))
 
 
 def add_note(notename=""):
@@ -55,7 +76,7 @@ def add_note(notename=""):
         else:
             print("%s exists, please use other name or delete it" % notename)
     except Exception as ex:
-        print(str(ex))
+        print(">>>>>",str(ex))
 
             
 def publish_note(notename=""):
@@ -68,14 +89,23 @@ def publish_note(notename=""):
             glob_re = "./notes/????/??/??/%s" % os.path.basename(notename)
 
         for _file in reversed(sorted(glob.glob(glob_re))):
-            _html = _file.replace(".org",".html")
-            if not os.path.exists(_html):
-                to_page(_file)
+            if _file.endswith(".org"):
+                _html = _file.replace(".org",".html")
+                print(">",_file,_html)
+                if not os.path.exists(_html):
+                    to_page(_file)                    
+            else:
+                _html = _file.replace(".md",".html")
+                print(">",_file,_html)
+                if not os.path.exists(_html):
+                    print("to_page_mk()",_file)
+                    to_page_mk(_file)
+
             _title = gen_title(_html)
             return "- [[%s][%s]]" % (_html,_title)
         return None
     except Exception as ex:
-        print(str(ex))
+        print(">>>>>",str(ex))
 
 
 def get_emacs_version():

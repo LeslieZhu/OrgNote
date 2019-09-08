@@ -91,6 +91,7 @@ setup(
     classifiers = [
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.5",
         "Environment :: Other Environment",
         "Intended Audience :: Developers",
         "Operating System :: OS Independent",
@@ -111,6 +112,7 @@ setup(
 	"Pygments==2.1.3",
 	"beautifulsoup4==4.4.1",
 	"bs4==0.0.1",
+  "Markdown==3.1.1",
     ]
 
     #extras_require={
