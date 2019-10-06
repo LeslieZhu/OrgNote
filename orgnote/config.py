@@ -101,6 +101,10 @@ links:
     url: https://github.com/LeslieZhu/OrgNote
     name: OrgNote
     icon: fa fa-github
+
+deploy_type: git
+deploy_url:
+deploy_branch: master
 """
 
     def __init__(self,cfgfile="_config.yml"):
