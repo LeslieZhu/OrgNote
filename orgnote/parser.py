@@ -203,7 +203,6 @@ class OrgNote(object):
             return "<a href=\"%s%s.html\"><i class=\"%s\"></i>%s</a>" % (self.public_url,self.menus_map[name],name,name)
 
     def gen_href(self,line=list()):
-        #print("DEBUG[5]:",line)
         if len(line) == 4:          # menu
             if "rss" in line[0]:
                 return "<li><a href=\"%s\" title=\"%s\" target=\"_blank\"><i class=\"%s\"></i>%s</a></li>" % (line[0],line[1],line[2],line[3])
@@ -228,7 +227,6 @@ class OrgNote(object):
         """
     
         for menu in menus:
-            #print("DEBUG[4]:",menu)
             output += self.gen_href(menu)
 
         output +="""
@@ -270,7 +268,6 @@ class OrgNote(object):
             output += "主页君: " + self.author
         elif len(tags) == 1 and tags[0] in self.tags:
             output += name
-            #print("DEBUG[5]:",self.gen_tag_href(tags[0]))
             output += self.gen_tag_href(tags[0])
         else:
             output += name
@@ -475,9 +472,6 @@ class OrgNote(object):
                #self.homepage + self.blogroot,
                self.gen_public_link(self.notes[num][0],self.public_url))
         
-        print("DEBUG[6]:",self.public_url)
-        print(output)
-
         return output
 
     def contain_page(self,link="",num=0, public=True):
@@ -836,7 +830,6 @@ class OrgNote(object):
         if prefix == None:
             prefix = "" #self.public_url
 
-        #print("DEBUG[3]:",link.split('/')," -> ",re.sub("//*","/",prefix+'/'.join(link.split('/')[2:])))
         return prefix+'/'.join(link.split('/')[2:])
         #return re.sub("//*","/",'/'.join(link.split('/')[2:]))
 
@@ -889,7 +882,6 @@ class OrgNote(object):
         import os.path
         
         page_file = './' + self.gen_public_link(note[0],self.public_dir)
-        print("DEBUG:",page_file)
         page_dir = os.path.dirname(page_file)
         
         if not os.path.exists(page_dir):
@@ -913,10 +905,8 @@ class OrgNote(object):
         
     def gen_public(self):
         for i,note in enumerate(self.notes):
-            print("DEBUG[1]:",note)
             self.gen_page(note,i,True)
         for i,note in enumerate(self.localnotes):
-            print("DEBUG[2]:",note)
             self.gen_page(note,i,False)
 
     def split_index(self,num,b_index,e_index):
@@ -1087,7 +1077,7 @@ class OrgNote(object):
     def do_server(self,port="8080"):
         import sys
         
-        self.homepage ="localhost:"+port
+        self.homepage ="http://localhost:"+port
         self.public_url = self.homepage + re.sub("//*","/",self.blogroot + '/')
         self.menus = [
             [self.public_url + "minyi.html","归档","fa fa-sitemap","MinYi"],
