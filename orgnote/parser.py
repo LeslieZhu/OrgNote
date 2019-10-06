@@ -1076,7 +1076,7 @@ class OrgNote(object):
         
     def do_server(self,port="8080"):
         import sys
-        
+
         self.homepage ="http://localhost:"+port
         self.public_url = self.homepage + re.sub("//*","/",self.blogroot + '/')
         self.menus = [
@@ -1117,10 +1117,18 @@ class OrgNote(object):
         
     def do_deploy(self,branch="master"):
         import os
-        os.system("git add .")
-        os.system("git commit -m \"update\"")
-        os.system("git push origin %s" % (branch,))
-        if self.deploy_url and self.deploy_type == "git":
+        self.homepage = self.cfg.cfg.get("url","https://github.com/LeslieZhu/OrgNote")
+        self.public_url = self.homepage + re.sub("//*","/",self.blogroot + '/')
+        self.menus = [
+	    [self.public_url + "minyi.html","归档","fa fa-sitemap","MinYi"],
+	    [self.public_url + "archive.html","归档","fa fa-archive","归档"],
+            [self.public_url + "about.html","关于","fa fa-user","关于"]
+	]
+        self.do_generate()
+
+        os.system("git add .;git commit -m 'update'; git push origin %s" % (branch,))
+
+        if self.deploy_url and self.deploy_type == "git":                   
             os.system("cd %s;git init;git remote add origin %s;git add .; git commit -m 'update';git push origin %s" % (self.public_dir,self.deploy_url,self.deploy_branch))
 
     def do_generate(self,batch=""):
