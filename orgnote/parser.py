@@ -1105,13 +1105,15 @@ class OrgNote(object):
         if not os.path.exists(self.public_dir):
             os.makedirs(self.public_dir)
 
-        os.system("rsync -av ./%s/CNAME ./%s/" % (self.source_dir,self.public_dir))
+        if os.path.exists("./%s/CNAME" % self.source_dir):
+            os.system("rsync -av ./%s/CNAME ./%s/" % (self.source_dir,self.public_dir))
         
     def public_favicon(self):
         if not os.path.exists(self.public_dir):
             os.makedirs(self.public_dir)
 
-        os.system("rsync -av ./%s/favicon.ico ./%s/" % (self.source_dir,self.public_dir))
+        if os.path.exists("./%s/favicon.ico" % self.source_dir):
+            os.system("rsync -av ./%s/favicon.ico ./%s/" % (self.source_dir,self.public_dir))
         
     def do_deploy(self,branch="master"):
         import os
