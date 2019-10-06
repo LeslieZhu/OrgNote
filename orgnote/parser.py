@@ -487,7 +487,7 @@ class OrgNote(object):
         
         # replace images path
         image_file = "file:///%s" % self.images_dir
-        image_path = "%s/%s" %(self.public_url,self.images_dir)
+        image_path = "%s%s" %(self.public_url,self.images_dir)
         if image_file in content_data_text:
             content_data_text = content_data_text.replace(image_file, image_path)
 
