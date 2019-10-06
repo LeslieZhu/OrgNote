@@ -500,7 +500,9 @@ class OrgNote(object):
             content_data_text = content_data_text.replace(str(src_tag),new_src)
             
         if public:
-            self.archives.append([self.gen_public_link(self.notes[num][0],self.public_url),"fa fa-file-o",self.notes[num][1].strip()])
+            new_archive = [self.gen_public_link(self.notes[num][0],self.public_url),"fa fa-file-o",self.notes[num][1].strip()]
+            if not new_archive in self.archives:
+                self.archives.append(new_archive)
             
             if num == 0:
                 prev_page = '<li class="prev disabled"><a><i class="fa fa-arrow-circle-o-left"></i>上一页</a></li>'
@@ -1105,6 +1107,10 @@ class OrgNote(object):
             [self.public_url + "archive.html","归档","fa fa-archive","归档"],
             [self.public_url + "about.html","说明","fa fa-user","说明"]
         ]
+        self.minyi = [
+            [self.public_url + "tags/" + self.nopublic_tag + ".html","fa fa-link",self.nopublic_tag]
+        ]
+                
         self.do_generate()
 
         try:
@@ -1153,6 +1159,10 @@ class OrgNote(object):
 	    [self.public_url + "archive.html","归档","fa fa-archive","归档"],
             [self.public_url + "about.html","说明","fa fa-user","说明"]
 	]
+        self.minyi = [
+            [self.public_url + "tags/" + self.nopublic_tag + ".html","fa fa-link",self.nopublic_tag]
+        ]
+
         self.do_generate()
 
         os.system("git add .;git commit -m 'update'; git push origin %s" % (branch,))
