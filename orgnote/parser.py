@@ -110,13 +110,13 @@ class OrgNote(object):
         self.menus = [
             [self.public_url + "minyi.html","归档","fa fa-sitemap","MinYi"],
             [self.public_url + "archive.html","归档","fa fa-archive","归档"],
-            [self.public_url + "about.html","关于","fa fa-user","关于"]
+            [self.public_url + "about.html","说明","fa fa-user","说明"]
         ]
 
         self.menus_map = {
             "MinYi":"minyi",
             "归档": "archive",
-            "关于": "about"
+            "说明": "about"
         }
 
         self.menu_list = self.cfg.cfg.get("menu_list",dict())
@@ -283,9 +283,9 @@ class OrgNote(object):
         if link.endswith(".html"):
             print(link)
             output += "<span class='date'>由「"
-            output += "<a href=\"%s%s.html\"><i class=\"%s\"></i>%s</a>" % (self.public_url,self.menus_map["关于"],"作者",self.author)
+            output += "<a href=\"%s%s.html\"><i class=\"%s\"></i>%s</a>" % (self.public_url,self.menus_map["说明"],"作者",self.author)
             output += "」创作于%s</span>" % self.gen_date(link)
-            #output += "<a href=\"%s%s.html\"><i class=\"%s\"></i>%s</a>" % (self.public_url,self.menus_map["关于"],"作者",self.author)
+            #output += "<a href=\"%s%s.html\"><i class=\"%s\"></i>%s</a>" % (self.public_url,self.menus_map["说明"],"作者",self.author)
             #output += "<span class='date'>创作于%s</span>" % self.gen_date(link)
         else:
             pass
@@ -962,16 +962,31 @@ class OrgNote(object):
             e_index = b_index + note_num
             
     def gen_about(self):
+        about_file = "%s/about.html" % self.source_dir
+        
         output = open('./' + self.public_dir + "about.html","w")
-        print(self.header_prefix(title="关于"),file=output)
+        print(self.header_prefix(title="说明"),file=output)        
         print(self.body_prefix(),file=output)
         print(self.body_menu(self.menus),file=output)
-        print(self.contain_prefix(["关于"],"","关于"),file=output)
+        print(self.contain_prefix(["说明"],"","说明"),file=output)
         print(self.contain_prefix_end(),file=output)
-        print(self.contain_about(),file=output)
+        
+        if os.path.exists(about_file):
+            print(self.contain_page(about_file,0,True),file=output)
+        else:
+            print(self.contain_about(),file=output)
+            
         print(self.gen_sidebar(),file=output)
         print(self.contain_suffix(),file=output)
         print(self.header_suffix(),file=output)
+        
+        '''
+        print(self.contain_prefix_end(note[0]),file=output)
+        print(self.contain_page(note[0],num,public),file=output)              # auto gen
+        print(self.gen_sidebar(),file=output)
+        print(self.contain_suffix(),file=output)
+        print(self.header_suffix(),file=output)
+        '''
             
         output.close()
 
@@ -1088,7 +1103,7 @@ class OrgNote(object):
         self.menus = [
             [self.public_url + "minyi.html","归档","fa fa-sitemap","MinYi"],
             [self.public_url + "archive.html","归档","fa fa-archive","归档"],
-            [self.public_url + "about.html","关于","fa fa-user","关于"]
+            [self.public_url + "about.html","说明","fa fa-user","说明"]
         ]
         self.do_generate()
 
@@ -1106,28 +1121,28 @@ class OrgNote(object):
             os.makedirs(self.public_dir)
             
         if os.path.exists("./theme"):
-            os.system("rsync -av ./theme ./%s/" % self.public_dir)
+            os.system("rsync --quiet -av ./theme ./%s/" % self.public_dir)
 
     def public_images(self):
         if not os.path.exists(self.public_dir):
             os.makedirs(self.public_dir)
             
         if os.path.exists("./%s/%s" % (self.source_dir,self.images_dir)):
-            os.system("rsync -av ./%s/%s ./%s/" % (self.source_dir,self.images_dir,self.public_dir))
+            os.system("rsync --quiet -av ./%s/%s ./%s/" % (self.source_dir,self.images_dir,self.public_dir))
 
     def public_cname(self):
         if not os.path.exists(self.public_dir):
             os.makedirs(self.public_dir)
 
         if os.path.exists("./%s/CNAME" % self.source_dir):
-            os.system("rsync -av ./%s/CNAME ./%s/" % (self.source_dir,self.public_dir))
+            os.system("rsync --quiet -av ./%s/CNAME ./%s/" % (self.source_dir,self.public_dir))
         
     def public_favicon(self):
         if not os.path.exists(self.public_dir):
             os.makedirs(self.public_dir)
 
         if os.path.exists("./%s/favicon.ico" % self.source_dir):
-            os.system("rsync -av ./%s/favicon.ico ./%s/" % (self.source_dir,self.public_dir))
+            os.system("rsync --quiet -av ./%s/favicon.ico ./%s/" % (self.source_dir,self.public_dir))
         
     def do_deploy(self,branch="master"):
         import os
@@ -1136,7 +1151,7 @@ class OrgNote(object):
         self.menus = [
 	    [self.public_url + "minyi.html","归档","fa fa-sitemap","MinYi"],
 	    [self.public_url + "archive.html","归档","fa fa-archive","归档"],
-            [self.public_url + "about.html","关于","fa fa-user","关于"]
+            [self.public_url + "about.html","说明","fa fa-user","说明"]
 	]
         self.do_generate()
 
