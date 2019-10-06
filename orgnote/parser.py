@@ -453,7 +453,7 @@ class OrgNote(object):
         <ul class="post-copyright">
         <li class="post-copyright-author">
         <strong>本文作者：</strong>
-        %s
+        <a href="%s" title="%s">%s</a>
         </li>
         <li class="post-copyright-link">
         <strong>本文链接：</strong>
@@ -465,7 +465,7 @@ class OrgNote(object):
         </li>
         </ul>
         </div>
-        """ % (self.author,#self.public_url,
+        """ % (self.public_url+"about.html",self.author,self.author,#self.public_url,
                #self.homepage + self.blogroot,
                self.gen_public_link(self.notes[num][0],self.public_url),
                self.notes[num][1],#self.public_url,
