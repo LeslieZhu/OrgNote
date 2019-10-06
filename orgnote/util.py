@@ -22,6 +22,27 @@ def gen_title(link=""):
     title = html_data.find('h1',{'class':'title'}).text
     return title
 
+def to_page_mk2(notename=""):
+    from orgnote.markdown import Markdown
+
+    print("to_page_mk2(%s)" % notename)
+
+    input_file = codecs.open(notename, mode="r", encoding="utf-8")
+    text = input_file.read()
+    
+    mk = Markdown()
+    
+    print("*" * 20)
+    print(text)
+    print("*" * 20)
+    
+    html = mk.mk2html(text)
+    
+    output_file = codecs.open(notename.replace(".md",".html"), "w",encoding="utf-8",errors="xmlcharrefreplace")
+    output_file.write(css+html)
+
+    
+
 def to_page_mk(notename=""):
     '''
     convert markdown to html
@@ -35,12 +56,16 @@ def to_page_mk(notename=""):
 <style type="text/css">
 </style>
 '''
-    print(notename)
+    
+        
     input_file = codecs.open(notename, mode="r", encoding="utf-8")
     text = input_file.read()
-    print(text)
-    html = markdown.markdown(text)
+    
+    if notename.endswith(".md"):
+        print(notename)
+        print(text)
 
+    html = markdown.markdown(text)
     output_file = codecs.open(notename.replace(".md",".html"), "w",encoding="utf-8",errors="xmlcharrefreplace")
     output_file.write(css+html)
 
@@ -55,6 +80,7 @@ def to_page(notename=""):
             cmd = "emacs -l scripts/init-orgnote.el --batch %s --funcall org-export-as-html 2>/dev/null" % notename
         os.system(cmd)
         html_file = notename.replace('.org','.html')
+        print("html:",html_file)
         if os.path.exists(html_file):
             print("==> %s generated" % html_file)
         else:
@@ -91,15 +117,15 @@ def publish_note(notename=""):
         for _file in reversed(sorted(glob.glob(glob_re))):
             if _file.endswith(".org"):
                 _html = _file.replace(".org",".html")
-                print(">",_file,_html)
+                #print(">",_file,_html)
                 if not os.path.exists(_html):
                     to_page(_file)                    
             else:
                 _html = _file.replace(".md",".html")
                 print(">",_file,_html)
                 if not os.path.exists(_html):
-                    print("to_page_mk()",_file)
-                    to_page_mk(_file)
+                    print("to_page_mk2()",_file)
+                    to_page_mk2(_file)
 
             _title = gen_title(_html)
             return "- [[%s][%s]]" % (_html,_title)

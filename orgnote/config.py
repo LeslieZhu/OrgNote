@@ -91,6 +91,7 @@ sidebar:
 
 
 # links, each link should setting url,name,icon
+links_title: "友情链接"
 links:
   link1:
     url: http://lesliezhu.com

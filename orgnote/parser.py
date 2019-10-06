@@ -21,6 +21,7 @@ from orgnote import util
 from orgnote.colorsrc import get_hightlight_src
 
 
+
 if sys.version_info.major == 3:
     from imp import reload
     reload(sys)
@@ -117,6 +118,7 @@ class OrgNote(object):
             self.menus_map[menu["title"]] = _url.strip(".html")
         
         self.links = self.cfg.cfg.get("links",list())
+        self.links_title = self.cfg.cfg.get("links_title","友情链接")
 
         self.__pagenames__ = {}
 
@@ -762,9 +764,9 @@ class OrgNote(object):
     def sidebar_link(self):
         output = """
         <div class="widget">
-        <h4>快速链接</h4>
+        <h4>%s</h4>
         <ul class="entry list-unstyled">
-        """
+        """ % self.links_title
 
         for key in sorted(self.links):
             _link = self.links[key]
@@ -1122,11 +1124,11 @@ class OrgNote(object):
             notename = notename.replace(".md",".org")
         else:
             pass
-
+        print("working on :",notename)
         if notename.endswith(".org"):
             return util.to_page(notename)
         elif notename.endswith(".md"):
-            return util.to_page_mk(notename)
+            return util.to_page_mk2(notename)
         else:
             pass
 
