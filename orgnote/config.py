@@ -45,6 +45,7 @@ root: /
 # if the source_dir is ./notes, then set 'source_dir' as 'notes', not include the '/'
 public_dir: public
 source_dir: notes
+images_dir: images
 
 
 # Category & Tag

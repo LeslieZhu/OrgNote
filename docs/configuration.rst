@@ -60,12 +60,15 @@
    # if the source_dir is ./notes, then set 'source_dir' as 'notes', not include the '/'
    public_dir: public
    source_dir: notes
+   images_dir: images 
 
 .. note::
    
    如果为自己的某个GitHub项目创建网页，并且使用了OrgNote，则由于GitHub会对该项目使用类似 `http://yoursite.github.io/child` 的URL，则root应该设置为 `/child/`.
 
-   对于 `public_dir`, `source_dir` 目录前后都不需要增加 `/` 字符。
+   对于 `public_dir`, `source_dir`, `images_dir` 目录前后都不需要增加 `/` 字符。
+
+   如果要插入 `images_dir` 目录下的图片，图片文件路径使用类似 `/images/filename.jpg`.
    
 
 主题与外观

@@ -66,12 +66,13 @@ class OrgNote(object):
         self.blogroot = self.cfg.cfg.get("root","/")
         
         self.source_dir = self.cfg.cfg.get("source_dir","notes")
+        self.images_dir = self.cfg.cfg.get("images_dir","images")
 
         self.public_dir = './' + self.cfg.cfg.get("public_dir","public") + '/'
         
         self.tags_dir = self.public_dir + "/tags"
         if not os.path.exists(self.tags_dir):
-            os.makedirs(self.tags_dir)
+            os.makedirs(self.tags_dir)        
 
         
         #self.public_url = self.homepage + '/' + self.blogroot + '/' + self.public_dir + '/'
@@ -484,6 +485,11 @@ class OrgNote(object):
         content_data_text = str(content_data)
         content_data_text += self.copyright(num)
         
+        # replace images path
+        image_file = "file:///%s" % self.images_dir
+        image_path = "%s/%s" %(self.public_url,self.images_dir)
+        if image_file in content_data_text:
+            content_data_text = content_data_text.replace(image_file, image_path)
 
         src_data = content_data.find_all('div',{'class':'org-src-container'})
         for src_tag in src_data:
@@ -1099,7 +1105,15 @@ class OrgNote(object):
         if not os.path.exists(self.public_dir):
             os.makedirs(self.public_dir)
             
-        os.system("rsync -av ./theme ./%s/" % self.public_dir)
+        if os.path.exists("./theme"):
+            os.system("rsync -av ./theme ./%s/" % self.public_dir)
+
+    def public_images(self):
+        if not os.path.exists(self.public_dir):
+            os.makedirs(self.public_dir)
+            
+        if os.path.exists("./%s/%s" % (self.source_dir,self.images_dir)):
+            os.system("rsync -av ./%s/%s ./%s/" % (self.source_dir,self.images_dir,self.public_dir))
 
     def public_cname(self):
         if not os.path.exists(self.public_dir):
@@ -1133,6 +1147,7 @@ class OrgNote(object):
 
     def do_generate(self,batch=""):
         self.cfg.update()
+        self.public_images()
         self.public_theme()
         self.public_cname()
         self.public_favicon()
