@@ -5,4 +5,4 @@ do
     python setup.py bdist_wheel
 done
 
-twine upload dist/orgnote-*
+twine upload dist/orgnote-0.5.2*
