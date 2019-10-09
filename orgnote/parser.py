@@ -157,6 +157,9 @@ class OrgNote(object):
             path = "."
         elif deep == 2:
             path = ".."
+
+        if not title:
+            title = self.title
             
         return """
         <!DOCTYPE HTML>
@@ -181,7 +184,7 @@ class OrgNote(object):
         <link rel="stylesheet" href="%stheme/%s/css/highlight.css" media="screen" type="text/css">
         <link rel="stylesheet" href="%stheme/%s/css/%s-highlight.css" media="screen" type="text/css">
         </head>
-        """ % (self.title, self.author, self.description, self.title,self._keywords,
+        """ % (title, self.author, self.description, self.title,self._keywords,
                self.blogroot,
                self.blogroot,self.theme,
                self.blogroot,self.theme,
