@@ -138,6 +138,13 @@ class OrgNote(object):
 
         self.__pagenames__ = {}
 
+        self.col_md_index = "col-md-9"
+        if self.sidebar_show_page == 1:
+            self.col_md_page = "col-md-9"
+        else:
+            self.col_md_page = "col-md-12"
+        
+
 
 
     def header_prefix(self,deep=1,title=""):
@@ -242,7 +249,16 @@ class OrgNote(object):
 
         return output
 
-    def contain_prefix(self,tags=[],name="",header_title=""):
+    def contain_prefix(self,tags=[],name="",header_title="",ispage=False):
+        """
+        ispage: False
+
+        - True: it's in each note page, use self.col_md_page
+        - False: it's in index page, use self.col_md_index
+        """
+
+        col_md = self.col_md_page if ispage else self.col_md_index
+            
         if header_title == "":
             _header_title  = self.subtitle
         elif header_title in self.__pagenames__.keys():
@@ -260,12 +276,12 @@ class OrgNote(object):
         </div>                                      <!-- page-header end -->
         
         <div class="row page">                      <!-- row-page begin -->
-        <div class="col-md-9">                      <!-- col-md-9 begin -->
+        <div class="%s">                            <!-- col-md-9/12 begin -->
         <div class="mypage">                        <!-- mypage begin -->
         
         <div class="slogan">                        <!-- slogan begin -->
         <i class="fa fa-heart"></i>
-        """ % _header_title
+        """ % (_header_title,col_md)
 
         if not tags:
             output += "主页君: " + self.author
@@ -879,10 +895,10 @@ class OrgNote(object):
 
     def gen_sidebar_page(self):
         if self.sidebar_show_page == 0:
-            output = self.contain_sidebar()
             if self._sidebar_contact:
-                output += self.sidebar_contact()
-            output += self.end_sidebar()
+                output = self.sidebar_contact()
+            else:
+                output = ""
         else:
             output = self.contain_sidebar()
             if self._sidebar_contact:
@@ -935,9 +951,9 @@ class OrgNote(object):
         print(self.body_prefix(),file=output)
         print(self.body_menu(self.menus),file=output)
         if public:
-            print(self.contain_prefix(self.page_tags[note[0]],"标签: ",util.gen_title(note[0])),file=output)
+            print(self.contain_prefix(self.page_tags[note[0]],"标签: ",util.gen_title(note[0]),True),file=output)
         else:
-            print(self.contain_prefix([self.nopublic_tag],"标签: ",util.gen_title(note[0])),file=output)
+            print(self.contain_prefix([self.nopublic_tag],"标签: ",util.gen_title(note[0]),True),file=output)
         print(self.contain_prefix_end(note[0]),file=output)
         print(self.contain_page(note[0],num,public),file=output)              # auto gen
         print(self.gen_sidebar_page(),file=output)
