@@ -1212,7 +1212,13 @@ class OrgNote(object):
             os.system("rsync --quiet -av ./%s/favicon.ico ./%s/" % (self.source_dir,self.public_dir))
         
     def do_deploy(self,branch="master"):
+        if not self.deploy_url or self.deploy_type != "git":
+            print("Please add deploy repo git config info")
+            return False
+        
         import os
+        import shutil
+        
         self.homepage = self.cfg.cfg.get("url","https://github.com/LeslieZhu/OrgNote")
         self.public_url = self.homepage + re.sub("//*","/",self.blogroot + '/')
         self.menus = [
@@ -1223,13 +1229,22 @@ class OrgNote(object):
         self.minyi = [
             [self.public_url + "tags/" + self.nopublic_tag + ".html","fa fa-link",self.nopublic_tag]
         ]
-
+                
         self.do_generate()
-
-        os.system("git add .;git commit -m 'update'; git push origin %s" % (branch,))
-
-        if self.deploy_url and self.deploy_type == "git":                   
-            os.system("cd %s;git init;git remote add origin %s;git add .; git commit -m 'update';git push origin %s" % (self.public_dir,self.deploy_url,self.deploy_branch))
+        curdir = os.getcwd()
+        repodir = "./%s/.repo" % self.public_dir
+        
+        if not os.path.exists(repodir):
+            os.makedirs(repodir)            
+            os.chdir(repodir)
+            os.system("git init && git remote add origin %s && git fetch && git pull origin %s" % (self.deploy_url,self.deploy_branch))
+        else:
+            os.chdir(repodir)
+            os.system("git fetch && git pull origin %s" % (self.deploy_branch))
+            
+        os.system("rsync -a --exclude='.repo/' ../ ./")
+        os.system("git add . && git commit -m 'update' && git push origin %s" % self.deploy_branch)
+        os.chdir(curdir)
 
     def do_generate(self,batch=""):
         self.cfg.update()
