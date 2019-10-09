@@ -90,6 +90,7 @@ class OrgNote(object):
 
         self.default_tag = self.cfg.cfg.get("default_tag", u"默认")
         self.nopublic_tag = self.cfg.cfg.get("nopublic_tag",u"暂不公开")
+        self.rdmode_keyword = self.cfg.cfg.get("reading_mode_keyword",u"随笔")
 
 
         self.per_page = self.cfg.cfg.get("per_page",6)
@@ -501,6 +502,11 @@ class OrgNote(object):
         _title = html_data.find('h1',{'class':'title'}).text
         content_data = html_data.find('div',{'id':'content'})
         content_data_text = str(content_data)
+
+        keywordtext = html_data.find(attrs={"name":"keywords"})['content']
+        if self.rdmode_keyword in keywordtext:
+            content_data_text = content_data_text.replace("id=\"content\"","id=\"content-reading\"")
+        
         content_data_text += self.copyright(num)
         
         # replace images path
