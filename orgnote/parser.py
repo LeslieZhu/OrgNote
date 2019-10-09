@@ -898,10 +898,11 @@ class OrgNote(object):
 
     def gen_sidebar_page(self):
         if self.sidebar_show_page == 0:
-            if self._sidebar_contact:
-                output = self.sidebar_contact()
-            else:
-                output = ""
+            #if self._sidebar_contact:
+            #    output = self.sidebar_contact()
+            #else:
+            #    output = ""
+            output = "" # do not want this now
         else:
             output = self.contain_sidebar()
             if self._sidebar_contact:
