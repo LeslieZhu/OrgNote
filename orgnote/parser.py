@@ -595,6 +595,9 @@ class OrgNote(object):
             new_data = '</p>'.join(new_data)
 
 
+        #delete id="content"
+        new_data = new_data.replace("content","content-index")
+
         output += new_data
 
 
