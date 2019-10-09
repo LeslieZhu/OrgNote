@@ -566,9 +566,13 @@ class OrgNote(object):
             new_data += '''
             </p>
             </div>
-            </div>
-            </div>
             '''
+            
+            if 'table-of-contents' in new_data:
+                new_data += '''
+                </div>
+                </div>
+                '''
         else:
             new_data = '</p>'.join(new_data)
 
