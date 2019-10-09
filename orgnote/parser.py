@@ -15,7 +15,7 @@ from __future__ import absolute_import
 
 import re,time,sys,os
 import json
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment
 from orgnote import config
 from orgnote import util
 from orgnote.colorsrc import get_hightlight_src
@@ -432,7 +432,7 @@ class OrgNote(object):
         if num == len(self.notes) - 1:
             return ""
         else:
-            return self.gen_public_link(self.notes[num+1][0],self.public_url)
+            return self.gen_public_link(self.notes[num+1][0],self.public_url) if self.notes else ""
 
     def gen_tag_list(self,public=True):
         """
@@ -467,6 +467,10 @@ class OrgNote(object):
 
 
     def copyright(self,num=""):
+        if not self.notes:
+            return ""
+
+        #
         output = """
         <hr>
         <div id="post-copyright">
@@ -498,6 +502,10 @@ class OrgNote(object):
         output = ""
 
         html_data = BeautifulSoup(open(link,"r").read(),"html.parser")
+
+        #去除注释
+        #comments = html_data(text=lambda text: isinstance(text, Comment))
+        #[comment.extract() for comment in comments]
         
         _title = html_data.find('h1',{'class':'title'}).text
         content_data = html_data.find('div',{'id':'content'})
@@ -524,7 +532,7 @@ class OrgNote(object):
             content_data_text = content_data_text.replace(str(src_tag),new_src)
             
         if public:
-            new_archive = [self.gen_public_link(self.notes[num][0],self.public_url),"fa fa-file-o",self.notes[num][1].strip()]
+            new_archive = [self.gen_public_link(self.notes[num][0],self.public_url),"fa fa-file-o",self.notes[num][1].strip()] if self.notes else []
             if not new_archive in self.archives:
                 self.archives.append(new_archive)
             
