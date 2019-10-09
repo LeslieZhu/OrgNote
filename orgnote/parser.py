@@ -301,10 +301,14 @@ class OrgNote(object):
         output = ""
         if link.endswith(".html"):
             print(link)
-            output += "<span class='date'>由「"
-            output += "<a href=\"%s%s.html\"><i class=\"%s\"></i>%s</a>" % (self.public_url,self.menus_map["说明"],"作者",self.author)
-            output += "」创作于%s</span>" % self.gen_date(link)
+            #output += "<span class='date'>由「"
             #output += "<a href=\"%s%s.html\"><i class=\"%s\"></i>%s</a>" % (self.public_url,self.menus_map["说明"],"作者",self.author)
+            #output += "」创作于%s</span>" % self.gen_date(link)
+            output += "<span class='date'>文|<a href='%s'><i class='%s'></i>%s</a></span>" % (self.public_url+"about.html",
+                                                                                                self.public_url+"about.html",
+                                                                                                self.author)
+            #self.public_url+"about.html",self.author
+            #output += "<a href=\"%s\"><i class=\"%s\"></i>%s</a>" % (self.public_url,self.menus_map["说明"],"作者",self.author)
             #output += "<span class='date'>创作于%s</span>" % self.gen_date(link)
         else:
             pass
@@ -476,8 +480,8 @@ class OrgNote(object):
         <div id="post-copyright">
         <ul class="post-copyright">
         <li class="post-copyright-author">
-        <strong>本文作者：</strong>
-        <a href="%s" title="%s">%s</a>
+        <strong>本文作者：</strong>「
+        <a href="%s" title="%s">%s</a> 」创作于%s
         </li>
         <li class="post-copyright-link">
         <strong>本文链接：</strong>
@@ -489,7 +493,7 @@ class OrgNote(object):
         </li>
         </ul>
         </div>
-        """ % (self.public_url+"about.html",self.author,self.author,#self.public_url,
+        """ % (self.public_url+"about.html",self.author,self.author,self.gen_date(self.notes[num][0]),#self.public_url,
                #self.homepage + self.blogroot,
                self.gen_public_link(self.notes[num][0],self.public_url),
                self.notes[num][1],#self.public_url,
