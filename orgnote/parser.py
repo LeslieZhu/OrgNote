@@ -95,7 +95,9 @@ class OrgNote(object):
         self.per_page = self.cfg.cfg.get("per_page",6)
 
         self.sidebar_show = self.cfg.cfg.get("sidebar_show",0)
+        self.sidebar_show_page = self.cfg.cfg.get("sidebar_show_page",0)
         self._sidebar_contact = self.cfg.cfg.get("sidebar_contact","")
+        self._sidebar_contact_name = self.cfg.cfg.get("sidebar_contact_name","联系/反馈")
         self.sidebar_list = self.cfg.cfg.get("sidebar",list())
         
         self.dirs = [self.source_dir + "/public.org", self.source_dir + "/nopublic.org"]
@@ -689,12 +691,12 @@ class OrgNote(object):
     def sidebar_contact(self):
         return """
         <div class="widget">
-        <h4>联系方式</h4>
+        <h4>%s</h4>
         <ul class="entry list-unstyled">
         <li>%s</li>
         </ul>
         </div>
-        """ % self._sidebar_contact
+        """ % (self._sidebar_contact_name,self._sidebar_contact)
 
     def sidebar_duoshuo(self):
         return """
@@ -875,6 +877,35 @@ class OrgNote(object):
             
         return output
 
+    def gen_sidebar_page(self):
+        if self.sidebar_show_page == 0:
+            output = self.contain_sidebar()
+            if self._sidebar_contact:
+                output += self.sidebar_contact()
+            output += self.end_sidebar()
+        else:
+            output = self.contain_sidebar()
+            if self._sidebar_contact:
+                output += self.sidebar_contact()
+            for _sidebar in self.sidebar_list:
+                if _sidebar == "sidebar_latest":
+                    output += self.sidebar_latest(self.notes)
+                elif _sidebar == 'sidebar_tags':
+                    output += self.sidebar_tags()
+                elif _sidebar == 'sidebar_time':
+                    output += self.sidebar_date()
+                elif _sidebar == 'sidebar_link':
+                    output += self.sidebar_link()
+                elif _sidebar == 'sidebar_weibo':
+                    output += self.sidebar_weibo()
+                elif _sidebar == 'sidebar_duoshuo' and self._sidebar_contact:
+                    output += self.sidebar_duoshuo()
+                else:
+                    pass
+            output += self.end_sidebar()
+
+        return output
+
     def gen_archive(self):
         output = open('./' + self.public_dir + "archive.html","w")
         print(self.header_prefix(title="归档"),file=output)
@@ -909,7 +940,7 @@ class OrgNote(object):
             print(self.contain_prefix([self.nopublic_tag],"标签: ",util.gen_title(note[0])),file=output)
         print(self.contain_prefix_end(note[0]),file=output)
         print(self.contain_page(note[0],num,public),file=output)              # auto gen
-        print(self.gen_sidebar(),file=output)
+        print(self.gen_sidebar_page(),file=output)
         print(self.contain_suffix(),file=output)
         print(self.header_suffix(),file=output)
 
@@ -986,14 +1017,6 @@ class OrgNote(object):
         print(self.contain_suffix(),file=output)
         print(self.header_suffix(),file=output)
         
-        '''
-        print(self.contain_prefix_end(note[0]),file=output)
-        print(self.contain_page(note[0],num,public),file=output)              # auto gen
-        print(self.gen_sidebar(),file=output)
-        print(self.contain_suffix(),file=output)
-        print(self.header_suffix(),file=output)
-        '''
-            
         output.close()
 
     def gen_minyi(self):

@@ -80,9 +80,17 @@ duoshuo_shortname:
 ### if 'sidebar_show` is disable, igore all `sidebar` option
 ### the sidebar item display as the config order, sidebar items list:
 ### sidebar_latest,sidebar_tags,sidebar_time,sidebar_weibo,sidebar_link
+###
+### sidebar_show_page: if show sidebar in each note page,default enable
+### sidebar_contain_name: the contain title in sidebar
+### sidebar_contact: the contain text in sidebar
 
 sidebar_show: 1
+sidebar_show_page: 0
+
+sidebar_contain_name: "联系/反馈"
 sidebar_contact: ""
+
 sidebar:
   - sidebar_latest
   - sidebar_tags
