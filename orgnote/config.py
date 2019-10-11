@@ -46,6 +46,7 @@ root: /
 public_dir: public
 source_dir: notes
 images_dir: images
+files_dir: data
 
 
 # Category & Tag

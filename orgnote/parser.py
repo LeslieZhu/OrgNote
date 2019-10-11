@@ -67,6 +67,7 @@ class OrgNote(object):
         
         self.source_dir = self.cfg.cfg.get("source_dir","notes")
         self.images_dir = self.cfg.cfg.get("images_dir","images")
+        self.files_dir = self.cfg.cfg.get("files_dir","data")
 
         self.public_dir = './' + self.cfg.cfg.get("public_dir","public") + '/'
         
@@ -525,10 +526,16 @@ class OrgNote(object):
         content_data_text += self.copyright(num)
         
         # replace images path
-        image_file = "file:///%s" % self.images_dir
-        image_path = "%s%s" %(self.public_url,self.images_dir)
+        image_file = "file:///%s/" % self.images_dir
+        image_path = "%s%s/" %(self.public_url,self.images_dir)
         if image_file in content_data_text:
             content_data_text = content_data_text.replace(image_file, image_path)
+
+        # replace files path
+        data_file = "file:///%s/" % self.files_dir
+        data_path =  "%s%s/" %(self.public_url,self.files_dir)
+        if data_file in content_data_text:
+            content_data_text = content_data_text.replace(data_file, data_path)
 
         src_data = content_data.find_all('div',{'class':'org-src-container'})
         for src_tag in src_data:
@@ -1203,6 +1210,9 @@ class OrgNote(object):
             
         if os.path.exists("./%s/%s" % (self.source_dir,self.images_dir)):
             os.system("rsync --quiet -av ./%s/%s ./%s/" % (self.source_dir,self.images_dir,self.public_dir))
+
+        if os.path.exists("./%s/%s" % (self.source_dir,self.files_dir)):
+            os.system("rsync --quiet -av ./%s/%s ./%s/" % (self.source_dir,self.files_dir,self.public_dir))
 
     def public_cname(self):
         if not os.path.exists(self.public_dir):
