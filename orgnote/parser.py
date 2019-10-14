@@ -47,24 +47,16 @@ class OrgNote(object):
 
         # general option
         self.title = self.cfg.cfg.get("title","OrgNote")
-
         self.subtitle = self.cfg.cfg.get("subtitle","OrgNote")
-
         self.author = self.cfg.cfg.get("author","OrgNote")
-
         self.email = self.cfg.cfg.get("email","")
-
         self.description = self.cfg.cfg.get("description","")
-
         self._keywords = self.cfg.cfg.get("keywords","OrgNote")
-
         self.language = self.cfg.cfg.get("language","zh-CN")
         
         # blog option        
         self.homepage = self.cfg.cfg.get("url","https://github.com/LeslieZhu/OrgNote")
-        
         self.blogroot = self.cfg.cfg.get("root","/")
-        
         self.source_dir = self.cfg.cfg.get("source_dir","notes")
         self.images_dir = self.cfg.cfg.get("images_dir","images")
         self.files_dir = self.cfg.cfg.get("files_dir","data")
@@ -74,12 +66,7 @@ class OrgNote(object):
         self.tags_dir = self.public_dir + "/tags"
         if not os.path.exists(self.tags_dir):
             os.makedirs(self.tags_dir)        
-
-        
-        #self.public_url = self.homepage + '/' + self.blogroot + '/' + self.public_dir + '/'
-        #self.public_url = re.sub("//*","/",'./' + self.blogroot + '/')
-        self.public_url = self.homepage + re.sub("//*","/",self.blogroot + '/')
-        
+                
         self.deploy_type = self.cfg.cfg.get("deploy_type","git")
         self.deploy_url = self.cfg.cfg.get("deploy_url","")
         self.deploy_branch = self.cfg.cfg.get("deploy_branch","master")
@@ -103,40 +90,15 @@ class OrgNote(object):
         self.sidebar_list = self.cfg.cfg.get("sidebar",list())
         
         self.dirs = [self.source_dir + "/public.org", self.source_dir + "/nopublic.org"]
-        
-        self.minyi = [
-            #[self.public_dir + "tags/nopublic.html","fa fa-link",self.nopublic_tag]
-            [self.public_url + "tags/" + self.nopublic_tag + ".html","fa fa-link",self.nopublic_tag]
-        ]
-        
-        
-        # menus
-        self.menus = [
-            [self.public_url + "minyi.html","归档","fa fa-sitemap","MinYi"],
-            [self.public_url + "archive.html","归档","fa fa-archive","归档"],
-            [self.public_url + "about.html","说明","fa fa-user","说明"]
-        ]
-
-        self.menus_map = {
-            "MinYi":"minyi",
-            "归档": "archive",
-            "说明": "about"
-        }
-
+                        
         self.menu_list = self.cfg.cfg.get("menu_list",dict())
-        for _menu in self.menu_list:
-            menu = self.menu_list[_menu]
-            if menu["url"].endswith(".html"):
-                _url = menu["url"]
-            else:
-                _url = menu["url"] + ".html"
-
-            _item = [self.public_url + _url,menu["title"],menu["icon"],menu["title"]]
-            self.menus.append(_item)
-            self.menus_map[menu["title"]] = _url.strip(".html")
         
         self.links = self.cfg.cfg.get("links",list())
         self.links_title = self.cfg.cfg.get("links_title","友情链接")
+
+        self.links_minyi_name = self.cfg.cfg.get("links_minyi_name","MinYi")
+        self.links_minyi = self.cfg.cfg.get("links_minyi",list())
+
 
         self.__pagenames__ = {}
 
@@ -145,9 +107,53 @@ class OrgNote(object):
             self.col_md_page = "col-md-9"
         else:
             self.col_md_page = "col-md-12"
+
+        # update settings
+        self.refresh_config()
+
+    def refresh_config(self):
+        # homepage will update in local/remote server mode
+        self.public_url = self.homepage + re.sub("//*","/",self.blogroot + '/')
+
+        # depends on public_url
+        self.menus = [
+            [self.public_url + "minyi.html",self.links_minyi_name,"fa fa-sitemap",self.links_minyi_name],
+            [self.public_url + "archive.html","归档","fa fa-archive","归档"],
+            [self.public_url + "about.html","说明","fa fa-user","说明"]
+        ]
+
         
+        self.menus_map = {
+            self.links_minyi_name: "minyi",
+            "归档": "archive",
+            "说明": "about"
+        }
 
 
+        for _menu in self.menu_list:
+            menu = self.menu_list[_menu]
+            if menu["url"].endswith(".html"):
+                _url = menu["url"]
+            else:
+                _url = menu["url"] + ".html"
+                
+            _item = [self.public_url + _url,menu["title"],menu["icon"],menu["title"]]
+            if _item not in self.menus:
+                self.menus.append(_item)
+                self.menus_map[menu["title"]] = _url.strip(".html")
+
+        
+        self.minyi = []
+
+        for _link in self.links_minyi:
+            link = self.links_minyi[_link]
+            item = [link['url'],link['icon'],link['name']]
+            if item not in self.minyi:
+                self.minyi.append(item)
+        #
+        nopublic_link = [self.public_url + "tags/" + self.nopublic_tag + ".html","fa fa-link",self.nopublic_tag]
+        if nopublic_link not in self.minyi:
+            self.minyi.append(nopublic_link)
 
     def header_prefix(self,deep=1,title=""):
         """
@@ -1069,10 +1075,10 @@ class OrgNote(object):
 
     def gen_minyi(self):
         output = open("./" + self.public_dir + "minyi.html","w")
-        print(self.header_prefix(title="MinYi"),file=output)
+        print(self.header_prefix(title=self.links_minyi_name),file=output)
         print(self.body_prefix(),file=output)
         print(self.body_menu(self.menus),file=output)
-        print(self.contain_prefix(["MinYi"],"","MinYi"),file=output)
+        print(self.contain_prefix([self.links_minyi_name],"",self.links_minyi_name),file=output)
         print(self.contain_prefix_end(),file=output)
         print(self.contain_archive(self.minyi),file=output)
         print(self.gen_sidebar(),file=output)
@@ -1176,16 +1182,7 @@ class OrgNote(object):
         import sys
 
         self.homepage ="http://localhost:"+port
-        self.public_url = self.homepage + re.sub("//*","/",self.blogroot + '/')
-        self.menus = [
-            [self.public_url + "minyi.html","归档","fa fa-sitemap","MinYi"],
-            [self.public_url + "archive.html","归档","fa fa-archive","归档"],
-            [self.public_url + "about.html","说明","fa fa-user","说明"]
-        ]
-        self.minyi = [
-            [self.public_url + "tags/" + self.nopublic_tag + ".html","fa fa-link",self.nopublic_tag]
-        ]
-                
+        self.refresh_config()
         self.do_generate()
 
         try:
@@ -1237,17 +1234,9 @@ class OrgNote(object):
         import shutil
         
         self.homepage = self.cfg.cfg.get("url","https://github.com/LeslieZhu/OrgNote")
-        self.public_url = self.homepage + re.sub("//*","/",self.blogroot + '/')
-        self.menus = [
-	    [self.public_url + "minyi.html","归档","fa fa-sitemap","MinYi"],
-	    [self.public_url + "archive.html","归档","fa fa-archive","归档"],
-            [self.public_url + "about.html","说明","fa fa-user","说明"]
-	]
-        self.minyi = [
-            [self.public_url + "tags/" + self.nopublic_tag + ".html","fa fa-link",self.nopublic_tag]
-        ]
-                
+        self.refresh_config()
         self.do_generate()
+        
         curdir = os.getcwd()
         repodir = "./%s/.repo" % self.public_dir
         

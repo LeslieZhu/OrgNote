@@ -53,6 +53,8 @@ files_dir: data
 default_tag: "默认"
 
 # Nopublic Tab
+# public: start with '-'
+# nopublic: start with '+'
 nopublic_tag: "暂不公开"
 reading_mode_keyword: "随笔"
 
@@ -112,6 +114,13 @@ links:
     url: https://github.com/LeslieZhu/OrgNote
     name: OrgNote
     icon: fa fa-github
+
+# minyi links, add links on menu(MinYi) page
+links_minyi_name: "MinYi"
+links_minyi:
+   link1:
+      url: https://github.com/OrgNote
+      name: OrgNote
 
 deploy_type: git
 deploy_url:
