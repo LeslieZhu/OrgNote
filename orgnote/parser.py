@@ -145,9 +145,20 @@ class OrgNote(object):
         
         self.minyi = []
 
-        for _link in self.links_minyi:
-            link = self.links_minyi[_link]
-            item = [link['url'],link['icon'],link['name']]
+        for link in self.links_minyi:
+            link = [i.strip() for i in link.split(',')]
+            if len(link) == 1:
+                url,name = link[0]
+                icon = "fa fa-link"
+            elif len(link) == 2:
+                url,name = link
+                icon = "fa fa-link"
+            elif len(link) >= 3:
+                url,name,icon = link[:3]
+            else:
+                pass
+            
+            item = [url,icon,name]
             if item not in self.minyi:
                 self.minyi.append(item)
         #

@@ -116,11 +116,10 @@ links:
     icon: fa fa-github
 
 # minyi links, add links on menu(MinYi) page
+# - url,display name
 links_minyi_name: "MinYi"
 links_minyi:
-   link1:
-      url: https://github.com/OrgNote
-      name: OrgNote
+    - https://github.com/OrgNote,OrgNote
 
 deploy_type: git
 deploy_url:
