@@ -57,7 +57,7 @@ class OrgNote(object):
         # blog option        
         self.homepage = self.cfg.cfg.get("url","https://github.com/LeslieZhu/OrgNote")
         self.blogroot = self.cfg.cfg.get("root","/")
-        self.source_dir = self.cfg.cfg.get("source_dir","notes")
+        self.source_dir = self.cfg.cfg.get("source_dir","notes") +'/'
         self.images_dir = self.cfg.cfg.get("images_dir","images")
         self.files_dir = self.cfg.cfg.get("files_dir","data")
 
@@ -1307,7 +1307,7 @@ class OrgNote(object):
         print("notes generate done")
 
     def do_new(self,notename=""):
-        return util.add_note(notename)
+        return util.add_note(notename,self.source_dir)
 
     def do_page(self,notename=""):
         if notename.endswith(".org") and not os.path.exist(notename):
@@ -1331,7 +1331,7 @@ class OrgNote(object):
 
         #notename = os.path.basename(notename).replace(".org","").replace(".html","")
 
-        publish_line = util.publish_note(notename)
+        publish_line = util.publish_note(notename,self.source_dir)
         print(publish_line)
 
         nopublish_data = open(nopublish_list,"r").readlines()
@@ -1349,7 +1349,7 @@ class OrgNote(object):
             #    print(publish_line,file=output)
             output.close()
         else:
-            publish_line = util.publish_note(notename)
+            publish_line = util.publish_note(notename,self.source_dir)
 
             if publish_line == None:
                 print("ERROR: Can not publish note: %s, are you sure it exists?" % notename)
@@ -1409,7 +1409,7 @@ class OrgNote(object):
         all_publish = True
         self.scan()
         for _note in reversed(sorted(self.notes_db.keys())):
-            publish_line = util.publish_note(self.notes_db[_note])
+            publish_line = util.publish_note(self.notes_db[_note],self.source_dir)
             if publish_line not in publish_data and publish_line not in nopublish_data:
                 print("%s not publish yet!" % _note)
                 all_publish = False

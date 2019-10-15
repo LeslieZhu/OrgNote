@@ -79,21 +79,25 @@ def to_page(notename=""):
         else:
             cmd = "emacs -l scripts/init-orgnote.el --batch %s --funcall org-export-as-html 2>/dev/null" % notename
         os.system(cmd)
-        html_file = notename.replace('.org','.html')
-        print("html:",html_file)
-        if os.path.exists(html_file):
-            print("==> %s generated" % html_file)
-        else:
-            print("==> %s generat FAILED" % html_file)
     except Exception as ex:
-        print(">>>>>",str(ex))
+        pass
+        #print(">>>>>",str(ex))
+        
+    html_file = notename.replace('.org','.html')
+    if os.path.exists(html_file):
+        #print("html:",html_file)
+        print("==> %s generated" % html_file)
+    else:
+        print("==> %s generate FAILED" % html_file)
 
 
-def add_note(notename=""):
+
+
+def add_note(notename="",srcdir="notes/"):
     try:
         import os
         if not notename.endswith('.org'): notename += ".org"
-        if not notename.startswith('notes/'): notename = "notes/"+notename
+        if not notename.startswith(srcdir): notename = srcdir+notename
         if not os.path.exists(notename):
             import orgnote.init
             note_name = orgnote.init.create_default_note(notename)
@@ -102,17 +106,18 @@ def add_note(notename=""):
         else:
             print("%s exists, please use other name or delete it" % notename)
     except Exception as ex:
-        print(">>>>>",str(ex))
+        pass
+        #print(">>>>>",str(ex))
 
             
-def publish_note(notename=""):
+def publish_note(notename="",srcdir="./notes/"):
     try:
         import glob,os.path
         #if notename.endswith(".org"): notename = notename[:-4]
-        if notename.startswith("./notes"):
+        if notename.startswith(srcdir):
             glob_re = notename
         else:
-            glob_re = "./notes/????/??/??/%s" % os.path.basename(notename)
+            glob_re = srcdir+"/????/??/??/%s" % os.path.basename(notename)
 
         for _file in reversed(sorted(glob.glob(glob_re))):
             if _file.endswith(".org"):
@@ -122,16 +127,17 @@ def publish_note(notename=""):
                     to_page(_file)                    
             else:
                 _html = _file.replace(".md",".html")
-                print(">",_file,_html)
+                #print(">",_file,_html)
                 if not os.path.exists(_html):
-                    print("to_page_mk2()",_file)
+                    #print("to_page_mk2()",_file)
                     to_page_mk2(_file)
 
             _title = gen_title(_html)
             return "- [[%s][%s]]" % (_html,_title)
         return None
     except Exception as ex:
-        print(">>>>>",str(ex))
+        pass
+        #print(">>>>>",str(ex))
 
 
 def get_emacs_version():
