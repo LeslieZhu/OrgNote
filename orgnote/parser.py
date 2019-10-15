@@ -345,30 +345,31 @@ class OrgNote(object):
         gen each note from blog list
         """
         import os
-        for notedir in dirs:
-            for line in open(notedir):
+        for i,notedir in enumerate(dirs):
+            for line in open(notedir):                
                 line = line.strip()
-                if line.startswith("#"): continue
+                if not line or line.startswith("#"): continue
+
                 public = False
                 local  = False
-                if "- [[" in line: public = True
-                if "+ [[" in line: local  = True
+                
+                #if "- [[" in line: public = True
+                #if "+ [[" in line: local  = True
+                public = True if i == 0 else False
+                local = not public
             
-                if public or local:
-                    line = line.replace("]","")
-                    line = line.split('[')[2:]
-                    
-                    if line[0][0] == ".":
-                        link = line[0]
-                    else:
-                        link = line[0]
-                        
-                    name = line[1]
-            
-                    if public:
-                        self.notes += [[link,name]]
-                    if local:
-                        self.localnotes += [[link,name]]
+                if line.endswith(".org"):
+                    link = line.replace(".org",".html")
+                elif line.endswith(".md"):
+                    link = line.replace(".md",".html")
+                else:
+                    link = line
+
+                name = util.gen_title(link)
+                if public:
+                    self.notes += [[link,name]]
+                if local:
+                    self.localnotes += [[link,name]]
 
     def contain_notes(self,data=list(),num=0,lastone=0):
         # each note
