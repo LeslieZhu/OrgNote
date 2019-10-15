@@ -1336,7 +1336,7 @@ class OrgNote(object):
         print(publish_line)
 
         nopublish_data = open(nopublish_list,"r").readlines()
-        nopublish_data = [i.strip() for i in nopublish_data]
+        nopublish_data = [i.strip() for i in nopublish_data if not i.startswith("#")]
 
         if not os.path.exists(publish_list):
             output = open(publish_list,"w")
@@ -1357,7 +1357,7 @@ class OrgNote(object):
                 return
 
             data = open(publish_list,"r").readlines()
-            data = [i.strip() for i in data]
+            data = [i.strip() for i in data if not i.startswith("#")]
 
             if publish_line in data or publish_line in nopublish_data:
                 print(" publish done")
@@ -1402,10 +1402,10 @@ class OrgNote(object):
         nopublish_list = self.dirs[1]
         
         publish_data = open(publish_list,"r").readlines()
-        publish_data = [i.strip() for i in publish_data]
+        publish_data = [i.strip() for i in publish_data if not i.startswith("#")]
 
         nopublish_data = open(nopublish_list,"r").readlines()
-        #nopublish_data = [i.strip().replace("+ [[","- [[") for i in nopublish_data]
+        nopublish_data = [i.strip() for i in nopublish_data if not i.startswith("#")]
         
         all_publish = True
         self.scan()
