@@ -84,11 +84,11 @@ def to_page(notename=""):
         #print(">>>>>",str(ex))
         
     html_file = notename.replace('.org','.html')
-    if os.path.exists(html_file):
-        #print("html:",html_file)
-        print("==> %s generated" % html_file)
-    else:
-        print("==> %s generate FAILED" % html_file)
+
+    #print("html:",html_file)
+    #print("\033[32m[Note:]\033[0m: %s generated" % html_file)
+    if not os.path.exists(html_file):
+        print("\033[31m[ERROR]\033[0m: %s generate FAILED" % html_file)
 
 
 
@@ -133,7 +133,8 @@ def publish_note(notename="",srcdir="./notes/"):
                     to_page_mk2(_file)
 
             _title = gen_title(_html)
-            return "- [[%s][%s]]" % (_html,_title)
+            #return "- [[%s][%s]]" % (_html,_title)
+            return _file
         return None
     except Exception as ex:
         pass

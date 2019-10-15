@@ -57,7 +57,7 @@ class OrgNote(object):
         # blog option        
         self.homepage = self.cfg.cfg.get("url","https://github.com/LeslieZhu/OrgNote")
         self.blogroot = self.cfg.cfg.get("root","/")
-        self.source_dir = self.cfg.cfg.get("source_dir","notes") +'/'
+        self.source_dir = "./" + self.cfg.cfg.get("source_dir","notes") +'/'
         self.images_dir = self.cfg.cfg.get("images_dir","images")
         self.files_dir = self.cfg.cfg.get("files_dir","data")
 
@@ -1335,7 +1335,7 @@ class OrgNote(object):
         print(publish_line)
 
         nopublish_data = open(nopublish_list,"r").readlines()
-        nopublish_data = [i.strip().replace("+ [[","- [[") for i in nopublish_data]
+        nopublish_data = [i.strip() for i in nopublish_data]
 
         if not os.path.exists(publish_list):
             output = open(publish_list,"w")
@@ -1352,14 +1352,14 @@ class OrgNote(object):
             publish_line = util.publish_note(notename,self.source_dir)
 
             if publish_line == None:
-                print("ERROR: Can not publish note: %s, are you sure it exists?" % notename)
+                print("\033[31m[ERROR]\033[0m: Can not publish note: %s, are you sure it exists?" % notename)
                 return
 
             data = open(publish_list,"r").readlines()
             data = [i.strip() for i in data]
 
             if publish_line in data or publish_line in nopublish_data:
-                print("publish done")
+                print(" publish done")
                 return
             output = open(publish_list,"w")
             print(publish_line,file=output)
@@ -1376,7 +1376,7 @@ class OrgNote(object):
         """
 
         if note_dir == None:
-            note_dir = "./" + self.source_dir
+            note_dir = self.source_dir
 
         for path,dirs,files in os.walk(note_dir):
             if dirs: continue
@@ -1404,14 +1404,29 @@ class OrgNote(object):
         publish_data = [i.strip() for i in publish_data]
 
         nopublish_data = open(nopublish_list,"r").readlines()
-        nopublish_data = [i.strip().replace("+ [[","- [[") for i in nopublish_data]
+        #nopublish_data = [i.strip().replace("+ [[","- [[") for i in nopublish_data]
         
         all_publish = True
         self.scan()
         for _note in reversed(sorted(self.notes_db.keys())):
+            if _note.endswith(".org"):
+                _html = _note.replace(".org",".html")
+            elif _note.endswith(".md"):
+                _html = _note.replace(".md",".html")
+            else:
+                _html = _note
+                
             publish_line = util.publish_note(self.notes_db[_note],self.source_dir)
+
             if publish_line not in publish_data and publish_line not in nopublish_data:
-                print("%s not publish yet!" % _note)
+                #if _html in publish_data or _html in nopublish_data:
+                #    print("Warning: %s (title) updated!" % _note)
+                #    print("\tPlease update it in %s/public.org or %s/nopublic.org" % (_note,self.source_dir,self.source_dir))
+                #    print("\tWith: %s" % publish_line)
+                #else:
+                print("\033[34m[Warning]\033[0m: %s not publish yet!" % _note)
+                # \033[34m蓝色字\033[0m
+                # \033[41;37m红色\033[0m
                 all_publish = False
 
         if all_publish:
