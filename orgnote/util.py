@@ -101,6 +101,7 @@ def add_note(notename="",srcdir="notes/"):
         if not os.path.exists(notename):
             import orgnote.init
             note_name = orgnote.init.create_default_note(notename)
+            note_name = note_name.replace("././","./").replace("//","/")
             if note_name != None:
                 print("%s init done" % note_name)
         else:

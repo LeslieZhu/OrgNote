@@ -57,7 +57,9 @@ class OrgNote(object):
         # blog option        
         self.homepage = self.cfg.cfg.get("url","https://github.com/LeslieZhu/OrgNote")
         self.blogroot = self.cfg.cfg.get("root","/")
+        
         self.source_dir = "./" + self.cfg.cfg.get("source_dir","notes") +'/'
+        
         self.images_dir = self.cfg.cfg.get("images_dir","images")
         self.files_dir = self.cfg.cfg.get("files_dir","data")
 
@@ -75,6 +77,7 @@ class OrgNote(object):
         self.css_highlight = self.cfg.cfg.get("css_highlight","default")
 
         self.duoshuo_shortname = self.cfg.cfg.get("duoshuo_shortname",None)
+        self.utteranc_repo = self.cfg.cfg.get("utteranc_repo",None)
 
         self.default_tag = self.cfg.cfg.get("default_tag", u"默认")
         self.nopublic_tag = self.cfg.cfg.get("nopublic_tag",u"暂不公开")
@@ -102,11 +105,19 @@ class OrgNote(object):
 
         self.__pagenames__ = {}
 
-        self.col_md_index = "col-md-9"
+        if self.sidebar_show == 1:
+            self.col_md_index = "col-md-9"
+            self.col_md_index_r = "col-md-3"
+        else:
+            self.col_md_index = "col-md-12"
+            self.col_md_index_r = ""
+            
         if self.sidebar_show_page == 1:
             self.col_md_page = "col-md-9"
+            self.col_md_page_r = "col-md-3"
         else:
             self.col_md_page = "col-md-12"
+            self.col_md_page_r = ""
 
         # update settings
         self.refresh_config()
@@ -386,13 +397,13 @@ class OrgNote(object):
 
 
             if self.emacs_version[0] >= 24: # and self.emacs_version[1] >= 4:
-                output += """<div class="col-md-12">"""
+                output += """<div class="%s">""" % "col-md-12" #self.col_md_index
             else:
                 output += """            
                 <div class="entry">
                 <div class="row">
-                <div class="col-md-12">
-                """
+                <div class="%s">
+                """ % self.col_md_index
                 
 
         
@@ -403,14 +414,14 @@ class OrgNote(object):
 
             if self.emacs_version[0] >= 24:# and self.emacs_version[1] >= 4:
                 output += """
-                </div> <!-- col-md-12 -->
-                """
+                </div> <!-- %s -->
+                """ % "col-md-12" #self.col_md_index
             else:
                 output += """
-                </div> <!-- col-md-12 -->
+                </div> <!-- %s -->
                 </div> <!-- row -->
                 </div> <!-- entry -->
-                """
+                """ % "col-md-12" #self.col_md_index
         
 
         if num == 0:
@@ -443,8 +454,8 @@ class OrgNote(object):
         
         output += """
         </div> <!-- mypage -->
-        </div> <!-- col-md-9 -->
-        """ 
+        </div> <!-- %s -->
+        """  % "col-md-12" #self.col_md_index
 
         return output
 
@@ -643,6 +654,7 @@ class OrgNote(object):
 
         #delete id="content"
         new_data = new_data.replace("content","content-index")
+        #new_data = new_data.replace(self.col_md_page,"col-md-12")
 
         output += new_data
 
@@ -668,8 +680,8 @@ class OrgNote(object):
         <!-- display as entry -->
         <div class="entry">
         <div class="row">
-        <div class="col-md-12">
-        """
+        <div class="%s">
+        """ % self.col_md_index
         
         for archive in data:
             if len(archive) == 2:
@@ -686,8 +698,8 @@ class OrgNote(object):
         
         output += """
         </div> <!-- mypage -->
-        </div> <!-- col-md-9 -->
-        """
+        </div> <!-- %s -->
+        """ % self.col_md_index
         
         return output
     
@@ -700,8 +712,8 @@ class OrgNote(object):
         <!-- display as entry -->
         <div class="entry">
         <div class="row">
-        <div class="col-md-12">
-        """
+        <div class="%s">
+        """ % self.col_md_index
         
         if self.description:
             output += "<p>%s</p>" % self.description
@@ -720,10 +732,24 @@ class OrgNote(object):
 
         output += """
         </div> <!-- mypage -->
-        </div> <!-- col-md-9 -->
-        """
+        </div> <!-- %s -->
+        """ % self.col_md_index
         
         return output
+
+    def utteranc(self):
+        if not self.utteranc_repo:
+            return ""
+        else:
+            return """
+            <script src="https://utteranc.es/client.js"
+            repo="%s"
+            issue-term="title"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+            </script>
+            """ % self.utteranc_repo
 
     def duosuo(self):
         if not self.duoshuo_shortname:
@@ -749,9 +775,9 @@ class OrgNote(object):
         
     def contain_sidebar(self):
         return """
-        <div class="col-md-3">
+        <div class="%s">
         <div id="sidebar">
-        """
+        """ % (self.col_md_index_r if self.col_md_index_r else self.col_md_page_r)
     
     def sidebar_contact(self):
         return """
@@ -878,8 +904,8 @@ class OrgNote(object):
     def end_sidebar(self):
         return """
         </div> <!-- sidebar -->
-        </div> <!-- col-md-3 -->
-        """
+        </div> <!-- %s -->
+        """ % self.col_md_index_r
         
     def contain_suffix(self):
         return """
@@ -943,14 +969,19 @@ class OrgNote(object):
         return output
 
     def gen_sidebar_page(self):
+        output = ""
+        
+        #if self.utteranc_repo:
+        #    output += self.utteranc()
+            
         if self.sidebar_show_page == 0:
             #if self._sidebar_contact:
             #    output = self.sidebar_contact()
             #else:
             #    output = ""
-            output = "" # do not want this now
+            output += "" # do not want this now
         else:
-            output = self.contain_sidebar()
+            output += self.contain_sidebar()
             if self._sidebar_contact:
                 output += self.sidebar_contact()
             for _sidebar in self.sidebar_list:
@@ -1259,6 +1290,7 @@ class OrgNote(object):
         else:
             os.chdir(repodir)
             os.system("git fetch && git pull origin %s" % (self.deploy_branch))
+            os.system("git rm -r . && git commit -m 'cleanup'")
             
         os.system("rsync -a --exclude='.repo/' ../ ./")
         os.system("git add . && git commit -m 'update' && git push origin %s" % self.deploy_branch)

@@ -76,6 +76,9 @@ per_page: 6
 # duoshuo
 duoshuo_shortname:
 
+# https://utteranc.es/
+utteranc_repo:
+
 
 
 # layout
