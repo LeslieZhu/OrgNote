@@ -722,6 +722,42 @@ class OrgNote(object):
         """ % self.col_md_index
         
         return output
+
+    def contain_archive_tag(self):
+        output = ""
+        
+        """
+        <!-- display as entry -->
+        <div class="entry"> 
+        <div class="row">
+        <div class="%s">
+        """ % self.col_md_index
+
+        output += "<ul>"
+
+        from functools import cmp_to_key
+        key = cmp_to_key(lambda x,y: len(self.tags[x]) - len(self.tags[y]))
+        for key in sorted(self.keywords,key=key,reverse=True):
+            output += "<h3>%s</h3><ul>" % key
+            for link in self.tags[key]:
+                newarchive = [self.gen_public_link(link[0],self.public_url),'fa fa-file-o',link[1]]
+                output += self.gen_href(newarchive)
+            output += "</ul>"
+
+        output += "</ul>"
+
+        """
+        </div>
+        </div>
+        </div>
+        """        
+
+        output += """
+        </div> <!-- mypage -->
+        </div> <!-- %s -->
+        """ % self.col_md_index
+
+        return output
     
     def contain_about(self):
         """about me page"""
@@ -1093,7 +1129,7 @@ class OrgNote(object):
         print(self.body_menu(self.menus),file=output)
         print(self.contain_prefix(["归档"],"","归档"),file=output)
         print(self.contain_prefix_end(),file=output)
-        print(self.contain_archive(self.archives),file=output)              # auto gen
+        print(self.contain_archive_tag(),file=output)
         print(self.gen_sidebar(),file=output)
         print(self.contain_suffix(),file=output)
         print(self.header_suffix(),file=output)
