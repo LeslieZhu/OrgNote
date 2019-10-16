@@ -622,7 +622,13 @@ class OrgNote(object):
 
         _title = html_data.find('h1',{'class':'title'}).text
         content_data = html_data.find('div',{'id':'content'})
-        content_data_text = str(content_data)
+
+        if 'table-of-contents' in str(content_data):
+            content_data_text = str(html_data.find('div',{'id':'table-of-contents'}))
+        else:
+            content_data_text = str(content_data)
+
+        content_data_text = content_data_text.replace('<h1 class="title">%s</h1>' % (_title),"")
 
         src_data = content_data.find_all('div',{'class':'org-src-container'})
         for src_tag in src_data:
@@ -632,24 +638,27 @@ class OrgNote(object):
             new_src = get_hightlight_src(src_code,src_lang)
             content_data_text = content_data_text.replace(str(src_tag),new_src)
 
-        content_data_text = content_data_text.replace('<h1 class="title">%s</h1>' % (_title),"")
-        new_data = content_data_text.split('</p>')
-        p_num = len(new_data)
 
-        if p_num > 5:
-            new_data = '</p>'.join(new_data[:5])
-            new_data += '''
-            </p>
-            </div>
-            '''
-            
-            if 'table-of-contents' in new_data:
+        if 'table-of-contents' in content_data_text:
+            new_data = content_data_text
+        else:
+            new_data = content_data_text.split('</p>')
+            p_num = len(new_data)
+
+            if p_num > 5:
+                new_data = '</p>'.join(new_data[:5])
                 new_data += '''
-                </div>
+                </p>
                 </div>
                 '''
-        else:
-            new_data = '</p>'.join(new_data)
+            
+                #if 'table-of-contents' in new_data:
+                #    new_data += '''
+                #    </div>
+                #    </div>
+                #    '''
+            else:
+                new_data = '</p>'.join(new_data)
 
 
         #delete id="content"
