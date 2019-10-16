@@ -136,7 +136,7 @@ class OrgNote(object):
             [self.public_url + "archive.html","归档","fa fa-archive","归档"],
             [self.public_url + "tags.html","标签","fa fa-archive","标签"],
             [self.public_url + "about.html","说明","fa fa-user","说明"],
-            [self.public_url + "index.xml","订阅","fa fa-rss","订阅"]
+            [self.public_url + "rss.xml","订阅","fa fa-rss","订阅"]
         ]
 
         
@@ -145,7 +145,7 @@ class OrgNote(object):
             "归档": "archive.html",
             "说明": "about.html",
             "标签": "tags.html",
-            "订阅": "index.xml"
+            "订阅": "rss.xml"
         }
 
 
@@ -1100,6 +1100,78 @@ class OrgNote(object):
             
         output.close()
 
+    def gen_rss(self):
+        output = open('./' + self.public_dir + "rss.xml","w")
+        print(self.gen_rss_xml(),file=output)
+        output.close()
+
+    def gen_rss_xml(self):
+        output = ""
+
+        # prefix
+        output += """<?xml version="1.0" encoding="UTF-8" ?>
+        <rss version="2.0">
+        <channel>
+
+        <title>%s</title>
+
+        <link>%s</link>
+
+        <description>
+           <![CDATA[%s]]>
+        </description>
+
+        <language>zh-CN</language>
+        <generator>OrgNote: A simple org-mode blog, write blog by org-mode in Emacs</generator>
+        <webMaster><![CDATA[%s]]></webMaster>
+        <ttl>120</ttl>
+        
+        <image>
+        <title><![CDATA[%s]]></title>
+        <url>%s/favicon.ico</url>
+        <link>%s</link>
+        </image>        
+        """ % (self.title,self.homepage,self.subtitle,
+               self.author,self.title,self.homepage,self.homepage)
+
+        # item
+        for note in self.notes:
+            link,name = note
+            output += '''
+            <item>
+            <title> %s </title>
+            <link> %s </link>
+            <author><![CDATA[%s]]></author>
+            <guid isPermaLink="true">%s</guid>
+            ''' % (name,self.gen_public_link(link,self.public_url),
+                   self.author,self.gen_public_link(link,self.public_url))
+
+            for tag in self.gen_category(link):
+                output += '''<category><![CDATA[%s]]></category>''' % tag
+                
+
+            output += '''
+            <pubDate>%s</pubDate>
+            <description><![CDATA[%s]]></description>
+            <comments>%s</comments>
+            </item>
+            ''' % (self.gen_date(link),
+                   self.gen_content(link),
+                   self.gen_public_link(link,self.public_url))
+
+        # suffix
+        output += '''
+        </channel>
+        </rss>
+        '''
+
+        return output
+
+    def gen_content(self,link):
+        html_data = BeautifulSoup(open(link,"r").read(),"html.parser")
+        content_data = html_data.find('div',{'id':'content'})
+        return str(content_data)
+
     def gen_tags_menu_page(self):
         output = open('./' + self.public_dir + "tags.html","w")
         print(self.header_prefix(title="标签"),file=output)
@@ -1433,6 +1505,7 @@ class OrgNote(object):
         self.gen_archive()
         self.gen_tags()
         self.gen_tags_menu_page()
+        self.gen_rss()
         self.gen_timetags()
         self.gen_nopublic()
         print("notes generate done")
