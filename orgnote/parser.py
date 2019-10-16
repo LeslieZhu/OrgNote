@@ -78,6 +78,10 @@ class OrgNote(object):
 
         self.duoshuo_shortname = self.cfg.cfg.get("duoshuo_shortname",None)
         self.utteranc_repo = self.cfg.cfg.get("utteranc_repo",None)
+        
+        self.donate_name = self.cfg.cfg.get("donate_name","赞赏支持")
+        self.donate_alipay = self.cfg.cfg.get("donate_alipay","")
+        self.donate_wechat = self.cfg.cfg.get("donate_wechat","")
 
         self.default_tag = self.cfg.cfg.get("default_tag", u"默认")
         self.nopublic_tag = self.cfg.cfg.get("nopublic_tag",u"暂不公开")
@@ -130,7 +134,9 @@ class OrgNote(object):
         self.menus = [
             [self.public_url + "minyi.html",self.links_minyi_name,"fa fa-sitemap",self.links_minyi_name],
             [self.public_url + "archive.html","归档","fa fa-archive","归档"],
-            [self.public_url + "about.html","说明","fa fa-user","说明"]
+            [self.public_url + "tags.html","标签","fa fa-archive","标签"],
+            [self.public_url + "about.html","说明","fa fa-user","说明"],
+            [self.public_url + "index.xml","订阅","fa fa-rss","订阅"]
         ]
 
         
@@ -607,8 +613,9 @@ class OrgNote(object):
         else:
             page_order = ""
 
+
         without_title_data = content_data_text.replace('<h1 class="title">%s</h1>' % (_title),"")
-        new_data = without_title_data + page_order + self.duosuo()
+        new_data = without_title_data + page_order + self.donate() + self.duosuo() + self.utteranc()
         output += new_data
         output += "</div> <!-- my-page -->"
         output += "</div> <!-- col-md -->"
@@ -748,6 +755,45 @@ class OrgNote(object):
         
         return output
 
+    def donate(self):
+        if not self.donate_name or (not self.donate_wechat and not self.donate_alipay):
+            return ""
+
+        output = ""
+        
+        if self.donate_name:
+            
+            output += """
+            <div class="post-reward">
+            <input type="checkbox" name="reward" id="reward" hidden />
+            <label class="reward-button" for="reward">%s</label>
+            <div class="qr-code">
+            """ % self.donate_name
+
+            if self.donate_wechat:
+                output += """
+                <label class="qr-code-image" for="reward">
+                <img class="image" src="%s/%s">
+                <span>微信打赏</span>
+                </label>
+                """ % (self.public_url,self.donate_wechat)
+
+            if self.donate_alipay:
+                output += """
+                <label class="qr-code-image" for="reward">
+                <img class="image" src="%s/%s">
+                <span>支付宝打赏</span>
+                </label>
+                """ % (self.public_url,self.donate_alipay)
+
+                
+            output += """
+            </div>
+            </div>
+            """
+            
+        return output
+            
     def utteranc(self):
         if not self.utteranc_repo:
             return ""
@@ -982,8 +1028,8 @@ class OrgNote(object):
     def gen_sidebar_page(self):
         output = ""
         
-        if self.utteranc_repo:
-            output += self.utteranc()
+        #if self.utteranc_repo:
+        #    output += self.utteranc()
             
         if self.sidebar_show_page == 0:
             #if self._sidebar_contact:

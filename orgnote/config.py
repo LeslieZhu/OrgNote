@@ -79,7 +79,11 @@ duoshuo_shortname:
 # https://utteranc.es/
 utteranc_repo:
 
-
+# donate
+#disable: set name as blank
+donate_name: "赞赏支持"
+donate_wechat: images/wechatpay.png
+donate_alipy: images/alipay.png
 
 # layout
 ## 1: enable
