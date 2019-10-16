@@ -522,7 +522,7 @@ class OrgNote(object):
         </li>
         <li class="post-copyright-license">
         <strong>版权声明： </strong>
-        本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+        原创文章，如需转载请注明文章作者和出处。谢谢！
         </li>
         </ul>
         </div>
@@ -532,6 +532,8 @@ class OrgNote(object):
                self.notes[num][1],#self.public_url,
                #self.homepage + self.blogroot,
                self.gen_public_link(self.notes[num][0],self.public_url))
+
+        # 本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
         
         return output
 
@@ -980,8 +982,8 @@ class OrgNote(object):
     def gen_sidebar_page(self):
         output = ""
         
-        #if self.utteranc_repo:
-        #    output += self.utteranc()
+        if self.utteranc_repo:
+            output += self.utteranc()
             
         if self.sidebar_show_page == 0:
             #if self._sidebar_contact:
