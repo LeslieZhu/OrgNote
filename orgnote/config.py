@@ -122,9 +122,9 @@ links:
     name: OrgNote
     icon: fa fa-github
 
-# minyi links, add links on menu(MinYi) page
+# minyi links, add links on menu page
 # - url,display name
-links_minyi_name: "MinYi"
+links_minyi_name: "觅链"
 links_minyi:
     - https://github.com/OrgNote,OrgNote
 

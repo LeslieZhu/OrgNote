@@ -103,7 +103,7 @@ class OrgNote(object):
         self.links = self.cfg.cfg.get("links",list())
         self.links_title = self.cfg.cfg.get("links_title","友情链接")
 
-        self.links_minyi_name = self.cfg.cfg.get("links_minyi_name","MinYi")
+        self.links_minyi_name = self.cfg.cfg.get("links_minyi_name","觅链") # MinYi
         self.links_minyi = self.cfg.cfg.get("links_minyi",list())
 
 
@@ -141,9 +141,11 @@ class OrgNote(object):
 
         
         self.menus_map = {
-            self.links_minyi_name: "minyi",
-            "归档": "archive",
-            "说明": "about"
+            self.links_minyi_name: "minyi.html",
+            "归档": "archive.html",
+            "说明": "about.html",
+            "标签": "tags.html",
+            "订阅": "index.xml"
         }
 
 
@@ -249,7 +251,7 @@ class OrgNote(object):
         if name not in self.menus_map.keys():
             return "<a href=\"%stags/%s.html\"><i class=\"%s\"></i>%s</a>" % (self.public_url,name,name,name)
         else:
-            return "<a href=\"%s%s.html\"><i class=\"%s\"></i>%s</a>" % (self.public_url,self.menus_map[name],name,name)
+            return "<a href=\"%s%s\"><i class=\"%s\"></i>%s</a>" % (self.public_url,self.menus_map[name],name,name)
 
     def gen_href(self,line=list()):
         if len(line) == 4:          # menu
@@ -893,6 +895,30 @@ class OrgNote(object):
 
         return output
 
+    def contain_tags(self):
+        output = ""
+        output += """
+        <div class="tag-cloud-tags" style="padding: 5px 15px">
+        """
+
+        for key in self.keywords:
+            nums = len(self.tags[key])
+            size = nums/5.0
+            if size < 1:
+                size = 1
+            elif size > 4:
+                size = 4
+            else:
+                pass
+            output += "<a href=\"%stags/%s.html\" style=\"font-size:%srem\">%s</a>" % (self.public_url,key,size,key)            
+
+        output += """
+        </div>
+        """
+
+
+        return output
+    
     def sidebar_date(self):
         output = ""
         output += """
@@ -1072,6 +1098,20 @@ class OrgNote(object):
         print(self.contain_suffix(),file=output)
         print(self.header_suffix(),file=output)
             
+        output.close()
+
+    def gen_tags_menu_page(self):
+        output = open('./' + self.public_dir + "tags.html","w")
+        print(self.header_prefix(title="标签"),file=output)
+        print(self.body_prefix(),file=output)
+        print(self.body_menu(self.menus),file=output)
+        print(self.contain_prefix(["标签"],"","标签"),file=output)
+        print(self.contain_prefix_end(),file=output)
+        print(self.contain_tags(),file=output)
+        #print(self.gen_sidebar(),file=output)
+        print(self.contain_suffix(),file=output)
+        print(self.header_suffix(),file=output)
+
         output.close()
         
     def gen_page(self,note=list(),num=0,public=True):
@@ -1392,6 +1432,7 @@ class OrgNote(object):
         self.gen_minyi()
         self.gen_archive()
         self.gen_tags()
+        self.gen_tags_menu_page()
         self.gen_timetags()
         self.gen_nopublic()
         print("notes generate done")
