@@ -1205,6 +1205,52 @@ class OrgNote(object):
         print(self.gen_rss_xml(),file=output)
         output.close()
 
+    def gen_search(self):
+        output = open('./' + self.public_dir + self.search_path,"w")
+        print(self.gen_search_json(),file=output)
+        output.close()
+
+    def gen_search_json(self):
+        searchdb = []
+        
+        for note in self.notes:
+            link,name = note
+            item = {}
+            item['title'] = name
+            item['url'] = self.gen_public_link(link,'/') #,self.public_url)
+            item['content'] = self.gen_content(link)
+            searchdb.append(item)
+
+        return json.dumps(searchdb)
+
+    def gen_search_xml(self):
+        output = ""
+
+        #entry
+        output += """<?xml version="1.0" encoding="UTF-8" ?>
+        <item>
+        """
+
+        # item
+        for note in self.notes:
+            link,name = note
+            output += '''
+            <entry>
+            <title> %s </title>
+            <url> %s </link>
+            <description>%s </description>
+            </entry>
+            ''' % (name,
+                   self.gen_public_link(link,self.public_url),
+                   self.gen_content(link))
+
+        output += """
+        </item>
+        </xml>
+        """
+
+        return output
+
     def gen_rss_xml(self):
         output = ""
 
@@ -1611,6 +1657,7 @@ class OrgNote(object):
         self.gen_tags()
         self.gen_tags_menu_page()
         self.gen_rss()
+        self.gen_search()
         self.gen_timetags()
         self.gen_nopublic()
         print("notes generate done")
