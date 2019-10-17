@@ -688,7 +688,7 @@ class OrgNote(object):
         </div>
         <div class="clearfix"></div>
         </footer>
-        """ % self.gen_public_link(link)
+        """ % self.gen_public_link(link,self.public_url)
         
         #output += "</div> <!-- contain -->"
         #output += "</div> <!-- col-md-12 -->"
@@ -1209,7 +1209,8 @@ class OrgNote(object):
             <comments>%s</comments>
             </item>
             ''' % (self.gen_date(link),
-                   self.gen_content(link),
+                   #self.gen_content(link),
+                   self.contain_note(link),
                    self.gen_public_link(link,self.public_url))
 
         # suffix
@@ -1516,7 +1517,7 @@ class OrgNote(object):
         else:
             os.chdir(repodir)
             os.system("git fetch && git pull origin %s" % (self.deploy_branch))
-            os.system("git rm -r . && git commit -m 'cleanup'")
+            #os.system("git rm -r . && git commit -m 'cleanup'")
             
         os.system("rsync -a --exclude='.repo/' ../ ./")
         os.system("git add . && git commit -m 'update' && git push origin %s" % self.deploy_branch)
@@ -1585,37 +1586,90 @@ class OrgNote(object):
         else:
             pass
 
+    def do_recall(self,notename=""):
+        import os.path
+        publish_list = self.dirs[0]
+        nopublish_list = self.dirs[1]
+
+        publish_line = util.publish_note(notename,self.source_dir)
+        link = publish_line.replace(".org",".html").replace(".md",".html")
+
+        if publish_line == None:
+            print("\033[31m[ERROR]\033[0m: Can not cancel note: %s, are you sure it exists?" % notename)
+            return
+
+        print(publish_line)
+
+        if not os.path.exists(publish_list):
+            data = []
+        else:
+            data = open(publish_list,"r").readlines()
+            data = [i.strip() for i in data if not i.startswith("#")]
+
+        nopublish_data = open(nopublish_list,"r").readlines()
+        nopublish_data = [i.strip() for i in nopublish_data if not i.startswith("#")]
+
+        if publish_line in data:
+            data.remove(publish_line)
+            output = open(publish_list,"w")
+            for line in data:
+                if line in nopublish_data:
+                    continue
+                print(line,file=output)
+            output.close()
+            
+        if publish_line in nopublish_data:
+            nopublish_data.remove(publish_line)
+            output = open(nopublish_list,"w")
+            for line in nopublish_data:
+                print(line,file=output)
+            output.close()
+
+        page_file = './' + self.gen_public_link(link,self.public_dir)
+        
+        curdir = os.getcwd()
+        repodir = "./%s/.repo/" % self.public_dir
+        
+        repo_file = './' + self.gen_public_link(link,repodir)
+        filename = os.path.basename(repo_file)
+
+        if os.path.exists(page_file):
+            os.remove(page_file)
+            print("\033[34m[Warning]\033[0m: delete %s done!" % page_file)
+
+        if os.path.exists(repo_file):
+            os.remove(repo_file)
+            print("\033[34m[Warning]\033[0m: delete %s done!" % repo_file)
+            os.chdir(repodir)
+            os.system("git  commit -am 'recall %s' >/dev/null;git push origin %s >/dev/null" % (filename,self.deploy_branch))
+            os.chdir(curdir)
+
+
+        print("\033[34m[Info]\033[0m: Recall %s done!" % notename)
+
+        
+
     def do_publish(self,notename=""):
         import os.path
         publish_list = self.dirs[0]
         nopublish_list = self.dirs[1]
 
-        #notename = os.path.basename(notename).replace(".org","").replace(".html","")
-
         publish_line = util.publish_note(notename,self.source_dir)
-        print(publish_line)
+        
+        if publish_line == None:
+            print("\033[31m[ERROR]\033[0m: Can not publish note: %s, are you sure it exists?" % notename)
+            return
 
+        print(publish_line)
+            
         nopublish_data = open(nopublish_list,"r").readlines()
         nopublish_data = [i.strip() for i in nopublish_data if not i.startswith("#")]
 
         if not os.path.exists(publish_list):
             output = open(publish_list,"w")
             print(publish_line,file=output)
-            #self.scan()
-            #for _note in reversed(sorted(self.notes_db.keys())):
-            #    publish_line = util.publish_note(self.notes_db[_note])
-                
-            #    if publish_line in nopublish_data: 
-            #        continue
-            #    print(publish_line,file=output)
             output.close()
         else:
-            publish_line = util.publish_note(notename,self.source_dir)
-
-            if publish_line == None:
-                print("\033[31m[ERROR]\033[0m: Can not publish note: %s, are you sure it exists?" % notename)
-                return
-
             data = open(publish_list,"r").readlines()
             data = [i.strip() for i in data if not i.startswith("#")]
 
@@ -1707,6 +1761,7 @@ Commands:
   list       List this blog notes
   status     Status of those notes
   publish    Publish a note
+  recall     Cancel publish a note
   generate   Generate static files
   server     Start the server
   deploy     Deploy your website
@@ -1758,6 +1813,8 @@ def main(args=None):
             blog.do_generate(sys.argv[2])
         elif sys.argv[1] == "deploy":
             blog.do_deploy(sys.argv[2])
+        elif sys.argv[1] == "recall":
+            blog.do_recall(sys.argv[2])
         else:
             usage()
     else:
