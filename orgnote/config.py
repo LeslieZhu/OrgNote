@@ -82,8 +82,8 @@ utteranc_repo:
 # donate
 #disable: set name as blank
 donate_name: "赞赏支持"
-donate_wechat: images/wechatpay.png
-donate_alipy: images/alipay.png
+donate_wechatpay: images/wechatpay.png
+donate_alipay: images/alipay.png
 
 # layout
 ## 1: enable

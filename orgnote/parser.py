@@ -81,7 +81,7 @@ class OrgNote(object):
         
         self.donate_name = self.cfg.cfg.get("donate_name","赞赏支持")
         self.donate_alipay = self.cfg.cfg.get("donate_alipay","")
-        self.donate_wechat = self.cfg.cfg.get("donate_wechat","")
+        self.donate_wechatpay = self.cfg.cfg.get("donate_wechatpay","")
 
         self.default_tag = self.cfg.cfg.get("default_tag", u"默认")
         self.nopublic_tag = self.cfg.cfg.get("nopublic_tag",u"暂不公开")
@@ -220,6 +220,7 @@ class OrgNote(object):
         <link rel="stylesheet" href="%stheme/%s/css/style.css" media="screen" type="text/css">
         <link rel="stylesheet" href="%stheme/%s/css/highlight.css" media="screen" type="text/css">
         <link rel="stylesheet" href="%stheme/%s/css/%s-highlight.css" media="screen" type="text/css">
+        <script type="text/javascript" src="%stheme/%s/js/jquery-2.0.3.min.js"></script>
         </head>
         """ % (title, self.author, self.description, self.title,self._keywords,
                self.blogroot,
@@ -227,7 +228,8 @@ class OrgNote(object):
                self.blogroot,self.theme,
                self.blogroot,self.theme,
                self.blogroot,self.theme,
-               self.blogroot,self.theme,self.css_highlight
+               self.blogroot,self.theme,self.css_highlight,
+               self.blogroot,self.theme
         )
 
     def body_prefix(self):
@@ -794,7 +796,7 @@ class OrgNote(object):
         return output
 
     def donate(self):
-        if not self.donate_name or (not self.donate_wechat and not self.donate_alipay):
+        if not self.donate_name or (not self.donate_wechatpay and not self.donate_alipay):
             return ""
 
         output = ""
@@ -804,21 +806,21 @@ class OrgNote(object):
             output += """
             <div class="post-reward">
             <input type="checkbox" name="reward" id="reward" hidden />
-            <label class="reward-button" for="reward">%s</label>
+            <label id="reward-button" class="reward-button" for="reward">%s</label>
             <div class="qr-code">
             """ % self.donate_name
 
-            if self.donate_wechat:
+            if self.donate_wechatpay:
                 output += """
-                <label class="qr-code-image" for="reward">
+                <label id="qr-code-image-w" class="qr-code-image" for="reward" hidden>
                 <img class="image" src="%s/%s">
                 <span>微信打赏</span>
                 </label>
-                """ % (self.public_url,self.donate_wechat)
+                """ % (self.public_url,self.donate_wechatpay)
 
             if self.donate_alipay:
                 output += """
-                <label class="qr-code-image" for="reward">
+                <label id="qr-code-image-a" class="qr-code-image" for="reward" hidden>
                 <img class="image" src="%s/%s">
                 <span>支付宝打赏</span>
                 </label>
@@ -1046,9 +1048,24 @@ class OrgNote(object):
         <span>▲</span> 
         </a>
         
+        %s
+
         </body>
         </html>
-        """ % self.author
+        """ % (self.author,self.gen_jscripts())
+
+    def gen_jscripts(self):
+        return """
+        <!-- donate script -->
+        <script type="text/javascript">
+        document.getElementById('reward').onclick = function() {
+        $('#reward-button').addClass('hidden');
+        $('#qr-code-image-w').show();
+        $('#qr-code-image-a').show();
+        }
+        </script>
+        <!-- /donate script -->
+        """
 
     def gen_public_link(self,link="",prefix=None):
         if prefix == None:
@@ -1483,6 +1500,10 @@ class OrgNote(object):
         
         self.homepage = self.cfg.cfg.get("url","https://github.com/LeslieZhu/OrgNote")
         self.refresh_config()
+
+        # cleanup cached html file
+        os.system("rm -r %s/2*/" % self.public_dir)
+        
         self.do_generate()
         
         curdir = os.getcwd()
