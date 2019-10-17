@@ -77,6 +77,7 @@ class OrgNote(object):
         self.css_highlight = self.cfg.cfg.get("css_highlight","default")
 
         self.duoshuo_shortname = self.cfg.cfg.get("duoshuo_shortname",None)
+        self.weibo_shortname = self.cfg.cfg.get("weibo_shortname",None)
         self.utteranc_repo = self.cfg.cfg.get("utteranc_repo",None)
         
         self.donate_name = self.cfg.cfg.get("donate_name","赞赏支持")
@@ -129,15 +130,19 @@ class OrgNote(object):
     def refresh_config(self):
         # homepage will update in local/remote server mode
         self.public_url = self.homepage + re.sub("//*","/",self.blogroot + '/')
+        self.search_path = "search.json"
 
         # depends on public_url
         self.menus = [
             [self.public_url + "minyi.html",self.links_minyi_name,"fa fa-sitemap",self.links_minyi_name],
             [self.public_url + "archive.html","归档","fa fa-archive","归档"],
-            [self.public_url + "tags.html","标签","fa fa-archive","标签"],
+            [self.public_url + "tags.html","标签","fa fa-tags","标签"],
             [self.public_url + "about.html","说明","fa fa-user","说明"],
-            [self.public_url + "rss.xml","订阅","fa fa-rss","订阅"]
+            [self.public_url + "rss.xml","订阅","fa fa-rss","订阅"],
+            [self.public_url + self.search_path,"搜索","fa fa-search fa-fw","搜索"]
         ]
+
+
 
         
         self.menus_map = {
@@ -203,7 +208,7 @@ class OrgNote(object):
         <html>
         <head>
         <meta charset="utf-8">
-        
+        %s
         <title>%s</title>
         <meta name="author" content="%s">
         <meta name="description" content="%s">
@@ -221,14 +226,16 @@ class OrgNote(object):
         <link rel="stylesheet" href="%stheme/%s/css/highlight.css" media="screen" type="text/css">
         <link rel="stylesheet" href="%stheme/%s/css/%s-highlight.css" media="screen" type="text/css">
         <script type="text/javascript" src="%stheme/%s/js/jquery-2.0.3.min.js"></script>
+        <script type="text/javascript" src="%stheme/%s/js/local-search.js?v=7.4.1"></script>
         </head>
-        """ % (title, self.author, self.description, self.title,self._keywords,
+        """ % (self.js_config(),title, self.author, self.description, self.title,self._keywords,
                self.blogroot,
                self.blogroot,self.theme,
                self.blogroot,self.theme,
                self.blogroot,self.theme,
                self.blogroot,self.theme,
                self.blogroot,self.theme,self.css_highlight,
+               self.blogroot,self.theme,
                self.blogroot,self.theme
         )
 
@@ -259,6 +266,13 @@ class OrgNote(object):
         if len(line) == 4:          # menu
             if "rss" in line[0]:
                 return "<li><a href=\"%s\" title=\"%s\" target=\"_blank\"><i class=\"%s\"></i>%s</a></li>" % (line[0],line[1],line[2],line[3])
+            elif "search" in line[0]:
+                return """<li>
+                <a role="button" class="popup-trigger">
+                <i class="%s"></i>%s
+                </a>
+                </li>
+                """ % (line[2],line[3])
             else:
                 return "<li><a href=\"%s\" title=\"%s\"><i class=\"%s\"></i>%s</a></li>" % (line[0],line[1],line[2],line[3])
         elif len(line) == 3:        # archive
@@ -281,6 +295,28 @@ class OrgNote(object):
     
         for menu in menus:
             output += self.gen_href(menu)
+
+        # search label
+        output += """
+        <div class="site-search">
+          <div class="popup search-popup">
+            <div class="search-header">
+              <span class="search-icon">
+                <i class="fa fa-search"></i>
+              </span>
+            <div class="search-input-container">
+              <input autocomplete="off" autocorrect="off" autocapitalize="none"
+                     placeholder="Searching..." spellcheck="false"
+                     type="text" id="search-input">
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa fa-times-circle"></i>
+            </span>
+          </div>
+          <div id="search-result"></div>
+        </div>
+        <div class="search-pop-overlay"></div>
+        """
 
         output +="""
         </ul>
@@ -1054,6 +1090,17 @@ class OrgNote(object):
         </html>
         """ % (self.author,self.gen_jscripts())
 
+    def js_config(self):
+        return """
+        <script>
+        var CONFIG = {
+        root: '/',
+        localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"preload":true},
+        path: '%s',
+        };
+        </script>
+        """ % self.search_path
+
     def gen_jscripts(self):
         return """
         <!-- donate script -->
@@ -1092,9 +1139,9 @@ class OrgNote(object):
                     output += self.sidebar_date()
                 elif _sidebar == 'sidebar_link':
                     output += self.sidebar_link()
-                elif _sidebar == 'sidebar_weibo':
+                elif _sidebar == 'sidebar_weibo' and self.weibo_shortname:
                     output += self.sidebar_weibo()
-                elif _sidebar == 'sidebar_duoshuo' and self._sidebar_contact:
+                elif self.duoshuo_shortname and _sidebar == 'sidebar_duoshuo' and self._sidebar_contact:
                     output += self.sidebar_duoshuo()
                 else:
                     pass
@@ -1129,9 +1176,9 @@ class OrgNote(object):
                     output += self.sidebar_date()
                 elif _sidebar == 'sidebar_link':
                     output += self.sidebar_link()
-                elif _sidebar == 'sidebar_weibo':
+                elif _sidebar == 'sidebar_weibo' and self.weibo_shortname:
                     output += self.sidebar_weibo()
-                elif _sidebar == 'sidebar_duoshuo' and self._sidebar_contact:
+                elif self.duoshuo_shortname and _sidebar == 'sidebar_duoshuo' and self._sidebar_contact:
                     output += self.sidebar_duoshuo()
                 else:
                     pass
