@@ -558,9 +558,9 @@ class OrgNote(object):
         #
         if self.weixin_name:
             if self.weixin_public:
-                wx = "<li><strong>微信搜索：</strong> <span>「<a href='%s%s'>%s</a>」</span>, 关注公众号!<li>" % (self.public_url,self.weixin_public,self.weixin_name)
+                wx = "<li><strong>微信搜索：</strong> <span>「 <a href='%s%s'>%s</a> 」</span>, 关注公众号!<li>" % (self.public_url,self.weixin_public,self.weixin_name)
             else:
-                wx = "<li><strong>微信搜索：</strong> <span style='color:red'>「%s」</span>, 关注公众号!<li>" % self.weixin_name
+                wx = "<li><strong>微信搜索：</strong> <span style='color:red'>「 %s 」</span>, 关注公众号!<li>" % self.weixin_name
         else:
             wx = ""
             
