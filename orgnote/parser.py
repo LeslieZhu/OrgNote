@@ -1616,7 +1616,7 @@ class OrgNote(object):
         os.system("git add . && git commit -m 'update' && git push origin %s" % self.deploy_branch)
         os.chdir(curdir)
 
-    def do_generate(self,batch=""):
+    def do_generate(self,homepage="",batch=""):
         self.cfg.update()
         self.public_images()
         self.public_theme()
@@ -1646,6 +1646,11 @@ class OrgNote(object):
                 self.do_page(note)
         else:
             pass
+
+        if homepage:
+            self.homepage = homepage
+
+        self.refresh_config()
         
         self.gen_tag_list()
         self.gen_timetag_list()
@@ -1904,7 +1909,7 @@ def main(args=None):
         elif sys.argv[1] == "publish":
             blog.do_publish(sys.argv[2])
         elif sys.argv[1] == "generate":
-            blog.do_generate(sys.argv[2])
+            blog.do_generate("http://localhost:" + sys.argv[2]) # port: 8080
         elif sys.argv[1] == "deploy":
             blog.do_deploy(sys.argv[2])
         elif sys.argv[1] == "recall":
