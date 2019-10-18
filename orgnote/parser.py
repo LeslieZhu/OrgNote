@@ -99,7 +99,7 @@ class OrgNote(object):
         self._sidebar_contact_name = self.cfg.cfg.get("sidebar_contact_name","联系/反馈")
         self.sidebar_list = self.cfg.cfg.get("sidebar",list())
         
-        self.dirs = [self.source_dir + "/public.org", self.source_dir + "/nopublic.org"]
+        self.dirs = [self.source_dir + "public.org", self.source_dir + "nopublic.org"]
                         
         self.menu_list = self.cfg.cfg.get("menu_list",dict())
         
@@ -1457,9 +1457,9 @@ class OrgNote(object):
             e_index = b_index + note_num
             
     def gen_about(self):
-        about_file = "%s/about.html" % self.source_dir
+        about_file = "%sabout.html" % self.source_dir
         
-        output = open('./' + self.public_dir + "about.html","w")
+        output = open(self.public_dir + "about.html","w")
         print(self.header_prefix(title="说明"),file=output)        
         print(self.body_prefix(),file=output)
         print(self.body_menu(self.menus),file=output)
@@ -1609,25 +1609,25 @@ class OrgNote(object):
         if not os.path.exists(self.public_dir):
             os.makedirs(self.public_dir)
             
-        if os.path.exists("./%s/%s" % (self.source_dir,self.images_dir)):
-            os.system("rsync --quiet -av ./%s/%s ./%s/" % (self.source_dir,self.images_dir,self.public_dir))
+        if os.path.exists("%s%s" % (self.source_dir,self.images_dir)):
+            os.system("rsync --quiet -av %s%s ./%s/" % (self.source_dir,self.images_dir,self.public_dir))
 
-        if os.path.exists("./%s/%s" % (self.source_dir,self.files_dir)):
-            os.system("rsync --quiet -av ./%s/%s ./%s/" % (self.source_dir,self.files_dir,self.public_dir))
+        if os.path.exists("%s%s" % (self.source_dir,self.files_dir)):
+            os.system("rsync --quiet -av %s%s ./%s/" % (self.source_dir,self.files_dir,self.public_dir))
 
     def public_cname(self):
         if not os.path.exists(self.public_dir):
             os.makedirs(self.public_dir)
 
-        if os.path.exists("./%s/CNAME" % self.source_dir):
-            os.system("rsync --quiet -av ./%s/CNAME ./%s/" % (self.source_dir,self.public_dir))
+        if os.path.exists("%sCNAME" % self.source_dir):
+            os.system("rsync --quiet -av %sCNAME ./%s/" % (self.source_dir,self.public_dir))
         
     def public_favicon(self):
         if not os.path.exists(self.public_dir):
             os.makedirs(self.public_dir)
 
-        if os.path.exists("./%s/favicon.ico" % self.source_dir):
-            os.system("rsync --quiet -av ./%s/favicon.ico ./%s/" % (self.source_dir,self.public_dir))
+        if os.path.exists("%sfavicon.ico" % self.source_dir):
+            os.system("rsync --quiet -av %sfavicon.ico ./%s/" % (self.source_dir,self.public_dir))
         
     def do_deploy(self,branch="master"):
         if not self.deploy_url or self.deploy_type != "git":
@@ -1736,6 +1736,9 @@ class OrgNote(object):
         nopublish_list = self.dirs[1]
 
         publish_line = util.publish_note(notename,self.source_dir)
+        
+        if not publish_line: return
+        
         link = publish_line.replace(".org",".html").replace(".md",".html")
 
         if publish_line == None:
@@ -1769,12 +1772,12 @@ class OrgNote(object):
                 print(line,file=output)
             output.close()
 
-        page_file = './' + self.gen_public_link(link,self.public_dir)
+        page_file = self.gen_public_link(link,self.public_dir)
         
         curdir = os.getcwd()
         repodir = "./%s/.repo/" % self.public_dir
         
-        repo_file = './' + self.gen_public_link(link,repodir)
+        repo_file = self.gen_public_link(link,repodir)
         filename = os.path.basename(repo_file)
 
         if os.path.exists(page_file):
@@ -1801,7 +1804,7 @@ class OrgNote(object):
         publish_line = util.publish_note(notename,self.source_dir)
         
         if publish_line == None:
-            print("\033[31m[ERROR]\033[0m: Can not publish note: %s, are you sure it exists?" % notename)
+            print("\033[31m[ERROR]\033[0m: Can not publish note: %s, are you sure the html file exists?" % notename)
             return
 
         print(publish_line)
@@ -1841,8 +1844,8 @@ class OrgNote(object):
             if dirs: continue
             for _file in files:
                 if not _file.endswith(".org") and not _file.endswith(".md"):continue
-                _path = path + '/' + _file
-                if _path == "./" + self.source_dir + "/public.org" or _path == "./" + self.source_dir + "/nopublic.org": continue
+                _path = path + "/"+ _file
+                if _path in [self.source_dir + "public.org",self.source_dir + "nopublic.org",self.source_dir + "about.org"]: continue
                 if _path.endswith(".html"):continue
                 self.notes_db[_path] = _path #_file
 
@@ -1867,7 +1870,7 @@ class OrgNote(object):
         
         all_publish = True
         self.scan()
-        for _note in reversed(sorted(self.notes_db.keys())):
+        for _note in reversed(sorted(self.notes_db.keys())):                        
             if _note.endswith(".org"):
                 _html = _note.replace(".org",".html")
             elif _note.endswith(".md"):

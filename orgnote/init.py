@@ -42,6 +42,100 @@ def create_emacs_init(initfile="init-orgnote.el"):
         print(_data,file=output)
         output.close()
 
+def create_about_html(name="about.hmtl"):
+    import os
+    import os.path
+    import time
+    
+    import orgnote.parser
+    blog = orgnote.parser.OrgNote()
+
+    _data =  """
+    <html>
+    <head>
+    <meta name="keywords" content="关于" />
+    </head>
+    <body>
+    <div id="content">
+    <h1 class="title"></h1>
+    <p>
+    此博客 <code>OrgNote</code> 基于<a href="https://github.com/LeslieZhu/OrgNote">OrgNote</a>生成。
+    </p>
+    </div>
+    </body>
+    </html>
+    """
+
+    
+    _dirname = blog.source_dir
+    _init_file = _dirname + os.path.basename(name)
+
+    if not os.path.exists(_dirname):
+        os.makedirs(_dirname)
+
+    if not os.path.exists(_init_file):
+        print("[info] create ",_init_file)
+        output = open(_init_file,"w")
+        print(_data,file=output)
+        output.close()
+        return _init_file
+    else:
+        print("File %s already exists, please use a new name!" % _init_file)
+        return None
+
+
+def create_about_note(name="about.org"):
+    import os
+    import os.path
+    import time
+
+    import orgnote.parser
+    blog = orgnote.parser.OrgNote()
+
+    _data =  """#+STARTUP: overview
+#+STARTUP: content
+#+STARTUP: showall
+#+STARTUP: showeverything
+#+STARTUP: indent
+#+STARTUP: nohideblocks
+#+OPTIONS: ^:{}
+#+OPTIONS: LaTeX:t
+#+OPTIONS: LaTeX:dvipng
+#+OPTIONS: LaTeX:nil
+#+OPTIONS: LaTeX:verbatim
+        
+#+OPTIONS: H:3
+#+OPTIONS: toc:t
+#+OPTIONS: num:t
+#+LANGUAGE: %s
+        
+#+KEYWORDS: 关于
+#+TITLE: 关于此博客
+#+AUTHOR: %s
+#+EMAIL: %s
+#+DATE: %s
+
+此博客 =%s= 基于[[https://github.com/LeslieZhu/OrgNote][OrgNote]]生成。
+""" % (blog.language, blog.author,blog.email,time.strftime("%Y/%m/%d",time.localtime()),blog.title)
+
+    
+    _dirname = blog.source_dir
+    _init_file = _dirname + os.path.basename(name)
+
+    if not os.path.exists(_dirname):
+        os.makedirs(_dirname)
+
+    if not os.path.exists(_init_file):
+        print("[info] create ",_init_file)
+        output = open(_init_file,"w")
+        print(_data,file=output)
+        output.close()
+        return _init_file
+    else:
+        print("File %s already exists, please use a new name!" % _init_file)
+        return None
+
+
 def create_default_note(name="HelloOrgNote.org"):
     """
     init source_dir/template.org
@@ -83,7 +177,7 @@ def create_default_note(name="HelloOrgNote.org"):
 """ % (blog.language, blog.default_tag, os.path.basename(name).strip(".org"),blog.author,blog.email,time.strftime("%Y/%m/%d",time.localtime()))
 
     
-    _dirname = "./" + blog.source_dir + "/"+ time.strftime("%Y/%m/%d",time.localtime())
+    _dirname = blog.source_dir + time.strftime("%Y/%m/%d",time.localtime())
     _init_file = _dirname + "/" + os.path.basename(name)
 
     if not os.path.exists(_dirname):
@@ -95,7 +189,7 @@ def create_default_note(name="HelloOrgNote.org"):
         print(_data,file=output)
         output.close()
         return _init_file
-    elif "HelloOrgNote.org" not in _init_file:
+    else:
         print("File %s already exists, please use a new name!" % _init_file)
         return None
 
@@ -127,7 +221,7 @@ def create_public_file(name = "public.org"):
     import orgnote.parser
     blog = orgnote.parser.OrgNote()
 
-    _dir = "./" + blog.source_dir + "/"
+    _dir = blog.source_dir
     _init_file = _dir + name
 
     if name == "public.org":
@@ -153,8 +247,8 @@ def main(args=None):
 
     create_config_file("_config.yml")
 
-    source_dir = "./" + blog.source_dir + "/"
-    public_dir = "." + blog.public_dir
+    source_dir = blog.source_dir
+    public_dir = blog.public_dir
     tags_dir = public_dir + "/tags/"
     
     target_list = ["./theme/",public_dir,tags_dir,source_dir]
@@ -168,7 +262,10 @@ def main(args=None):
     #create_emacs_init("init-orgnote.el")
     create_public_file("public.org")
     create_public_file("nopublic.org")
-    create_default_note(blog.source_dir + "/HelloOrgNote.org")
+    create_about_note(blog.source_dir + "/about.org")
+    create_about_html(blog.source_dir + "/about.html")
+    #create_default_note(blog.source_dir + "/HelloOrgNote.org")
+
 
     if not os.path.exists("theme/freemind"):
         cmd = "git clone git@github.com:LeslieZhu/orgnote-theme-freemind.git theme/freemind"

@@ -97,7 +97,7 @@ def add_note(notename="",srcdir="notes/"):
     try:
         import os
         if not notename.endswith('.org'): notename += ".org"
-        if not notename.startswith(srcdir): notename = srcdir+notename
+        if not notename.startswith(srcdir): notename = srcdir+"/"+notename
         if not os.path.exists(notename):
             import orgnote.init
             note_name = orgnote.init.create_default_note(notename)
