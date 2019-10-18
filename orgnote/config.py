@@ -79,11 +79,17 @@ duoshuo_shortname:
 # https://utteranc.es/
 utteranc_repo:
 
+# WeChat Official Accounts
+weixin_name:
+#weixin_public: images/weixin.jpg
+
 # donate
 #disable: set name as blank
-donate_name: "赞赏支持"
+# "赞赏支持"
+donate_name: "" 
 donate_wechatpay: images/wechatpay.png
 donate_alipay: images/alipay.png
+
 
 # layout
 ## 1: enable
@@ -103,6 +109,7 @@ sidebar_contain_name: "联系/反馈"
 sidebar_contact: ""
 
 sidebar:
+  - sidebar_weixin
   - sidebar_latest
   - sidebar_tags
   - sidebar_duoshuo

@@ -79,6 +79,8 @@ class OrgNote(object):
         self.duoshuo_shortname = self.cfg.cfg.get("duoshuo_shortname",None)
         self.weibo_shortname = self.cfg.cfg.get("weibo_shortname",None)
         self.utteranc_repo = self.cfg.cfg.get("utteranc_repo",None)
+        self.weixin_name = self.cfg.cfg.get("weixin_name",None)
+        self.weixin_public = self.cfg.cfg.get("weixin_public",None)
         
         self.donate_name = self.cfg.cfg.get("donate_name","赞赏支持")
         self.donate_alipay = self.cfg.cfg.get("donate_alipay","")
@@ -554,6 +556,11 @@ class OrgNote(object):
             return ""
 
         #
+        if self.weixin_name:
+            wx = "<li><strong>微信搜索：</strong> <span style='color:red'>「%s」</span>, 关注公众号!<li>" % self.weixin_name
+        else:
+            wx = ""
+            
         output = """
         <hr>
         <div id="post-copyright">
@@ -562,21 +569,23 @@ class OrgNote(object):
         <strong>本文作者：</strong>「
         <a href="%s" title="%s">%s</a> 」创作于%s
         </li>
+        %s
         <li class="post-copyright-link">
         <strong>本文链接：</strong>
         <a href="%s" title="%s">%s</a>
         </li>
         <li class="post-copyright-license">
-        <strong>版权声明： </strong>
+        <strong>版权声明：</strong>
         原创文章，如需转载请注明文章作者和出处。谢谢！
         </li>
         </ul>
         </div>
-        """ % (self.public_url+"about.html",self.author,self.author,self.gen_date(self.notes[num][0]),#self.public_url,
-               #self.homepage + self.blogroot,
+        """ % (self.public_url+"about.html",
+               self.author,self.author,
+               self.gen_date(self.notes[num][0]),
+               wx,
                self.gen_public_link(self.notes[num][0],self.public_url),
-               self.notes[num][1],#self.public_url,
-               #self.homepage + self.blogroot,
+               self.notes[num][1],
                self.gen_public_link(self.notes[num][0],self.public_url))
 
         # 本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
@@ -862,6 +871,14 @@ class OrgNote(object):
                 </label>
                 """ % (self.public_url,self.donate_alipay)
 
+            if self.weixin_public:
+                output += """
+                <label id="qr-code-image-p" class="qr-code-image" for="reward" hidden>
+                <img class="image" src="%s/%s">
+                <span>微信公众号</span>
+                </label>
+                """ % (self.public_url,self.weixin_public)
+
                 
             output += """
             </div>
@@ -921,6 +938,29 @@ class OrgNote(object):
         </ul>
         </div>
         """ % (self._sidebar_contact_name,self._sidebar_contact)
+
+    def sidebar_weixin(self):
+        if not self.weixin_name and not self.weixin_public:
+            return ""
+        
+        if not self.weixin_public:
+            return """
+            <div class="widget">
+            <h4>%s</h4>
+            <ul class="entry list-unstyled">
+            <li>%s</li>
+            </ul>
+            </div>
+            """ % ("微信公众号",self.weixin_name)
+        else:        
+            return """
+            <div class="widget">
+            <h4>%s</h4>
+            <ul class="entry list-unstyled">
+            <li><img class="image" src="%s/%s"></li>
+            </ul>
+            </div>
+            """ % ("微信公众号",self.public_url,self.weixin_public)
 
     def sidebar_duoshuo(self):
         return """
@@ -1109,6 +1149,7 @@ class OrgNote(object):
         $('#reward-button').addClass('hidden');
         $('#qr-code-image-w').show();
         $('#qr-code-image-a').show();
+        $('#qr-code-image-p').show();
         }
         </script>
         <!-- /donate script -->
@@ -1143,6 +1184,8 @@ class OrgNote(object):
                     output += self.sidebar_weibo()
                 elif self.duoshuo_shortname and _sidebar == 'sidebar_duoshuo' and self._sidebar_contact:
                     output += self.sidebar_duoshuo()
+                elif self.weixin_name or self.weixin_public:
+                    output += self.sidebar_weixin()
                 else:
                     pass
             output += self.end_sidebar()
@@ -1180,6 +1223,8 @@ class OrgNote(object):
                     output += self.sidebar_weibo()
                 elif self.duoshuo_shortname and _sidebar == 'sidebar_duoshuo' and self._sidebar_contact:
                     output += self.sidebar_duoshuo()
+                elif self.weixin_name or self.weixin_public:
+                    output += self.sidebar_weixin()
                 else:
                     pass
             output += self.end_sidebar()
