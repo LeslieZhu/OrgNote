@@ -66,8 +66,9 @@ class OrgNote(object):
         self.public_dir = './' + self.cfg.cfg.get("public_dir","public") + '/'
         
         self.tags_dir = self.public_dir + "/tags"
-        if not os.path.exists(self.tags_dir):
-            os.makedirs(self.tags_dir)        
+        
+        #if not os.path.exists(self.tags_dir):os.makedirs(self.tags_dir)        
+        #    os.makedirs(self.tags_dir)        
                 
         self.deploy_type = self.cfg.cfg.get("deploy_type","git")
         self.deploy_url = self.cfg.cfg.get("deploy_url","")
@@ -1588,6 +1589,8 @@ class OrgNote(object):
     def do_server(self,port="8080"):
         import sys
 
+        if not os.path.exists(self.tags_dir):
+            os.makedirs(self.tags_dir)        
         self.homepage ="http://localhost:"+port
         self.refresh_config()
         self.do_generate()
@@ -1641,6 +1644,8 @@ class OrgNote(object):
         import shutil
         
         self.homepage = self.cfg.cfg.get("url","https://github.com/LeslieZhu/OrgNote")
+        if not os.path.exists(self.tags_dir):
+            os.makedirs(self.tags_dir)        
         self.refresh_config()
 
         # cleanup cached html file
@@ -1666,6 +1671,8 @@ class OrgNote(object):
 
     def do_generate(self,homepage="",batch=""):
         self.cfg.update()
+        if not os.path.exists(self.tags_dir):
+            os.makedirs(self.tags_dir)        
         self.public_images()
         self.public_theme()
         self.public_cname()
@@ -1782,6 +1789,9 @@ class OrgNote(object):
         
         repo_file = self.gen_public_link(link,repodir)
         filename = os.path.basename(repo_file)
+
+        if not os.path.exists(self.tags_dir):
+            os.makedirs(self.tags_dir)        
 
         if os.path.exists(page_file):
             os.remove(page_file)
