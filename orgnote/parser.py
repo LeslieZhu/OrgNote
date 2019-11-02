@@ -87,6 +87,10 @@ class OrgNote(object):
         self.donate_alipay = self.cfg.cfg.get("donate_alipay","")
         self.donate_wechatpay = self.cfg.cfg.get("donate_wechatpay","")
 
+        self.rss_type = self.cfg.cfg.get("rss_type","ReadMore")
+        if self.rss_type not in ["ReadMore","ReadAll"]:
+            self.rss_type = "ReadMore"
+
         self.default_tag = self.cfg.cfg.get("default_tag", u"默认")
         self.nopublic_tag = self.cfg.cfg.get("nopublic_tag",u"暂不公开")
         self.rdmode_keyword = self.cfg.cfg.get("reading_mode_keyword",u"随笔")
@@ -1332,6 +1336,7 @@ class OrgNote(object):
         # item
         for note in self.notes:
             link,name = note
+
             output += '''
             <item>
             <title> %s </title>
@@ -1351,8 +1356,7 @@ class OrgNote(object):
             <comments>%s</comments>
             </item>
             ''' % (self.gen_date(link),
-                   #self.gen_content(link),
-                   self.contain_note(link),
+                   (self.gen_content(link) if self.rss_type == "ReadAll" else self.contain_note(link)),
                    self.gen_public_link(link,self.public_url))
 
         # suffix

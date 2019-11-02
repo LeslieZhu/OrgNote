@@ -91,6 +91,11 @@ donate_wechatpay: images/wechatpay.png
 donate_alipay: images/alipay.png
 
 
+# RSS
+# ReadMore|ReadAll
+rss_type: "ReadMore"
+
+
 # layout
 ## 1: enable
 ## 0: disable
