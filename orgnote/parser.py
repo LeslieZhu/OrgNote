@@ -218,6 +218,7 @@ class OrgNote(object):
         %s
         <title>%s</title>
         <meta name="author" content="%s">
+        <meta name="email" content="%s">
         <meta name="description" content="%s">
         <meta property="og:site_name" content="%s"/>
         <meta name="Keywords" content="%s">
@@ -235,7 +236,7 @@ class OrgNote(object):
         <script type="text/javascript" src="%stheme/%s/js/jquery-2.0.3.min.js"></script>
         <script type="text/javascript" src="%stheme/%s/js/local-search.js?v=7.4.1"></script>
         </head>
-        """ % (self.js_config(),title, self.author, self.description, self.title,self._keywords,
+        """ % (self.js_config(),title, self.author, self.email, self.description, self.title,self._keywords,
                self.blogroot,
                self.blogroot,self.theme,
                self.blogroot,self.theme,
