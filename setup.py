@@ -113,6 +113,7 @@ setup(
 	"beautifulsoup4==4.4.1",
 	"bs4==0.0.1",
   "Markdown==3.1.1",
+  "watchdog==0.9.0",
     ]
 
     #extras_require={

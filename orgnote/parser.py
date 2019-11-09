@@ -14,8 +14,17 @@ from __future__ import print_function
 from __future__ import absolute_import
 
 import re,time,sys,os
+#import subprocess,shlex
 import json
+import http.server
+#import socketserver
 from bs4 import BeautifulSoup, Comment
+from multiprocessing import Process
+from functools import partial
+
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+
 from orgnote import config
 from orgnote import util
 from orgnote.colorsrc import get_hightlight_src
@@ -28,6 +37,17 @@ if sys.version_info.major == 3:
 else:
     reload(sys)                    
     sys.setdefaultencoding('utf-8')
+
+
+class OrgNoteFileSystemEventHander(FileSystemEventHandler):
+    def __init__(self, fn):
+        super(OrgNoteFileSystemEventHander, self).__init__()
+        self.restart = fn
+
+    def on_any_event(self, event):
+        if event.src_path.endswith('.html'):
+            print('orgnote html source file changed: %s' % event.src_path)
+            self.restart()
 
 class OrgNote(object):
     def __init__(self):
@@ -386,7 +406,7 @@ class OrgNote(object):
     def contain_prefix_end(self,link=""):
         output = ""
         if link.endswith(".html"):
-            print(link)
+            #print(link)
             #output += "<span class='date'>由「"
             #output += "<a href=\"%s%s.html\"><i class=\"%s\"></i>%s</a>" % (self.public_url,self.menus_map["说明"],"作者",self.author)
             #output += "」创作于%s</span>" % self.gen_date(link)
@@ -1590,21 +1610,108 @@ class OrgNote(object):
             return [i.strip() for i in keywords.split(",")]
         else:
             return [self.default_tag]
-        
+
+    def monitor_log(self,s=""):
+        print("[Monitor] %s" % s)
+
+    def monitor_kill(self):
+        if self.process and self.process.is_alive():
+            self.monitor_log('Kill process [%s]...' % self.process.pid)
+            self.process.terminate()
+            self.monitor_log('Process ended with code %s.' % self.process.exitcode)
+            self.process = None
+
+    def monitor_restart(self):
+        self.monitor_kill()
+        #self.monitor_start()
+        self.process = Process(target=self.monitor_start, args=(self.port,))
+        self.process.daemon = True
+        self.process.start()
+        self.process.join()
+
+
     def do_server(self,port="8080"):
+        self.port = port
+
+        self.monitor_path = self.source_dir
+        
+        observer = Observer()
+        observer.schedule(OrgNoteFileSystemEventHander(self.monitor_restart), self.monitor_path, recursive=True)
+        observer.start()
+        
+        self.monitor_log('Watching directory %s' % self.monitor_path)
+
+        self.process = Process(target=self.monitor_start, args=(self.port,))
+        self.process.daemon = True
+        self.process.start()
+        self.process.join()
+        
+        try:
+            while True:
+                time.sleep(0.5)
+        except KeyboardInterrupt:
+            observer.stop()
+        observer.join()
+        
+    def monitor_start(self,port):
         import sys
 
         if not os.path.exists(self.tags_dir):
             os.makedirs(self.tags_dir)        
-        self.homepage ="http://localhost:"+port
+        self.homepage ="http://localhost:" + port
         self.refresh_config()
-        self.do_generate()
+        self.do_generate()                
 
         try:
+            server_address = ('', int(port))
             if sys.version_info.major == 2:
-                os.system("cd %s && python -m SimpleHTTPServer %s" % (self.public_dir,port))
-            else:
-                os.system("cd %s && python -m http.server %s" % (self.public_dir,port))
+                import SimpleHTTPServer,BaseHTTPServer
+                server_class = BaseHTTPServer.HTTPServer
+                handler_class = SimpleHTTPServer.SimpleHTTPRequestHandler
+
+                curdir = os.getcwd()
+                os.chdir(self.public_dir)
+                
+                BaseHTTPServer.test(handler_class,server_class)
+                
+                os.chdir(curdir)
+            elif sys.version_info.major == 3:
+                if sys.version_info >= (3,7):
+                    server_class=http.server.ThreadingHTTPServer
+                    handler_class=partial(http.server.SimpleHTTPRequestHandler,directory=self.public_dir)
+                    
+                    curdir = os.getcwd()
+                    os.chdir(self.public_dir)
+                    
+                    with server_class(server_address, handler_class) as httpd:
+                        sa = httpd.socket.getsockname()
+                        serve_message = "Serving HTTP on {host} port {port} (http://{host}:{port}/) ..."
+                        print(serve_message.format(host=sa[0], port=sa[1]))
+                        try:
+                            httpd.serve_forever()
+                        except KeyboardInterrupt:
+                            print("\nKeyboard interrupt received, exiting.")
+                            os.chdir(curdir)
+                            sys.exit(0)                            
+                else:
+                    server_class=http.server.HTTPServer
+                    handler_class=http.server.SimpleHTTPRequestHandler                    
+                    handler_class.protocol_version = "HTTP/1.0"
+
+                    curdir = os.getcwd()
+                    os.chdir(self.public_dir)
+                    
+                    httpd = server_class(server_address, handler_class)
+                    
+                    sa = httpd.socket.getsockname()
+                    print("Serving HTTP on", sa[0], "port", sa[1], "...")
+                    try:
+                        httpd.serve_forever()
+                    except KeyboardInterrupt:
+                        print("\nKeyboard interrupt received, exiting.")
+                        httpd.server_close()
+                        os.chdir(curdir)
+                        sys.exit(0)                        
         except Exception as ex:
             print(str(ex))
             usage()
