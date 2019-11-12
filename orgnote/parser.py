@@ -892,7 +892,12 @@ class OrgNote(object):
             print("Can not found jobfile: ",self.calendar_jobfile)
             return output
 
-        by_types = ['by_once', 'by_day', 'by_week', 'by_month', 'by_quarter', 'by_year']
+        by_types = {'by_once':'一次性事情',
+                    'by_day':'每天一次',
+                    'by_week':'每周一次',
+                    'by_month':'每月一次',
+                    'by_quarter':'每季一次',
+                    'by_year':'每年一次'}
 
         for job in open(self.calendar_jobfile, "r").readlines():
             job = job.strip()
@@ -916,7 +921,7 @@ class OrgNote(object):
 
             if jtype not in by_types:
                 print("Bad job type in", job)
-                print("job type must be on of ", by_types)
+                print("job type must be on of ", by_types.keys())
                 continue
 
             try:
@@ -1005,9 +1010,9 @@ class OrgNote(object):
             output += "<ul>"
             for job in jobs:
                 if not job[3]:
-                    output += "<li>时间: %s , 事情: %s </li>" % (job[0], job[1])
+                    output += "<li>时间: %s , (%s): %s </li>" % (job[0], by_types[job[2]],job[1])
                 else:
-                    output += "<li>时间: %s , 事情: <a href='%s'>%s</a> </li>" % (job[0], job[3],job[1])
+                    output += "<li>时间: %s , (%s): <a href='%s'>%s</a> </li>" % (job[0], by_types[job[2]],job[3],job[1])
             output += "</ul>"
 
         output += """
