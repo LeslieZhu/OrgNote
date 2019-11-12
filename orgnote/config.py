@@ -123,19 +123,18 @@ sidebar:
 
 
 # sidebar links, each link should setting url,name,icon
-slinks_title: "友情链接"
-slinks:
-  link1:
-    url: http://lesliezhu.com
-    name: Leslie Zhu
-    icon: fa fa-github
-  link2:
-    url: https://github.com/LeslieZhu/OrgNote
-    name: OrgNote
-    icon: fa fa-github
+slinks_name: "友情链接"
+
+# format: url,name,icon
+# e.g: https://github.com/LeslieZhu/OrgNote,OrgNote,fa fa-github
+# e.g: https://github.com/LeslieZhu/OrgNote,OrgNote
+# e.g: https://github.com/LeslieZhu/OrgNote
+slinks_file: slinks.org
 
 # links, add links on menu page
-# - url,display name
+# format: url,name
+# e.g: https://github.com/LeslieZhu/OrgNote,OrgNote
+# e.g: https://github.com/LeslieZhu/OrgNote
 links_name: "觅链"
 links_file: links.org
 

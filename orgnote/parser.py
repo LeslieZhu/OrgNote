@@ -133,8 +133,11 @@ class OrgNote(object):
         self.menu_list = self.cfg.cfg.get("menu_list",dict())
         
 
-        self.slinks_title = self.cfg.cfg.get("slinks_title","友情链接")
-        self.slinks = self.cfg.cfg.get("slinks",list())
+        self.slinks = []
+        self.slinks_name = self.cfg.cfg.get("slinks_name","友情链接")
+        self.slinks_file = self.cfg.cfg.get("slinks_file","")
+        if self.slinks_file:
+            self.slinks_file = self.source_dir + self.slinks_file
 
         self.links = []
         self.links_name = self.cfg.cfg.get("links_name","觅链")        
@@ -222,16 +225,15 @@ class OrgNote(object):
                 if link.startswith("#"): continue
                 
                 link = [i.strip() for i in link.split(',')]
-                if len(link) == 1:
-                    url,name = link[0]
-                    icon = "fa fa-link"
+                
+                if len(link) >= 3:
+                    url,name,icon = link[:3]
                 elif len(link) == 2:
                     url,name = link
                     icon = "fa fa-link"
-                elif len(link) >= 3:
-                    url,name,icon = link[:3]
                 else:
-                    continue
+                    url = name = link[0]
+                    icon = "fa fa-link"
             
                 item = [url,icon,name]
                 if item not in self.links:
@@ -1267,13 +1269,32 @@ class OrgNote(object):
         <div class="widget">
         <h4>%s</h4>
         <ul class="entry list-unstyled">
-        """ % self.slinks_title
+        """ % self.slinks_name
 
-        for key in sorted(self.slinks):
-            _link = self.slinks[key]
+        if os.path.exists(self.slinks_file):
+            for link in open(self.slinks_file,"r").readlines():
+                link = link.strip()
+                if not link: continue
+                if link.startswith("#"): continue
+                link = [i.strip() for i in link.split(',')]
+
+                if len(link) >= 3:
+                    url,name,icon = link[:3]
+                elif len(link) == 2:
+                    icon = "fa fa-link"
+                else:
+                    url = name = link[0]
+                    icon = "fa fa-link"
+
+                item = (url,name,icon)
+                if item not in self.slinks:
+                    self.slinks.append(item)
+                    
+        for link in sorted(self.slinks):
+            url,name,icon = link
             output += """
             <li><a href="%s" title="%s" target="_blank"><i class="%s"></i>%s</a></li>
-            """ % (_link["url"], _link["name"], _link["icon"], _link["name"])
+            """ % (url, name, icon,name)
         
         output += """
         </ul>
