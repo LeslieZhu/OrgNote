@@ -174,13 +174,11 @@ class OrgNote(object):
             [self.public_url + "minyi.html",self.links_minyi_name,"fa fa-sitemap",self.links_minyi_name],
             [self.public_url + "archive.html","归档","fa fa-archive","归档"],
             [self.public_url + "tags.html","标签","fa fa-tags","标签"],
+            [self.public_url + "calendar.html", self.calendar_name, "fa fa-calendar",self.calendar_name] if self.calendar_name else None,
             [self.public_url + "about.html","说明","fa fa-user","说明"],
             [self.public_url + "rss.xml","订阅","fa fa-rss","订阅"],
-            [self.public_url + "calendar.html",self.calendar_name,"fa fa-calendar",self.calendar_name] if self.calendar_name else None,
             [self.public_url + self.search_path,"搜索","fa fa-search fa-fw","搜索"]
         ]
-
-
 
         
         self.menus_map = {
@@ -896,6 +894,7 @@ class OrgNote(object):
 
         for job in open(self.calendar_jobfile, "r").readlines():
             job = [i.strip() for i in job.strip().split(',')]
+            if not job: continue
             #print(job)
 
             if len(job) == 4:
