@@ -16,6 +16,8 @@ from __future__ import absolute_import
 import re
 import sys,os
 import time,datetime
+import calendar
+
 #import subprocess,shlex
 import json
 import http.server
@@ -895,6 +897,7 @@ class OrgNote(object):
         for job in open(self.calendar_jobfile, "r").readlines():
             job = job.strip()
             if not job: continue
+            if job.startswith("#"): continue
             
             job = [i.strip() for i in job.strip().split(',')]
             #print(job)
@@ -926,11 +929,18 @@ class OrgNote(object):
             quarter_list = [j for j in [i + jtime.month for i in range(-9, 10, 3)] if j >= 1 and j <= 12]
 
             today = datetime.datetime.now()
-            today = today.replace(hour=jtime.hour, minute=jtime.minute)
-            today_str = today.strftime("%Y/%m/%d %H:%M")
 
+
+            monthrange = calendar.monthrange(today.year,today.month)
+
+            if monthrange[1] < jtime.day:
+                jtime.replace(day=monthrange[1])
+            
             is_today_job = False
             is_week_job = False
+
+            if (today.year, today.month, today.day) == (jtime.year, jtime.month, jtime.day):
+                is_today_job = True
 
             if jtype == "by_once":
                 delta = jtime - today
@@ -942,9 +952,10 @@ class OrgNote(object):
                 is_today_job = True
                 is_week_job = True
             elif jtype == "by_week":
-                is_week_job = True
                 if jtime.weekday() == today.weekday():
                     is_today_job = True
+                #if jtime.day - today.day in range(0,8):
+                is_week_job = True
             elif jtype == "by_month":
                 if jtime.day == today.day:
                     is_today_job = True
@@ -963,9 +974,14 @@ class OrgNote(object):
             else:
                 continue
 
-            if is_today_job:
+
+            today = today.replace(hour=jtime.hour, minute=jtime.minute)
+            today_str = today.strftime("%Y/%m/%d %H:%M")
+            if is_today_job:                
                 self.job_today.append([today_str, jname, jtype, jurl])
             elif is_week_job:
+                today = today.replace(day=jtime.day)
+                today_str = today.strftime("%Y/%m/%d %H:%M")
                 self.job_week.append([today_str, jname, jtype, jurl])
 
         #print(self.job_today)
