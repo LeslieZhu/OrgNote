@@ -893,8 +893,10 @@ class OrgNote(object):
         by_types = ['by_once', 'by_day', 'by_week', 'by_month', 'by_quarter', 'by_year']
 
         for job in open(self.calendar_jobfile, "r").readlines():
-            job = [i.strip() for i in job.strip().split(',')]
+            job = job.strip()
             if not job: continue
+            
+            job = [i.strip() for i in job.strip().split(',')]
             #print(job)
 
             if len(job) == 4:
@@ -906,7 +908,7 @@ class OrgNote(object):
                 print("Bad job by_type:", job)
                 continue
             else:
-                print("Bad format calendar job(time,name,job type,ulr):", job)
+                print("Bad format calendar job(time,name,job type,url):", job)
                 continue
 
             if jtype not in by_types:
