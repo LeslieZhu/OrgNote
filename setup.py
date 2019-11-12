@@ -49,6 +49,7 @@ The usage of **orgnote**::
    list       List this blog notes
    status     Status of those notes
    publish    Auto Publish a note
+   recall     Cancel publish a note
    generate   Generate static files
    server     Start the server
    deploy     Deploy your website
@@ -108,12 +109,12 @@ setup(
     },
 
     install_requires = [
-        'pyyaml>=4.2b1',
+    'pyyaml>=4.2b1',
 	"Pygments==2.1.3",
 	"beautifulsoup4==4.4.1",
 	"bs4==0.0.1",
-  "Markdown==3.1.1",
-  "watchdog==0.9.0",
+    "Markdown==3.1.1",
+    "watchdog==0.9.0",
     ]
 
     #extras_require={

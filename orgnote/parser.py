@@ -13,7 +13,9 @@ then use orgnote convert into new html with default theme.
 from __future__ import print_function
 from __future__ import absolute_import
 
-import re,time,sys,os
+import re
+import sys,os
+import time,datetime
 #import subprocess,shlex
 import json
 import http.server
@@ -134,6 +136,14 @@ class OrgNote(object):
         self.links_minyi_name = self.cfg.cfg.get("links_minyi_name","觅链") # MinYi
         self.links_minyi = self.cfg.cfg.get("links_minyi",list())
 
+        self.calendar_name = self.cfg.cfg.get("calendar_name","")
+        self.calendar_jobfile = self.cfg.cfg.get("calendar_jobfile","")
+        if self.calendar_jobfile:
+            self.calendar_jobfile = self.source_dir + self.calendar_jobfile
+        
+        self.job_today = []
+        self.job_week = []
+
 
         self.__pagenames__ = {}
 
@@ -166,6 +176,7 @@ class OrgNote(object):
             [self.public_url + "tags.html","标签","fa fa-tags","标签"],
             [self.public_url + "about.html","说明","fa fa-user","说明"],
             [self.public_url + "rss.xml","订阅","fa fa-rss","订阅"],
+            [self.public_url + "calendar.html",self.calendar_name,"fa fa-calendar",self.calendar_name] if self.calendar_name else None,
             [self.public_url + self.search_path,"搜索","fa fa-search fa-fw","搜索"]
         ]
 
@@ -179,6 +190,9 @@ class OrgNote(object):
             "标签": "tags.html",
             "订阅": "rss.xml"
         }
+
+        if self.calendar_name:
+            self.menus_map[self.calendar_name] = "calendar.html"
 
 
         for _menu in self.menu_list:
@@ -322,6 +336,7 @@ class OrgNote(object):
         """
     
         for menu in menus:
+            if not menu: continue
             output += self.gen_href(menu)
 
         # search label
@@ -867,6 +882,130 @@ class OrgNote(object):
         </div> <!-- %s -->
         """ % self.col_md_index
         
+        return output
+
+    def contain_calender(self):
+        output = ""
+
+        if not self.calendar_name or not self.calendar_jobfile: return output
+        if not os.path.exists(self.calendar_jobfile):
+            print("Can not found jobfile: ",self.calendar_jobfile)
+            return output
+
+        by_types = ['by_once', 'by_day', 'by_week', 'by_month', 'by_quarter', 'by_year']
+
+        for job in open(self.calendar_jobfile, "r").readlines():
+            job = [i.strip() for i in job.strip().split(',')]
+            #print(job)
+
+            if len(job) == 4:
+                jtime, jname, jtype, jurl = job
+            elif len(job) == 3:
+                jtime, jname, jtype = job
+                jurl = ""
+            elif jtype not in by_types:
+                print("Bad job by_type:", job)
+                continue
+            else:
+                print("Bad format calendar job(time,name,job type,ulr):", job)
+                continue
+
+            if jtype not in by_types:
+                print("Bad job type in", job)
+                print("job type must be on of ", by_types)
+                continue
+
+            try:
+                jtime = datetime.datetime.strptime(jtime, "%Y/%m/%d %H:%M")
+            except ValueError as e:
+                print("Bad job format:", job)
+                print(str(e))
+                continue
+
+            quarter_list = [j for j in [i + jtime.month for i in range(-9, 10, 3)] if j >= 1 and j <= 12]
+
+            today = datetime.datetime.now()
+            today = today.replace(hour=jtime.hour, minute=jtime.minute)
+            today_str = today.strftime("%Y/%m/%d %H:%M")
+
+            is_today_job = False
+            is_week_job = False
+
+            if jtype == "by_once":
+                delta = jtime - today
+                if (today.year, today.month, today.day) == (jtime.year, jtime.month, jtime.day):
+                    is_today_job = True
+                if delta.days in range(0, 8):
+                    is_week_job = True
+            elif jtype == "by_day":
+                is_today_job = True
+                is_week_job = True
+            elif jtype == "by_week":
+                is_week_job = True
+                if jtime.weekday() == today.weekday():
+                    is_today_job = True
+            elif jtype == "by_month":
+                if jtime.day == today.day:
+                    is_today_job = True
+                if jtime.day - today.day in range(0, 8):
+                    is_week_job = True
+            elif jtype == "by_quarter" and today.month in quarter_list:
+                if today.day == jtime.day:
+                    is_today_job = True
+                if jtime.day - today.day in range(0, 8):
+                    is_week_job = True
+            elif jtype == "by_year" and today.year >= jtime.year:
+                if (today.month, today.day) == (jtime.month, jtime.day):
+                    is_today_job = True
+                if today.month == jtime.month and jtime.day - today.day in range(0, 8):
+                    is_week_job = True
+            else:
+                continue
+
+            if is_today_job:
+                self.job_today.append([today_str, jname, jtype, jurl])
+            elif is_week_job:
+                self.job_week.append([today_str, jname, jtype, jurl])
+
+        #print(self.job_today)
+        #print(self.job_week)
+
+        output += """
+        <!-- display as entry -->
+        <div class="entry">
+        <div class="row">
+        <div class="%s">
+        """ % self.col_md_index
+
+
+        for jobs in [self.job_today,self.job_week]:
+            if not jobs: continue
+            if jobs == self.job_today:
+                output += "<h1>今日工作</h1>"
+            else:
+                output += "<h1>本周工作</h1>"
+
+            output += "<ul>"
+            for job in jobs:
+                if not job[3]:
+                    output += "<li>时间: %s , 事情: %s </li>" % (job[0], job[1])
+                else:
+                    output += "<li>时间: %s , 事情: <a href='%s'>%s</a> </li>" % (job[0], job[3],job[1])
+            output += "</ul>"
+
+        output += """
+        </div>
+        </div>
+        </div>
+        """
+
+        output += self.duosuo()
+
+        output += """
+        </div> <!-- mypage -->
+        </div> <!-- %s -->
+        """ % self.col_md_index
+
         return output
 
     def donate(self):
@@ -1560,6 +1699,20 @@ class OrgNote(object):
         print(self.contain_suffix(),file=output)
         print(self.header_suffix(),file=output)
         output.close()
+        
+    def gen_calendar(self):
+        output = open(self.public_dir + "calendar.html","w")
+        print(self.header_prefix(title=self.calendar_name),file=output)
+        print(self.body_prefix(),file=output)
+        print(self.body_menu(self.menus),file=output)
+        print(self.contain_prefix([self.calendar_name],"",self.calendar_name),file=output)
+        print(self.contain_prefix_end(),file=output)
+        print(self.contain_calender(),file=output)
+        print(self.gen_sidebar(),file=output)
+        print(self.contain_suffix(),file=output)
+        print(self.header_suffix(),file=output)
+        output.close()
+        
     
     def gen_date(self,link=""):
         """ Filter Publish data from HTML metadata>"""
@@ -1832,6 +1985,7 @@ class OrgNote(object):
         self.gen_search()
         self.gen_timetags()
         self.gen_nopublic()
+        self.gen_calendar()
         print("notes generate done")
 
     def do_new(self,notename=""):

@@ -1,5 +1,5 @@
 用户指南
-=======
+=========
 
 ::
 
@@ -13,6 +13,7 @@
    list       List this blog notes
    status     Status of those notes
    publish    Auto Publish a note
+   recall     Cancel publish a note
    generate   Generate static files
    server     Start the server
    deploy     Deploy your website

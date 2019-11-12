@@ -1,5 +1,5 @@
 OrgNote: A simple blog based on org-mode
-=======================================
+=========================================
 
 .. image:: https://img.shields.io/pypi/v/orgnote.svg
    :target: https://pypi.python.org/pypi/orgnote
@@ -101,6 +101,7 @@ Usage
    list       List this blog notes
    status     Status of those notes
    publish    Auto Publish a note
+   recall     Cancel publish a note
    generate   Generate static files
    server     Start the server
    deploy     Deploy your website
@@ -112,7 +113,7 @@ Usage
 Emacs Version
 ==============
 
-Tested via ``GNU Emacs 24.4.1``
+Tested via ``GNU Emacs 26.1``
 
 Docs
 =======

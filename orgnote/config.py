@@ -143,6 +143,20 @@ links_minyi:
 deploy_type: git
 deploy_url:
 deploy_branch: master
+
+
+# calendar
+# disable calendar, just keep as blank
+calendar_name: "日历"
+
+# calendar job
+# job time: %Y/%m/%d %H:%M
+# job name: text
+# job type: by_once,by_day,by_week,by_month,by_quarter,by_year
+# job link(optional): url
+# job layout: time,name,type,link
+# e.g: 2019/11/12 09:30,查看新闻,by_once,www.weibo.com
+calendar_jobfile: calendar.org
 """
 
     def __init__(self,cfgfile="_config.yml"):
