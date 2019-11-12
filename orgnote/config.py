@@ -122,9 +122,9 @@ sidebar:
   - sidebar_link
 
 
-# links, each link should setting url,name,icon
-links_title: "友情链接"
-links:
+# sidebar links, each link should setting url,name,icon
+slinks_title: "友情链接"
+slinks:
   link1:
     url: http://lesliezhu.com
     name: Leslie Zhu
@@ -134,11 +134,10 @@ links:
     name: OrgNote
     icon: fa fa-github
 
-# minyi links, add links on menu page
+# links, add links on menu page
 # - url,display name
-links_minyi_name: "觅链"
-links_minyi:
-    - https://github.com/OrgNote,OrgNote
+links_name: "觅链"
+links_file: links.org
 
 deploy_type: git
 deploy_url:

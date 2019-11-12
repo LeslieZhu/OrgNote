@@ -132,11 +132,16 @@ class OrgNote(object):
                         
         self.menu_list = self.cfg.cfg.get("menu_list",dict())
         
-        self.links = self.cfg.cfg.get("links",list())
-        self.links_title = self.cfg.cfg.get("links_title","友情链接")
 
-        self.links_minyi_name = self.cfg.cfg.get("links_minyi_name","觅链") # MinYi
-        self.links_minyi = self.cfg.cfg.get("links_minyi",list())
+        self.slinks_title = self.cfg.cfg.get("slinks_title","友情链接")
+        self.slinks = self.cfg.cfg.get("slinks",list())
+
+        self.links = []
+        self.links_name = self.cfg.cfg.get("links_name","觅链")        
+        self.links_file = self.cfg.cfg.get("links_file","")
+        if self.links_file:
+            self.links_file = self.source_dir + self.links_file
+        
 
         self.calendar_name = self.cfg.cfg.get("calendar_name","")
         self.calendar_jobfile = self.cfg.cfg.get("calendar_jobfile","")
@@ -173,7 +178,7 @@ class OrgNote(object):
 
         # depends on public_url
         self.menus = [
-            [self.public_url + "minyi.html",self.links_minyi_name,"fa fa-sitemap",self.links_minyi_name],
+            [self.public_url + "links.html",self.links_name,"fa fa-sitemap",self.links_name],
             [self.public_url + "archive.html","归档","fa fa-archive","归档"],
             [self.public_url + "tags.html","标签","fa fa-tags","标签"],
             [self.public_url + "calendar.html", self.calendar_name, "fa fa-calendar",self.calendar_name] if self.calendar_name else None,
@@ -184,7 +189,7 @@ class OrgNote(object):
 
         
         self.menus_map = {
-            self.links_minyi_name: "minyi.html",
+            self.links_name: "links.html",
             "归档": "archive.html",
             "说明": "about.html",
             "标签": "tags.html",
@@ -208,28 +213,33 @@ class OrgNote(object):
                 self.menus_map[menu["title"]] = _url.strip(".html")
 
         
-        self.minyi = []
+        self.links = []
 
-        for link in self.links_minyi:
-            link = [i.strip() for i in link.split(',')]
-            if len(link) == 1:
-                url,name = link[0]
-                icon = "fa fa-link"
-            elif len(link) == 2:
-                url,name = link
-                icon = "fa fa-link"
-            elif len(link) >= 3:
-                url,name,icon = link[:3]
-            else:
-                pass
+        if os.path.exists(self.links_file):
+            for link in open(self.links_file,"r").readlines():
+                link = link.strip()
+                if not link: continue
+                if link.startswith("#"): continue
+                
+                link = [i.strip() for i in link.split(',')]
+                if len(link) == 1:
+                    url,name = link[0]
+                    icon = "fa fa-link"
+                elif len(link) == 2:
+                    url,name = link
+                    icon = "fa fa-link"
+                elif len(link) >= 3:
+                    url,name,icon = link[:3]
+                else:
+                    continue
             
-            item = [url,icon,name]
-            if item not in self.minyi:
-                self.minyi.append(item)
+                item = [url,icon,name]
+                if item not in self.links:
+                    self.links.append(item)
         #
         nopublic_link = [self.public_url + "tags/" + self.nopublic_tag + ".html","fa fa-link",self.nopublic_tag]
-        if nopublic_link not in self.minyi:
-            self.minyi.append(nopublic_link)
+        if nopublic_link not in self.links:
+            self.links.append(nopublic_link)
 
     def header_prefix(self,deep=1,title=""):
         """
@@ -1257,10 +1267,10 @@ class OrgNote(object):
         <div class="widget">
         <h4>%s</h4>
         <ul class="entry list-unstyled">
-        """ % self.links_title
+        """ % self.slinks_title
 
-        for key in sorted(self.links):
-            _link = self.links[key]
+        for key in sorted(self.slinks):
+            _link = self.slinks[key]
             output += """
             <li><a href="%s" title="%s" target="_blank"><i class="%s"></i>%s</a></li>
             """ % (_link["url"], _link["name"], _link["icon"], _link["name"])
@@ -1651,14 +1661,14 @@ class OrgNote(object):
         
         output.close()
 
-    def gen_minyi(self):
-        output = open("./" + self.public_dir + "minyi.html","w")
-        print(self.header_prefix(title=self.links_minyi_name),file=output)
+    def gen_links(self):
+        output = open("./" + self.public_dir + "links.html","w")
+        print(self.header_prefix(title=self.links_name),file=output)
         print(self.body_prefix(),file=output)
         print(self.body_menu(self.menus),file=output)
-        print(self.contain_prefix([self.links_minyi_name],"",self.links_minyi_name),file=output)
+        print(self.contain_prefix([self.links_name],"",self.links_name),file=output)
         print(self.contain_prefix_end(),file=output)
-        print(self.contain_archive(self.minyi),file=output)
+        print(self.contain_archive(self.links),file=output)
         print(self.gen_sidebar(),file=output)
         print(self.contain_suffix(),file=output)
         print(self.header_suffix(),file=output)
@@ -1983,7 +1993,7 @@ class OrgNote(object):
         self.gen_public()
         self.gen_index()
         self.gen_about()
-        self.gen_minyi()
+        self.gen_links()
         self.gen_archive()
         self.gen_tags()
         self.gen_tags_menu_page()
