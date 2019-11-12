@@ -992,36 +992,20 @@ class OrgNote(object):
         #print(self.job_today)
         #print(self.job_week)
 
-        output += """
-        <!-- display as entry -->
-        <div class="entry">
-        <div class="row">
-        <div class="%s">
-        """ % self.col_md_index
-
-
         for jobs in [self.job_today,self.job_week]:
             if not jobs: continue
             if jobs == self.job_today:
-                output += "<h1>今日工作</h1>"
+                output += "<h3>今日工作</h3>"
             else:
-                output += "<h1>本周工作</h1>"
+                output += "<h3>本周工作</h3>"
 
             output += "<ul>"
             for job in jobs:
                 if not job[3]:
-                    output += "<li>时间: %s , (%s): %s </li>" % (job[0], by_types[job[2]],job[1])
+                    output += "<li><strong>时间</strong>: %s , <strong>(%s)</strong>: %s </li>" % (job[0], by_types[job[2]],job[1])
                 else:
-                    output += "<li>时间: %s , (%s): <a href='%s'>%s</a> </li>" % (job[0], by_types[job[2]],job[3],job[1])
+                    output += "<li><strong>时间</strong>: %s , <strong>(%s)</strong>: <a href='%s'>%s</a> </li>" % (job[0], by_types[job[2]],job[3],job[1])
             output += "</ul>"
-
-        output += """
-        </div>
-        </div>
-        </div>
-        """
-
-        output += self.duosuo()
 
         output += """
         </div> <!-- mypage -->
