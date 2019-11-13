@@ -154,6 +154,7 @@ class OrgNote(object):
         
         self.job_today = []
         self.job_week = []
+        self.job_prev = []
 
 
         self.__pagenames__ = {}
@@ -956,6 +957,7 @@ class OrgNote(object):
             
             is_today_job = False
             is_week_job = False
+            is_prev_job = False
 
             if (today.year, today.month, today.day) == (jtime.year, jtime.month, jtime.day):
                 is_today_job = True
@@ -966,29 +968,39 @@ class OrgNote(object):
                     is_today_job = True
                 if delta.days in range(0, 8):
                     is_week_job = True
+                if delta.days in range(-8, 0):
+                    is_prev_job = True
             elif jtype == "by_day":
                 is_today_job = True
                 is_week_job = True
+                is_prev_job = True
             elif jtype == "by_week":
                 if jtime.weekday() == today.weekday():
                     is_today_job = True
                 #if jtime.day - today.day in range(0,8):
                 is_week_job = True
+                is_prev_job = True
             elif jtype == "by_month":
                 if jtime.day == today.day:
                     is_today_job = True
                 if jtime.day - today.day in range(0, 8):
                     is_week_job = True
+                if jtime.day - today.day in range(-8,0):
+                    is_prev_job = True
             elif jtype == "by_quarter" and today.month in quarter_list:
                 if today.day == jtime.day:
                     is_today_job = True
                 if jtime.day - today.day in range(0, 8):
                     is_week_job = True
+                if jtime.day - today.day in range(-8,0):
+                    is_prev_job = True
             elif jtype == "by_year" and today.year >= jtime.year:
                 if (today.month, today.day) == (jtime.month, jtime.day):
                     is_today_job = True
                 if today.month == jtime.month and jtime.day - today.day in range(0, 8):
                     is_week_job = True
+                if today.month == jtime.month and jtime.day - today.day in range(-8, 0):
+                    is_prev_job = True
             else:
                 continue
 
@@ -1001,16 +1013,22 @@ class OrgNote(object):
                 today = today.replace(day=jtime.day)
                 today_str = today.strftime("%Y/%m/%d %H:%M")
                 self.job_week.append([today_str, jname, jtype, jurl])
+            elif is_prev_job:
+                today = today.replace(day=jtime.day)
+                today_str = today.strftime("%Y/%m/%d %H:%M")
+                self.job_prev.append([today_str, jname, jtype, jurl])
 
         #print(self.job_today)
         #print(self.job_week)
 
-        for jobs in [self.job_today,self.job_week]:
+        for jobs in [self.job_today,self.job_week,self.job_prev]:
             if not jobs: continue
             if jobs == self.job_today:
                 output += "<h3>今日工作</h3>"
-            else:
+            elif jobs == self.job_week:
                 output += "<h3>本周工作</h3>"
+            else:
+                output += "<h3>上周工作</h3>"
 
             output += "<ul>"
             for job in jobs:

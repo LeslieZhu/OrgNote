@@ -83,7 +83,30 @@ def create_about_html(name="about.hmtl"):
         print("File %s already exists, please use a new name!" % _init_file)
         return None
 
+def create_note_file(name="links.org",text=[]):
+    import os
+    import orgnote.parser
+    
+    blog = orgnote.parser.OrgNote()
+    
+    _dirname = blog.source_dir
+    _init_file = _dirname + os.path.basename(name)
 
+    if not os.path.exists(_dirname):
+        os.makedirs(_dirname)
+
+    if not os.path.exists(_init_file):
+        print("[info] create ",_init_file)
+        output = open(_init_file,"w")
+        for i in text:
+            print(i,file=output)
+        output.close()
+        return _init_file
+    else:
+        print("File %s already exists, please use a new name!" % _init_file)
+        return None
+
+    
 def create_about_note(name="about.org"):
     import os
     import os.path
@@ -264,6 +287,18 @@ def main(args=None):
     create_public_file("nopublic.org")
     create_about_note(blog.source_dir + "/about.org")
     create_about_html(blog.source_dir + "/about.html")
+
+    link = ["https://github.com/LeslieZhu/OrgNote, OrgNote:为自己定制的基于org-mode博客工具, fa fa-github"]
+    create_note_file(blog.source_dir + "/links.org",link)
+    create_note_file(blog.source_dir + "/slinks.org",link)
+
+    job_once = "2019/11/11 10:00,查看OrgNote更新,by_once,https://github.com/LeslieZhu/OrgNote"
+    job_day = "2019/11/11 10:00,查看OrgNote更新,by_day,https://github.com/LeslieZhu/OrgNote"
+    job_week = "2019/11/11 10:00,查看OrgNote更新,by_week,https://github.com/LeslieZhu/OrgNote"
+    job_month = "2019/11/11 10:00,查看OrgNote更新,by_month,https://github.com/LeslieZhu/OrgNote"
+    job_quarter = "2019/11/11 10:00,查看OrgNote更新,by_quarter,https://github.com/LeslieZhu/OrgNote"
+    job_year = "2019/11/11 10:00,查看OrgNote更新,by_year,https://github.com/LeslieZhu/OrgNote"
+    create_note_file(blog.source_dir + "/calendar.org",[job_once,job_day,job_week,job_month,job_quarter,job_year])
     #create_default_note(blog.source_dir + "/HelloOrgNote.org")
 
 
