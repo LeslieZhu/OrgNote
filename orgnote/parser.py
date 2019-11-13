@@ -146,6 +146,7 @@ class OrgNote(object):
             self.links_file = self.source_dir + self.links_file
         
 
+        self.shift_hour = self.cfg.cfg.get("shift_hour",0)
         self.calendar_name = self.cfg.cfg.get("calendar_name","")
         self.calendar_jobfile = self.cfg.cfg.get("calendar_jobfile","")
         if self.calendar_jobfile:
@@ -896,7 +897,7 @@ class OrgNote(object):
         
         return output
 
-    def contain_calender(self):
+    def contain_calendar(self):
         output = ""
 
         if not self.calendar_name or not self.calendar_jobfile: return output
@@ -945,7 +946,7 @@ class OrgNote(object):
 
             quarter_list = [j for j in [i + jtime.month for i in range(-9, 10, 3)] if j >= 1 and j <= 12]
 
-            today = datetime.datetime.now()
+            today = datetime.datetime.now() + datetime.timedelta(hours=self.shift_hour)
 
 
             monthrange = calendar.monthrange(today.year,today.month)
@@ -1744,7 +1745,7 @@ class OrgNote(object):
         print(self.body_menu(self.menus),file=output)
         print(self.contain_prefix([self.calendar_name],"",self.calendar_name),file=output)
         print(self.contain_prefix_end(),file=output)
-        print(self.contain_calender(),file=output)
+        print(self.contain_calendar(),file=output)
         print(self.gen_sidebar(),file=output)
         print(self.contain_suffix(),file=output)
         print(self.header_suffix(),file=output)

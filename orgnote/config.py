@@ -155,6 +155,10 @@ calendar_name: "日历"
 # job layout: time,name,type,link
 # e.g: 2019/11/12 09:30,查看新闻,by_once,www.weibo.com
 calendar_jobfile: calendar.org
+
+# shift hour for calendar job
+# default: 0h
+shift_hour: 0
 """
 
     def __init__(self,cfgfile="_config.yml"):
