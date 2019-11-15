@@ -919,7 +919,7 @@ class OrgNote(object):
             if job.startswith("#"): continue
             
             job = [i.strip() for i in job.strip().split(',')]
-            print(job)
+            #print(job)
 
             if len(job) == 4:
                 jtype,jtime, jname,jurl = job
@@ -978,31 +978,20 @@ class OrgNote(object):
             elif jtype == "by_month":
                 if today.day == jtime.day:
                     is_today_job = True
-                elif abs(today.day - jtime.day) <= 7:
-                    if (today.day + 7) <= monthrange[1] and jtime.day <= (today.day + 7):
-                        is_week_job = True
-                    elif (today.day + 7) > monthrange[1] and 7 - (31 - today.day) >= jtime.day:
-                        is_week_job = True
-                    elif (today.day -7) >= 0 and jtime.day >= (today.day - 7):
-                        is_prev_job = True
-                    elif (today.day - 7) < 0 and 31 - (7 - today.day) <= jtime.day:
-                        is_prev_job = True
-                    else:
-                        pass
+                elif abs(today.day - jtime.day) <= 7 and today.day > jtime.day:
+                    is_prev_job = True
+                elif abs(today.day - jtime.day) <= 7 and today.day < jtime.day:
+                    is_week_job = True
                 else:
                     pass
             elif jtype == "by_quarter":
                 if today.month not in quarter_list: continue
                 if today.day == jtime.day:
                     is_today_job = True
-                elif (today.day + 7) <= monthrange[1] and jtime.day <= (today.day + 7):
-                    is_week_job = True
-                elif (today.day + 7) > monthrange[1] and 7 - (31 - today.day) >= jtime.day:
-                    is_week_job = True
-                elif (today.day -7) >= 0 and jtime.day >= (today.day - 7):
+                elif abs(today.day - jtime.day) <= 7 and today.day > jtime.day:
                     is_prev_job = True
-                elif (today.day - 7) < 0 and 31 - (7 - today.day) <= jtime.day:
-                    is_prev_job = True
+                elif abs(today.day - jtime.day) <= 7 and today.day < jtime.day:
+                    is_week_job = True
                 else:
                     pass
             elif jtype == "by_year":
@@ -1010,14 +999,10 @@ class OrgNote(object):
                 if today.month != jtime.month: continue
                 if today.day == jtime.day:
                     is_today_job = True
-                elif (today.day + 7) <= monthrange[1] and jtime.day <= (today.day + 7):
-                    is_week_job = True
-                elif (today.day + 7) > monthrange[1] and 7 - (31 - today.day) >= jtime.day:
-                    is_week_job = True
-                elif (today.day - 7) >= 0 and jtime.day >= (today.day - 7):
+                elif abs(today.day - jtime.day) <= 7 and today.day > jtime.day:
                     is_prev_job = True
-                elif (today.day - 7) < 0 and 31 - (7 - today.day) <= jtime.day:
-                    is_prev_job = True
+                elif abs(today.day - jtime.day) <= 7 and today.day < jtime.day:
+                    is_week_job = True
                 else:
                     pass
             else:
