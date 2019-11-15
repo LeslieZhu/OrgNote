@@ -919,16 +919,13 @@ class OrgNote(object):
             if job.startswith("#"): continue
             
             job = [i.strip() for i in job.strip().split(',')]
-            #print(job)
+            print(job)
 
             if len(job) == 4:
                 jtype,jtime, jname,jurl = job
             elif len(job) == 3:
                 jtype,jtime, jname = job
                 jurl = ""
-            elif jtype not in by_types:
-                print("Bad job by_type:", job)
-                continue
             else:
                 print("Bad format calendar job(time,name,job type,url):", job)
                 continue
@@ -955,54 +952,74 @@ class OrgNote(object):
             if monthrange[1] < jtime.day:
                 jtime.replace(day=monthrange[1])
 
+            # get current time to generate calendar jobs
             today = today.replace(hour=jtime.hour, minute=jtime.minute)
             
             is_today_job = False
             is_week_job = False
             is_prev_job = False
 
-            if (today.year, today.month, today.day) == (jtime.year, jtime.month, jtime.day):
+            if jtype == "by_day" or (today.year, today.month, today.day) == (jtime.year, jtime.month, jtime.day):
                 is_today_job = True
-
-            if jtype == "by_once":
+            elif jtype == "by_once":
                 delta = jtime - today
-                if (today.year, today.month, today.day) == (jtime.year, jtime.month, jtime.day):
-                    is_today_job = True
                 if delta.days in range(0, 8):
                     is_week_job = True
-                if delta.days in range(-8, 0):
+                elif delta.days in range(-8, 0):
                     is_prev_job = True
-            elif jtype == "by_day":
-                is_today_job = True
-                is_week_job = True
-                is_prev_job = True
+                else:
+                    pass
             elif jtype == "by_week":
                 if jtime.weekday() == today.weekday():
                     is_today_job = True
-                #if jtime.day - today.day in range(0,8):
-                is_week_job = True
-                is_prev_job = True
-            elif jtype == "by_month":
-                if jtime.day == today.day:
-                    is_today_job = True
-                if jtime.day - today.day in range(0, 8):
+                else:
                     is_week_job = True
-                if jtime.day - today.day in range(-8,0):
                     is_prev_job = True
-            elif jtype == "by_quarter" and today.month in quarter_list:
+            elif jtype == "by_month":
                 if today.day == jtime.day:
                     is_today_job = True
-                if jtime.day - today.day in range(0, 8):
-                    is_week_job = True
-                if jtime.day - today.day in range(-8,0):
-                    is_prev_job = True
-            elif jtype == "by_year" and today.year >= jtime.year:
-                if (today.month, today.day) == (jtime.month, jtime.day):
+                elif abs(today.day - jtime.day) <= 7:
+                    if (today.day + 7) <= monthrange[1] and jtime.day <= (today.day + 7):
+                        is_week_job = True
+                    elif (today.day + 7) > monthrange[1] and 7 - (31 - today.day) >= jtime.day:
+                        is_week_job = True
+                    elif (today.day -7) >= 0 and jtime.day >= (today.day - 7):
+                        is_prev_job = True
+                    elif (today.day - 7) < 0 and 31 - (7 - today.day) <= jtime.day:
+                        is_prev_job = True
+                    else:
+                        pass
+                else:
+                    pass
+            elif jtype == "by_quarter":
+                if today.month not in quarter_list: continue
+                if today.day == jtime.day:
                     is_today_job = True
-                if today.month == jtime.month and jtime.day - today.day in range(0, 8):
+                elif (today.day + 7) <= monthrange[1] and jtime.day <= (today.day + 7):
                     is_week_job = True
-                if today.month == jtime.month and jtime.day - today.day in range(-8, 0):
+                elif (today.day + 7) > monthrange[1] and 7 - (31 - today.day) >= jtime.day:
+                    is_week_job = True
+                elif (today.day -7) >= 0 and jtime.day >= (today.day - 7):
                     is_prev_job = True
+                elif (today.day - 7) < 0 and 31 - (7 - today.day) <= jtime.day:
+                    is_prev_job = True
+                else:
+                    pass
+            elif jtype == "by_year":
+                if today.year < jtime.year: continue
+                if today.month != jtime.month: continue
+                if today.day == jtime.day:
+                    is_today_job = True
+                elif (today.day + 7) <= monthrange[1] and jtime.day <= (today.day + 7):
+                    is_week_job = True
+                elif (today.day + 7) > monthrange[1] and 7 - (31 - today.day) >= jtime.day:
+                    is_week_job = True
+                elif (today.day - 7) >= 0 and jtime.day >= (today.day - 7):
+                    is_prev_job = True
+                elif (today.day - 7) < 0 and 31 - (7 - today.day) <= jtime.day:
+                    is_prev_job = True
+                else:
+                    pass
             else:
                 continue
 
@@ -1011,41 +1028,27 @@ class OrgNote(object):
             weekday = jtime.weekday() + 1 # 0 + 1: Mon
             t_weekday = today.weekday() + 1
 
-            month = jtime.month
-            t_month = today.month
-            
             if is_today_job:
                 today_str = today.strftime("%Y/%m/%d %H:%M")
                 self.job_today.append([today_str, jname, jtype, jurl])
             elif is_week_job:
-                if jtype == "by_week":
-                    if t_weekday > weekday:
-                        days = (7 - t_weekday) + weekday
-                    else:
-                        days = weekday - t_weekday                
-                    today = today + datetime.timedelta(days=days)
-                elif jtype == "by_month":
-                    if t_month > week:
-                        months = (12 - t_month) + month
-                    else:
-                        months = month - t_month
-                    today = today + datetime.timedelta(months=months)
-                    today = today.replace(day=jtime.day)
-                elif jtype == "by_quarter":
-                    n_month = [i for m in quarter_list if m > t_month]
-                    if n_month:
-                        n_month = n_month[0]
-                    else:
-                        n_month = quarter_list[0]
-                    today = today.replace(day=jtime.day,month=n_month)
-                        
+                if t_weekday > weekday:
+                    days = (7 - t_weekday) + weekday
+                else:
+                    days = weekday - t_weekday
+                today = today + datetime.timedelta(days=days)
                 today_str = today.strftime("%Y/%m/%d %H:%M")
                 self.job_week.append([today_str, jname, jtype, jurl])
             elif is_prev_job:
-                #if t_weekday > weekday:
-                today = today + datetime.timedelta(days=days)
+                if t_weekday < weekday:
+                    days = (7 - weekday) + t_weekday
+                else:
+                    days = t_weekday -  weekday
+                today = today + datetime.timedelta(days=-1 * days)
                 today_str = today.strftime("%Y/%m/%d %H:%M")
                 self.job_prev.append([today_str, jname, jtype, jurl])
+            else:
+                pass
 
         #print(self.job_today)
         #print(self.job_week)
@@ -1055,7 +1058,7 @@ class OrgNote(object):
             if jobs == self.job_today:
                 output += "<h3>今日行程</h3>"
             elif jobs == self.job_week:
-                output += "<h3>本周行程</h3>"
+                output += "<h3>下周行程</h3>"
             else:
                 output += "<h3>上周行程</h3>"
 
