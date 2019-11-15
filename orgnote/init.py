@@ -292,12 +292,12 @@ def main(args=None):
     create_note_file(blog.source_dir + "/links.org",link)
     create_note_file(blog.source_dir + "/slinks.org",link)
 
-    job_once = "2019/11/11 10:00,查看OrgNote更新,by_once,https://github.com/LeslieZhu/OrgNote"
-    job_day = "2019/11/11 10:00,查看OrgNote更新,by_day,https://github.com/LeslieZhu/OrgNote"
-    job_week = "2019/11/11 10:00,查看OrgNote更新,by_week,https://github.com/LeslieZhu/OrgNote"
-    job_month = "2019/11/11 10:00,查看OrgNote更新,by_month,https://github.com/LeslieZhu/OrgNote"
-    job_quarter = "2019/11/11 10:00,查看OrgNote更新,by_quarter,https://github.com/LeslieZhu/OrgNote"
-    job_year = "2019/11/11 10:00,查看OrgNote更新,by_year,https://github.com/LeslieZhu/OrgNote"
+    job_once = "by_once,2019/11/11 10:00,查看OrgNote更新,https://github.com/LeslieZhu/OrgNote"
+    job_day = "by_day,2019/11/11 10:00,查看OrgNote更新,https://github.com/LeslieZhu/OrgNote"
+    job_week = "by_week,2019/11/11 10:00,查看OrgNote更新,https://github.com/LeslieZhu/OrgNote"
+    job_month = "by_month,2019/11/11 10:00,查看OrgNote更新,https://github.com/LeslieZhu/OrgNote"
+    job_quarter = "by_quarter,2019/11/11 10:00,查看OrgNote更新,https://github.com/LeslieZhu/OrgNote"
+    job_year = "by_year,2019/11/11 10:00,查看OrgNote更新,https://github.com/LeslieZhu/OrgNote"
     create_note_file(blog.source_dir + "/calendar.org",[job_once,job_day,job_week,job_month,job_quarter,job_year])
     #create_default_note(blog.source_dir + "/HelloOrgNote.org")
 

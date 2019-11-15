@@ -922,9 +922,9 @@ class OrgNote(object):
             #print(job)
 
             if len(job) == 4:
-                jtime, jname, jtype, jurl = job
+                jtype,jtime, jname,jurl = job
             elif len(job) == 3:
-                jtime, jname, jtype = job
+                jtype,jtime, jname = job
                 jurl = ""
             elif jtype not in by_types:
                 print("Bad job by_type:", job)
@@ -954,6 +954,8 @@ class OrgNote(object):
 
             if monthrange[1] < jtime.day:
                 jtime.replace(day=monthrange[1])
+
+            today = today.replace(hour=jtime.hour, minute=jtime.minute)
             
             is_today_job = False
             is_week_job = False
@@ -1005,16 +1007,43 @@ class OrgNote(object):
                 continue
 
 
-            today = today.replace(hour=jtime.hour, minute=jtime.minute)
-            today_str = today.strftime("%Y/%m/%d %H:%M")
-            if is_today_job:                
+
+            weekday = jtime.weekday() + 1 # 0 + 1: Mon
+            t_weekday = today.weekday() + 1
+
+            month = jtime.month
+            t_month = today.month
+            
+            if is_today_job:
+                today_str = today.strftime("%Y/%m/%d %H:%M")
                 self.job_today.append([today_str, jname, jtype, jurl])
             elif is_week_job:
-                today = today.replace(day=jtime.day)
+                if jtype == "by_week":
+                    if t_weekday > weekday:
+                        days = (7 - t_weekday) + weekday
+                    else:
+                        days = weekday - t_weekday                
+                    today = today + datetime.timedelta(days=days)
+                elif jtype == "by_month":
+                    if t_month > week:
+                        months = (12 - t_month) + month
+                    else:
+                        months = month - t_month
+                    today = today + datetime.timedelta(months=months)
+                    today = today.replace(day=jtime.day)
+                elif jtype == "by_quarter":
+                    n_month = [i for m in quarter_list if m > t_month]
+                    if n_month:
+                        n_month = n_month[0]
+                    else:
+                        n_month = quarter_list[0]
+                    today = today.replace(day=jtime.day,month=n_month)
+                        
                 today_str = today.strftime("%Y/%m/%d %H:%M")
                 self.job_week.append([today_str, jname, jtype, jurl])
             elif is_prev_job:
-                today = today.replace(day=jtime.day)
+                #if t_weekday > weekday:
+                today = today + datetime.timedelta(days=days)
                 today_str = today.strftime("%Y/%m/%d %H:%M")
                 self.job_prev.append([today_str, jname, jtype, jurl])
 
@@ -1024,11 +1053,11 @@ class OrgNote(object):
         for jobs in [self.job_today,self.job_week,self.job_prev]:
             if not jobs: continue
             if jobs == self.job_today:
-                output += "<h3>今日工作</h3>"
+                output += "<h3>今日行程</h3>"
             elif jobs == self.job_week:
-                output += "<h3>本周工作</h3>"
+                output += "<h3>本周行程</h3>"
             else:
-                output += "<h3>上周工作</h3>"
+                output += "<h3>上周行程</h3>"
 
             output += "<ul>"
             for job in jobs:

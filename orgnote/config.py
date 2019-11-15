@@ -152,8 +152,8 @@ calendar_name: "日历"
 # job name: text
 # job type: by_once,by_day,by_week,by_month,by_quarter,by_year
 # job link(optional): url
-# job layout: time,name,type,link
-# e.g: 2019/11/12 09:30,查看新闻,by_once,www.weibo.com
+# job layout: type,time,name,link
+# e.g: by_once,2019/11/12 09:30,查看新闻,www.weibo.com
 calendar_jobfile: calendar.org
 
 # shift hour for calendar job
