@@ -1220,8 +1220,10 @@ class OrgNote(object):
         <h4>标签云</h4>
         <ul class="tag_box inline list-unstyled">
         """
-        
-        for key in self.keywords:
+
+        from functools import cmp_to_key
+        key = cmp_to_key(lambda x,y: len(self.tags[x]) - len(self.tags[y]))
+        for key in sorted(self.keywords,key=key,reverse=True):
             output += "<li><a href=\"%stags/%s.html\">%s<span>%s</span></a></li>" % (self.public_url,key,key,len(self.tags[key]))
 
         output += """
@@ -1236,8 +1238,9 @@ class OrgNote(object):
         output += """
         <div class="tag-cloud-tags" style="padding: 5px 15px">
         """
-
-        for key in self.keywords:
+        from functools import cmp_to_key
+        key = cmp_to_key(lambda x,y: len(self.tags[x]) - len(self.tags[y]))
+        for key in sorted(self.keywords,key=key,reverse=True):
             nums = len(self.tags[key])
             size = nums/5.0
             if size < 1:
