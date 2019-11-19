@@ -843,7 +843,8 @@ class OrgNote(object):
         from functools import cmp_to_key
         key = cmp_to_key(lambda x,y: len(self.tags[x]) - len(self.tags[y]))
         for key in sorted(self.keywords,key=key,reverse=True):
-            output += "<h3>%s(%d)</h3><ul>" % (key,len(self.tags[key]))
+            output += "<a href=\"javascript:showul('%s');\"><h3>%s(%d)</h3></a>" % (key,key,len(self.tags[key]))
+            output += "<ul id='%s' style='display:none'>" %  key
             for link in self.tags[key]:
                 newarchive = [self.gen_public_link(link[0],self.public_url),'fa fa-file-o',link[1]]
                 output += self.gen_href(newarchive)
@@ -1387,16 +1388,31 @@ class OrgNote(object):
 
     def gen_jscripts(self):
         return """
-        <!-- donate script -->
+
         <script type="text/javascript">
-        document.getElementById('reward').onclick = function() {
-        $('#reward-button').addClass('hidden');
-        $('#qr-code-image-w').show();
-        $('#qr-code-image-a').show();
-        $('#qr-code-image-p').show();
+        
+        <!-- donate script -->
+        var reward = document.getElementById('reward');
+        if(reward){
+            reward.onclick = function() {
+              $('#reward-button').addClass('hidden');
+              $('#qr-code-image-w').show();
+              $('#qr-code-image-a').show();
+              $('#qr-code-image-p').show();
+            }
+        }
+        <!-- /donate script -->
+
+        
+        function showul(name){
+            var uls = document.getElementById(name);
+            if(uls.style.display == "none"){
+               uls.style.display = "block";
+            } else {
+               uls.style.display = "none";
+            } 
         }
         </script>
-        <!-- /donate script -->
         """
 
     def gen_public_link(self,link="",prefix=None):
