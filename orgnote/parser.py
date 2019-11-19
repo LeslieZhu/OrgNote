@@ -1048,7 +1048,7 @@ class OrgNote(object):
                 output += "<h3>上周行程</h3>"
 
             output += "<ul>"
-            for job in jobs:
+            for job in sorted(jobs):
                 if not job[3]:
                     output += "<li><strong>时间</strong>: %s , <strong>(%s)</strong>: %s </li>" % (job[0], by_types[job[2]],job[1])
                 else:
