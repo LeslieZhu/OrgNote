@@ -843,7 +843,7 @@ class OrgNote(object):
         from functools import cmp_to_key
         key = cmp_to_key(lambda x,y: len(self.tags[x]) - len(self.tags[y]))
         for key in sorted(self.keywords,key=key,reverse=True):
-            output += "<h3>%s</h3><ul>" % key
+            output += "<h3>%s(%d)</h3><ul>" % (key,len(self.tags[key]))
             for link in self.tags[key]:
                 newarchive = [self.gen_public_link(link[0],self.public_url),'fa fa-file-o',link[1]]
                 output += self.gen_href(newarchive)
