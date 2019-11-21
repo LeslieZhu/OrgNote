@@ -23,7 +23,16 @@ def gen_title(link=""):
     return title
 
 def to_page_mk2(notename=""):
+    import codecs,os
     from orgnote.markdown import Markdown
+
+
+    css = '''
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+</style>
+'''
+
 
     print("to_page_mk2(%s)" % notename)
 
