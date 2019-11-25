@@ -1496,7 +1496,7 @@ class OrgNote(object):
         print(self.header_prefix(title="归档"),file=output)
         print(self.body_prefix(),file=output)
         print(self.body_menu(self.menus),file=output)
-        print(self.contain_prefix(["归档"],"","归档"),file=output)
+        print(self.contain_prefix(["归档"],"","归档(%d)" % sum([len(self.tags[k]) for k in self.keywords])),file=output)
         print(self.contain_prefix_end(),file=output)
         print(self.contain_archive_tag(),file=output)
         print(self.gen_sidebar(),file=output)
