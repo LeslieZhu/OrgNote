@@ -922,14 +922,23 @@ class OrgNote(object):
             job = [i.strip() for i in job.strip().split(',')]
             #print(job)
 
-            if len(job) == 4:
-                jtype,jtime, jname,jurl = job
-            elif len(job) == 3:
-                jtype,jtime, jname = job
-                jurl = ""
-            else:
+            if len(job) < 3:
                 print("Bad format calendar job(time,name,job type,url):", job)
                 continue
+
+            jtype,jtime = job[:2]
+            hasurl = False
+            for p in ["http://","https://","www."]:
+                if job[-1].startswith(p):
+                    hasurl = True
+                    continue
+
+            if hasurl:
+                jurl = job[-1]
+                jname = ','.join(job[2:-1]) if len(job) > 3 else jurl
+            else:
+                jurl = ""
+                jname = ','.join(job[2:])
 
             if jtype not in by_types:
                 print("Bad job type in", job)
