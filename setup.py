@@ -62,7 +62,7 @@ For more help, you can check the docs:  http://orgnote.readthedocs.org/zh_CN/lat
 setup(
     name = "orgnote",
     version = find_version("orgnote", "__init__.py"),
-    keywords = ('org-mode', 'emacs','orgnote','blog'),
+    keywords = ['org-mode', 'emacs','orgnote','blog'],
     description = ' A simple blog based on org-mode',
     long_description=long_description,
     license = 'GPL',

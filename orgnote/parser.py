@@ -1922,11 +1922,12 @@ class OrgNote(object):
                 os.chdir(curdir)
             elif sys.version_info.major == 3:
                 if sys.version_info >= (3,7):
-                    server_class=http.server.ThreadingHTTPServer
-                    handler_class=partial(http.server.SimpleHTTPRequestHandler,directory=self.public_dir)
-                    
                     curdir = os.getcwd()
                     os.chdir(self.public_dir)
+                    
+                    server_class=http.server.ThreadingHTTPServer
+                    handler_class=partial(http.server.SimpleHTTPRequestHandler,directory=os.getcwd())
+                    handler_class.protocol_version = "HTTP/1.0"
                     
                     with server_class(server_address, handler_class) as httpd:
                         sa = httpd.socket.getsockname()
