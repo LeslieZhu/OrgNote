@@ -1027,7 +1027,7 @@ class OrgNote(object):
                 today_str = today.strftime("%Y/%m/%d %H:%M")
                 self.job_today.append([today_str, jname, jtype, jurl])
             elif is_week_job:
-                if t_weekday > weekday:
+                if t_weekday >= weekday:
                     days = (7 - t_weekday) + weekday
                 else:
                     days = weekday - t_weekday
@@ -1035,11 +1035,12 @@ class OrgNote(object):
                 today_str = today.strftime("%Y/%m/%d %H:%M")
                 self.job_week.append([today_str, jname, jtype, jurl])
             elif is_prev_job:
-                if t_weekday < weekday:
+                if t_weekday <= weekday:
                     days = (7 - weekday) + t_weekday
                 else:
                     days = t_weekday -  weekday
-                today = today + datetime.timedelta(days=-1 * days)
+                days *= -1
+                today = today + datetime.timedelta(days=days)
                 today_str = today.strftime("%Y/%m/%d %H:%M")
                 self.job_prev.append([today_str, jname, jtype, jurl])
             else:
