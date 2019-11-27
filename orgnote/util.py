@@ -41,9 +41,9 @@ def to_page_mk2(notename=""):
     
     mk = Markdown()
     
-    print("*" * 20)
-    print(text)
-    print("*" * 20)
+    #print("*" * 20)
+    #print(text)
+    #print("*" * 20)
     
     html = mk.mk2html(text)
     
