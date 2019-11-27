@@ -44,15 +44,17 @@ else:
 
 
 class OrgNoteFileSystemEventHander(FileSystemEventHandler):
-    def __init__(self, fn):
+    def __init__(self, fn,port=""):
         super(OrgNoteFileSystemEventHander, self).__init__()
         self.restart = fn
+        self.port = port
+        self.orglist = ["calendar.org","links.org","nopublic.org","public.org","slinks.org"]
 
     def on_any_event(self, event):
-        if event.src_path.endswith('.html'):
-            print('orgnote html source file changed: %s' % event.src_path)
-            self.restart()
-
+        if event.src_path.endswith('.html') or os.path.basename(event.src_path) in self.orglist:
+            print('orgnote source file changed: %s' % event.src_path)
+            self.restart(self.port)
+            
 class OrgNote(object):
     def __init__(self):
         self.cfg = config.Config()
@@ -177,6 +179,12 @@ class OrgNote(object):
         self.refresh_config()
 
     def refresh_config(self):
+        self.slinks = []
+        self.links = []
+        self.job_today = []
+        self.job_week = []
+        self.job_prev = []
+
         # homepage will update in local/remote server mode
         self.public_url = self.homepage + re.sub("//*","/",self.blogroot + '/')
         self.search_path = "search.json"
@@ -217,8 +225,6 @@ class OrgNote(object):
                 self.menus.append(_item)
                 self.menus_map[menu["title"]] = _url.strip(".html")
 
-        
-        self.links = []
 
         if os.path.exists(self.links_file):
             for link in open(self.links_file,"r").readlines():
@@ -1876,13 +1882,17 @@ class OrgNote(object):
             self.monitor_log('Process ended with code %s.' % self.process.exitcode)
             self.process = None
 
-    def monitor_restart(self):
-        self.monitor_kill()
-        #self.monitor_start()
-        self.process = Process(target=self.monitor_start, args=(self.port,))
-        self.process.daemon = True
-        self.process.start()
-        self.process.join()
+    def monitor_restart(self,port="8080",filename=""):
+        #self.monitor_kill()
+        #self.process = Process(target=self.monitor_start, args=(self.port,))
+        #self.process.daemon = True
+        #self.process.start()
+        #self.process.join()
+
+        print("Watch: re-generate pages")
+        self.homepage ="http://localhost:" + port
+        self.refresh_config()
+        self.do_generate()
 
 
     def do_server(self,port="8080"):
@@ -1891,7 +1901,7 @@ class OrgNote(object):
         self.monitor_path = self.source_dir
         
         observer = Observer()
-        observer.schedule(OrgNoteFileSystemEventHander(self.monitor_restart), self.monitor_path, recursive=True)
+        observer.schedule(OrgNoteFileSystemEventHander(self.monitor_restart,self.port), self.monitor_path, recursive=True)
         observer.start()
         
         self.monitor_log('Watching directory %s' % self.monitor_path)
@@ -1903,7 +1913,7 @@ class OrgNote(object):
         
         try:
             while True:
-                time.sleep(0.5)
+                time.sleep(1)
         except KeyboardInterrupt:
             observer.stop()
         observer.join()
@@ -1912,13 +1922,15 @@ class OrgNote(object):
         import sys
 
         if not os.path.exists(self.tags_dir):
-            os.makedirs(self.tags_dir)        
-        self.homepage ="http://localhost:" + port
+            os.makedirs(self.tags_dir)
+            
+        self.port = port
+        self.homepage ="http://localhost:" + self.port
         self.refresh_config()
         self.do_generate()                
 
         try:
-            server_address = ('', int(port))
+            server_address = ('', int(self.port))
             if sys.version_info.major == 2:
                 import SimpleHTTPServer,BaseHTTPServer
                 server_class = BaseHTTPServer.HTTPServer
