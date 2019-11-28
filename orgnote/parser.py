@@ -20,7 +20,7 @@ import calendar
 
 #import subprocess,shlex
 import json
-import http.server
+
 #import socketserver
 from bs4 import BeautifulSoup, Comment
 from multiprocessing import Process
@@ -1938,6 +1938,7 @@ class OrgNote(object):
                 
                 os.chdir(curdir)
             elif sys.version_info.major == 3:
+                import http.server
                 if sys.version_info >= (3,7):
                     curdir = os.getcwd()
                     os.chdir(self.public_dir)
