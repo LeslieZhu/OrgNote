@@ -59,16 +59,30 @@ class OrgNote(object):
     def __init__(self):
         self.cfg = config.Config()
         self.emacs_version = [int(i) for i in util.get_emacs_version()]
+        
+        # update settings
+        self.refresh_config()
 
-        self.notes_db = dict()
-        self.notes = list()
-        self.localnotes = list()
-        self.archives = list()
 
-        self.keywords = list()
-        self.tags = dict()
-        self.page_tags = dict()
-        self.timetags = dict()
+    def refresh_config(self,homepage=""):
+        self.notes_db = {}
+        self.notes = []
+        self.localnotes = []
+        self.archives = []
+        self.keywords = []
+        self.tags = {}
+        self.page_tags = {}
+        self.timetags = {}
+        
+        self.slinks = []
+        self.links = []
+
+        self.job_today = []
+        self.job_week = []
+        self.job_prev = []
+        
+        self.__pagenames__ = {}
+
 
 
         # general option
@@ -81,7 +95,7 @@ class OrgNote(object):
         self.language = self.cfg.cfg.get("language","zh-CN")
         
         # blog option        
-        self.homepage = self.cfg.cfg.get("url","https://github.com/LeslieZhu/OrgNote")
+        self.homepage = self.cfg.cfg.get("url","https://github.com/LeslieZhu/OrgNote") if not homepage else homepage    
         self.blogroot = self.cfg.cfg.get("root","/")
         
         self.source_dir = "./" + self.cfg.cfg.get("source_dir","notes") +'/'
@@ -135,13 +149,12 @@ class OrgNote(object):
         self.menu_list = self.cfg.cfg.get("menu_list",dict())
         
 
-        self.slinks = []
+
         self.slinks_name = self.cfg.cfg.get("slinks_name","友情链接")
         self.slinks_file = self.cfg.cfg.get("slinks_file","")
         if self.slinks_file:
             self.slinks_file = self.source_dir + self.slinks_file
 
-        self.links = []
         self.links_name = self.cfg.cfg.get("links_name","觅链")        
         self.links_file = self.cfg.cfg.get("links_file","")
         if self.links_file:
@@ -154,12 +167,6 @@ class OrgNote(object):
         if self.calendar_jobfile:
             self.calendar_jobfile = self.source_dir + self.calendar_jobfile
         
-        self.job_today = []
-        self.job_week = []
-        self.job_prev = []
-
-
-        self.__pagenames__ = {}
 
         if self.sidebar_show == 1:
             self.col_md_index = "col-md-9"
@@ -174,16 +181,6 @@ class OrgNote(object):
         else:
             self.col_md_page = "col-md-12"
             self.col_md_page_r = ""
-
-        # update settings
-        self.refresh_config()
-
-    def refresh_config(self):
-        self.slinks = []
-        self.links = []
-        self.job_today = []
-        self.job_week = []
-        self.job_prev = []
 
         # homepage will update in local/remote server mode
         self.public_url = self.homepage + re.sub("//*","/",self.blogroot + '/')
@@ -1891,8 +1888,7 @@ class OrgNote(object):
 
         print("Watch: re-generate pages")
         self.homepage ="http://localhost:" + port
-        self.refresh_config()
-        self.do_generate()
+        self.do_generate(self.homepage)
 
 
     def do_server(self,port="8080"):
@@ -1926,8 +1922,7 @@ class OrgNote(object):
             
         self.port = port
         self.homepage ="http://localhost:" + self.port
-        self.refresh_config()
-        self.do_generate()                
+        self.do_generate(self.homepage)                
 
         try:
             server_address = ('', int(self.port))
@@ -2023,10 +2018,8 @@ class OrgNote(object):
         import os
         import shutil
         
-        self.homepage = self.cfg.cfg.get("url","https://github.com/LeslieZhu/OrgNote")
         if not os.path.exists(self.tags_dir):
             os.makedirs(self.tags_dir)        
-        self.refresh_config()
 
         # cleanup cached html file
         os.system("rm -r %s/2*/" % self.public_dir)
@@ -2051,6 +2044,8 @@ class OrgNote(object):
 
     def do_generate(self,homepage="",batch=""):
         self.cfg.update()
+        self.refresh_config(homepage)
+        
         if not os.path.exists(self.tags_dir):
             os.makedirs(self.tags_dir)        
         self.public_images()
@@ -2082,11 +2077,6 @@ class OrgNote(object):
         else:
             pass
 
-        if homepage:
-            self.homepage = homepage
-
-        self.refresh_config()
-        
         self.gen_tag_list()
         self.gen_timetag_list()
         self.gen_public()
