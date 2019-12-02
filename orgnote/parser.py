@@ -989,6 +989,7 @@ class OrgNote(object):
                     is_week_job = True
                     is_prev_job = True
             elif jtype == "by_month":
+                jtime = jtime.replace(year=today.year,month=today.month)
                 if today.day == jtime.day:
                     is_today_job = True
                 elif abs(today.day - jtime.day) <= 7 and today.day > jtime.day:
@@ -999,6 +1000,7 @@ class OrgNote(object):
                     pass
             elif jtype == "by_quarter":
                 if today.month not in quarter_list: continue
+                jtime = jtime.replace(year=today.year,month=today.month)
                 if today.day == jtime.day:
                     is_today_job = True
                 elif abs(today.day - jtime.day) <= 7 and today.day > jtime.day:
@@ -1010,6 +1012,7 @@ class OrgNote(object):
             elif jtype == "by_year":
                 if today.year < jtime.year: continue
                 if today.month != jtime.month: continue
+                jtime = jtime.replace(year=today.year,month=today.month)
                 if today.day == jtime.day:
                     is_today_job = True
                 elif abs(today.day - jtime.day) <= 7 and today.day > jtime.day:
