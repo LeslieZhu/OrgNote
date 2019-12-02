@@ -1346,7 +1346,7 @@ class OrgNote(object):
                 if item not in self.slinks:
                     self.slinks.append(item)
                     
-        for link in sorted(self.slinks):
+        for link in self.slinks:
             url,name,icon = link
             output += """
             <li><a href="%s" title="%s" target="_blank"><i class="%s"></i>%s</a></li>
