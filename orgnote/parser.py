@@ -737,6 +737,8 @@ class OrgNote(object):
         
         output = ""
 
+        return output
+
         html_data = BeautifulSoup(open(link,"r").read(),"html.parser")
 
         _title = html_data.find('h1',{'class':'title'}).text
@@ -757,7 +759,8 @@ class OrgNote(object):
             new_src = get_hightlight_src(src_code,src_lang)
             content_data_text = content_data_text.replace(str(src_tag),new_src)
 
-
+        READ_MORE = ""
+        
         if 'table-of-contents' in content_data_text:
             new_data = content_data_text
         else:
@@ -784,10 +787,10 @@ class OrgNote(object):
         new_data = new_data.replace("content","content-index")
         #new_data = new_data.replace(self.col_md_page,"col-md-12")
 
-        output += new_data
+        READ_MORE += new_data
 
 
-        output +=  """
+        READ_MORE +=  """
         <footer>
         <div class="alignleft">
         <a href="%s#more" class="more-link">阅读全文</a>
@@ -798,7 +801,10 @@ class OrgNote(object):
         
         #output += "</div> <!-- contain -->"
         #output += "</div> <!-- col-md-12 -->"
-        
+
+        if self.rss_type != "ReadNone":
+            output += READ_MORE
+            
         return output
 
     def contain_archive(self,data=list()):
@@ -1645,7 +1651,7 @@ class OrgNote(object):
         print(self.header_prefix(title="标签"),file=output)
         print(self.body_prefix(),file=output)
         print(self.body_menu(self.menus),file=output)
-        print(self.contain_prefix(["标签"],"","标签"),file=output)
+        print(self.contain_prefix(["标签"],"","标签",True),file=output)
         print(self.contain_prefix_end(),file=output)
         print(self.contain_tags(),file=output)
         #print(self.gen_sidebar(),file=output)
@@ -1669,9 +1675,9 @@ class OrgNote(object):
         print(self.body_prefix(),file=output)
         print(self.body_menu(self.menus),file=output)
         if public:
-            print(self.contain_prefix(self.page_tags[note[0]],"标签: ",util.gen_title(note[0]),True),file=output)
+            print(self.contain_prefix(self.page_tags[note[0]],"标签: ",util.gen_title(note[0])),file=output)
         else:
-            print(self.contain_prefix([self.nopublic_tag],"标签: ",util.gen_title(note[0]),True),file=output)
+            print(self.contain_prefix([self.nopublic_tag],"标签: ",util.gen_title(note[0])),file=output)
         print(self.contain_prefix_end(note[0]),file=output)
         print(self.contain_page(note[0],num,public),file=output)              # auto gen
         print(self.gen_sidebar_page(),file=output)
