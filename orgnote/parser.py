@@ -82,6 +82,7 @@ class OrgNote(object):
         self.job_prev = []
         
         self.__pagenames__ = {}
+        self.cjk_num = 0
 
 
 
@@ -628,7 +629,7 @@ class OrgNote(object):
         <ul class="post-copyright">
         <li class="post-copyright-author">
         <strong>本文作者：</strong>「
-        <a href="%s" title="%s">%s</a> 」创作于%s
+        <a href="%s" title="%s">%s</a> 」创作于%s，共%s字
         </li>
         %s
         <li class="post-copyright-link">
@@ -644,10 +645,12 @@ class OrgNote(object):
         """ % (self.public_url+"about.html",
                self.author,self.author,
                self.gen_date(self.notes[num][0]),
+               self.cjk_num,
                wx,
                self.gen_public_link(self.notes[num][0],self.public_url),
                self.notes[num][1],
                self.gen_public_link(self.notes[num][0],self.public_url))
+        
 
         # 本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
         
@@ -669,9 +672,7 @@ class OrgNote(object):
         keywordtext = html_data.find(attrs={"name":"keywords"})['content']
         if self.rdmode_keyword in keywordtext:
             content_data_text = content_data_text.replace("id=\"content\"","id=\"content-reading\"")
-        
-        content_data_text += self.copyright(num)
-        
+                        
         # replace images path
         image_file = "file:///%s/" % self.images_dir
         image_path = "%s%s/" %(self.public_url,self.images_dir)
@@ -691,6 +692,16 @@ class OrgNote(object):
             src_code = src_tag.text
             new_src = get_hightlight_src(src_code,src_lang)
             content_data_text = content_data_text.replace(str(src_tag),new_src)
+
+
+        # cjk nums
+        import re
+        hanzi_regex = re.compile(r'[\u4E00-\u9FA5]')
+        hanzi_list = hanzi_regex.findall(content_data_text)
+        self.cjk_num = len(hanzi_list)
+
+        content_data_text += self.copyright(num)
+
             
         if public:
             new_archive = [self.gen_public_link(self.notes[num][0],self.public_url),"fa fa-file-o",self.notes[num][1].strip()] if self.notes else []
@@ -729,7 +740,8 @@ class OrgNote(object):
         output += new_data
         output += "</div> <!-- my-page -->"
         output += "</div> <!-- col-md -->"
-        
+
+                
         return output
     
     def contain_note(self,link=""):
