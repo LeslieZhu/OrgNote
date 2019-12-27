@@ -113,10 +113,12 @@ def add_note(notename="",srcdir="notes/"):
             note_name = note_name.replace("././","./").replace("//","/")
             if note_name != None:
                 print("%s init done" % note_name)
+                return note_name
         else:
             print("%s exists, please use other name or delete it" % notename)
+            return ""
     except Exception as ex:
-        pass
+        return ""
         #print(">>>>>",str(ex))
 
             

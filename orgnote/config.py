@@ -52,6 +52,10 @@ files_dir: data
 # Category & Tag
 default_tag: "默认"
 
+# create a note and publish it auto
+# True|False
+auto_publish: True
+
 # Nopublic Tab
 # public: start with '-'
 # nopublic: start with '+'

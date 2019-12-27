@@ -138,6 +138,7 @@ class OrgNote(object):
 
 
         self.per_page = self.cfg.cfg.get("per_page",6)
+        self.auto_publish = self.cfg.cfg.get("auto_publish",True);
 
         self.sidebar_show = self.cfg.cfg.get("sidebar_show",0)
         self.sidebar_show_page = self.cfg.cfg.get("sidebar_show_page",0)
@@ -2116,7 +2117,11 @@ class OrgNote(object):
         print("notes generate done")
 
     def do_new(self,notename=""):
-        return util.add_note(notename,self.source_dir)
+        if self.auto_publish:
+            notefullname = util.add_note(notename,self.source_dir)
+            if notefullname: self.do_publish(notefullname)                
+        else:
+            return util.add_note(notename,self.source_dir)
 
     def do_page(self,notename=""):
         if notename.endswith(".org") and not os.path.exist(notename):
@@ -2266,6 +2271,7 @@ class OrgNote(object):
     def do_org2html(self,note=""):
         if note:
             if note.endswith(".org"):
+                print("Run: emacs -l scripts/init-orgnote.el --batch %s --funcall org-html-export-to-html" % note)
                 util.to_page(note)
             else:
                 print("%s not .org file" % note)
@@ -2273,6 +2279,7 @@ class OrgNote(object):
             self.scan()
             for _note in reversed(sorted(self.notes_db.keys())):                        
                 if _note.endswith(".org"):
+                    print("Run: emacs -l scripts/init-orgnote.el --batch %s --funcall org-html-export-to-html" % _note)
                     util.to_page(_note)
 
 
