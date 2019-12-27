@@ -2263,6 +2263,20 @@ class OrgNote(object):
         for _note in reversed(sorted(self.notes_db.keys())):
             print(_note)
 
+    def do_org2html(self,note=""):
+        if note:
+            if note.endswith(".org"):
+                util.to_page(note)
+            else:
+                print("%s not .org file" % note)
+        else:
+            self.scan()
+            for _note in reversed(sorted(self.notes_db.keys())):                        
+                if _note.endswith(".org"):
+                    util.to_page(_note)
+
+
+
     def do_status(self):
         
         publish_list = self.dirs[0]
@@ -2313,6 +2327,7 @@ Commands:
   new        Create a new .org post
   list       List this blog notes
   status     Status of those notes
+  org2html   Run Emacs to convert .org to .html
   publish    Publish a note
   recall     Cancel publish a note
   generate   Generate static files
@@ -2353,6 +2368,8 @@ def main(args=None):
             blog.do_list()
         elif sys.argv[1] == "status":
             blog.do_status()
+        elif sys.argv[1] == "org2html":
+            blog.do_org2html()
         else:
             usage()
     elif len(sys.argv) == 3:
@@ -2368,6 +2385,8 @@ def main(args=None):
             blog.do_deploy(sys.argv[2])
         elif sys.argv[1] == "recall":
             blog.do_recall(sys.argv[2])
+        elif sys.argv[1] == "org2html":
+            blog.do_org2html(sys.argv[2])
         else:
             usage()
     else:
