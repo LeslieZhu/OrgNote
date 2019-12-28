@@ -2271,7 +2271,7 @@ class OrgNote(object):
     def do_org2html(self,note=""):
         if note:
             if note.endswith(".org"):
-                print("Run: emacs -l scripts/init-orgnote.el --batch %s --funcall org-html-export-to-html" % note)
+                #print("Run: emacs -l scripts/init-orgnote.el --batch %s --funcall org-html-export-to-html" % note)
                 util.to_page(note)
             else:
                 print("%s not .org file" % note)
@@ -2279,7 +2279,7 @@ class OrgNote(object):
             self.scan()
             for _note in reversed(sorted(self.notes_db.keys())):                        
                 if _note.endswith(".org"):
-                    print("Run: emacs -l scripts/init-orgnote.el --batch %s --funcall org-html-export-to-html" % _note)
+                    #print("Run: emacs -l scripts/init-orgnote.el --batch %s --funcall org-html-export-to-html" % _note)
                     util.to_page(_note)
 
 

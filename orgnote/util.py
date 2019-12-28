@@ -87,6 +87,8 @@ def to_page(notename=""):
             cmd = "emacs -l scripts/init-orgnote.el --batch %s --funcall org-html-export-to-html 2>/dev/null" % notename
         else:
             cmd = "emacs -l scripts/init-orgnote.el --batch %s --funcall org-export-as-html 2>/dev/null" % notename
+            
+        print("Run: %s" % cmd)
         os.system(cmd)
     except Exception as ex:
         pass
