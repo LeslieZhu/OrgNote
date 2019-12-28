@@ -75,7 +75,9 @@ class OrgNote(object):
         self.timetags = {}
         
         self.slinks = []
-        self.links = []
+        self.links_default_title = "其它"
+        self.links_title_key = 'titles'
+        self.links = {self.links_default_title:[],self.links_title_key:[]}
 
         self.job_today = []
         self.job_week = []
@@ -226,10 +228,17 @@ class OrgNote(object):
 
 
         if os.path.exists(self.links_file):
+            curtitle = self.links_default_title
             for link in open(self.links_file,"r").readlines():
                 link = link.strip()
                 if not link: continue
                 if link.startswith("#"): continue
+
+                if link.startswith("*"):
+                    curtitle = ''.join(link.split(" ")[1:])
+                    self.links[curtitle] = []
+                    self.links[self.links_title_key].append(curtitle)
+                    continue
                 
                 link = [i.strip() for i in link.split(',')]
                 
@@ -243,12 +252,13 @@ class OrgNote(object):
                     icon = "fa fa-link"
             
                 item = [url,icon,name]
-                if item not in self.links:
-                    self.links.append(item)
+                if item not in self.links[curtitle]:
+                    self.links[curtitle].append(item)
         #
+        self.links[self.links_title_key].append(self.links_default_title)
         nopublic_link = [self.public_url + "tags/" + self.nopublic_tag + ".html","fa fa-link",self.nopublic_tag]
-        if nopublic_link not in self.links:
-            self.links.append(nopublic_link)
+        if nopublic_link not in self.links[self.links_default_title]:
+            self.links[self.links_default_title].append(nopublic_link)
 
     def header_prefix(self,deep=1,title=""):
         """
@@ -818,6 +828,41 @@ class OrgNote(object):
         if self.rss_type != "ReadNone":
             output += READ_MORE
             
+        return output
+
+
+    def contain_archive_links(self,data={}):
+        output = ""
+        output += """
+        <!-- display as entry -->
+        <div class="entry">
+        <div class="row">
+        <div class="%s">
+        """ % self.col_md_index
+
+        output += "<ul>"
+        for archives in data[self.links_title_key]:
+            output += "<h3>%s</h3>" % archives            
+            for archive in data[archives]:
+                if len(archive) == 2:
+                    newarchive = [self.public_url + '/'.join(archive[0].split('/')[2:]),'fa fa-file-o',archive[1]]
+                    output += self.gen_href(newarchive)
+                else:
+                    output += self.gen_href(archive)
+
+        output += "</ul>"
+
+        output += """
+        </div>
+        </div>
+        </div>
+        """
+
+        output += """
+        </div> <!-- mypage -->
+        </div> <!-- %s -->
+        """ % self.col_md_index
+
         return output
 
     def contain_archive(self,data=list()):
@@ -1779,7 +1824,7 @@ class OrgNote(object):
         print(self.body_menu(self.menus),file=output)
         print(self.contain_prefix([self.links_name],"",self.links_name),file=output)
         print(self.contain_prefix_end(),file=output)
-        print(self.contain_archive(self.links),file=output)
+        print(self.contain_archive_links(self.links),file=output)
         print(self.gen_sidebar(),file=output)
         print(self.contain_suffix(),file=output)
         print(self.header_suffix(),file=output)
