@@ -81,7 +81,8 @@ class OrgNote(object):
 
         self.job_today = []
         self.job_week = []
-        self.job_prev = []
+        self.job_prev = []      # last week jobs
+        self.job_done = []      # all finished jobs
         
         self.__pagenames__ = {}
         self.cjk_num = 0
@@ -1035,6 +1036,7 @@ class OrgNote(object):
             is_today_job = False
             is_week_job = False
             is_prev_job = False
+            is_done_job = False
 
             if jtype == "by_day" or (today.year, today.month, today.day) == (jtime.year, jtime.month, jtime.day):
                 is_today_job = True
@@ -1044,6 +1046,8 @@ class OrgNote(object):
                     is_week_job = True
                 elif delta.days in range(-8, 0):
                     is_prev_job = True
+                elif delta.days < -8:
+                    is_done_job = True
                 else:
                     pass
             elif jtype == "by_week":
@@ -1113,23 +1117,32 @@ class OrgNote(object):
                 today = today + datetime.timedelta(days=days)
                 today_str = today.strftime("%Y/%m/%d %H:%M")
                 self.job_prev.append([today_str, jname, jtype, jurl])
+            elif is_done_job:
+                day_str = jtime.strftime("%Y/%m/%d %H:%M")
+                self.job_done.append([day_str,jname,jtype,jurl])
             else:
                 pass
 
         #print(self.job_today)
         #print(self.job_week)
 
-        for jobs in [self.job_today,self.job_week,self.job_prev]:
+        for jobs in [self.job_today,self.job_week,self.job_prev,self.job_done]:
             if not jobs: continue
             if jobs == self.job_today:
                 output += "<h3>今日行程</h3>"
+                job_data = sorted(jobs)
             elif jobs == self.job_week:
                 output += "<h3>下周行程</h3>"
-            else:
+                job_data = sorted(jobs)
+            elif jobs == self.job_prev:
                 output += "<h3>上周行程</h3>"
+                job_data = sorted(jobs)
+            else:
+                output += "<h3>完成行程</h3>"
+                job_data = sorted(jobs,reverse=True)
 
             output += "<ul>"
-            for job in sorted(jobs):
+            for job in job_data:
                 if not job[3]:
                     output += "<li><strong>时间</strong>: %s , <strong>(%s)</strong>: %s </li>" % (job[0], by_types[job[2]],job[1])
                 else:
