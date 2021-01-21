@@ -108,6 +108,7 @@ class OrgNote(object):
         self.files_dir = self.cfg.cfg.get("files_dir","data")
 
         self.public_dir = './' + self.cfg.cfg.get("public_dir","public") + '/'
+        self.sync_dirs = self.cfg.cfg.get("sync_dirs",list())
         
         self.tags_dir = self.public_dir + "/tags"
         
@@ -2060,6 +2061,14 @@ class OrgNote(object):
             print(str(ex))
             usage()
 
+    def public_syncdirs(self):
+        if not os.path.exists(self.public_dir):
+            os.makedirs(self.public_dir)
+
+        for dir in self.sync_dirs:
+            if os.path.exists("./"+dir):
+                os.system("rsync --quiet -av ./%s ./%s/" % (dir,self.public_dir))
+    
     def public_theme(self):
         if not os.path.exists(self.public_dir):
             os.makedirs(self.public_dir)
@@ -2131,6 +2140,7 @@ class OrgNote(object):
             os.makedirs(self.tags_dir)        
         self.public_images()
         self.public_theme()
+        self.public_syncdirs()
         self.public_cname()
         self.public_favicon()
         self.gen_notes(self.dirs)

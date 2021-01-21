@@ -76,6 +76,9 @@ css_highlight: default
 ## the note num of each page
 per_page: 6
 
+# sync dirs into public dir
+sync_dirs:
+    - theme
 
 # duoshuo
 duoshuo_shortname:
