@@ -10,7 +10,7 @@ then use orgnote convert into new html with default theme.
 
 from __future__ import absolute_import
 
-__version__ = "0.5.8"
+__version__ = "1.0.0"
 
 def main():
     import orgnote.__main__

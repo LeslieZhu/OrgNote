@@ -45,7 +45,7 @@ The usage of **orgnote**::
 
    Commands:
    init       Create a new OrgNote folder
-   new        Create a new .org post
+   new        Create a new .org/.md post
    list       List this blog notes
    status     Status of those notes
    publish    Auto Publish a note
@@ -111,11 +111,12 @@ setup(
 
     install_requires = [
     'pyyaml>=4.2b1',
-	"Pygments==2.1.3",
-	"beautifulsoup4==4.4.1",
-	"bs4==0.0.1",
-    "Markdown==3.1.1",
-    "watchdog==0.9.0",
+	"Pygments>=2.1.3",
+	"beautifulsoup4>=4.4.1",
+	"bs4>=0.0.1",
+        "mistune>=0.8.4",
+    "Markdown>=3.1.1",
+    "watchdog>=0.9.0",
     ]
 
     #extras_require={

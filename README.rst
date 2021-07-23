@@ -97,7 +97,7 @@ Usage
 
    Commands:
    init       Create a new OrgNote folder
-   new        Create a new .org post
+   new        Create a new .org/.md post
    list       List this blog notes
    status     Status of those notes
    publish    Auto Publish a note
