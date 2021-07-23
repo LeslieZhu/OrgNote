@@ -111,7 +111,7 @@ setup(
 
     install_requires = [
     'pyyaml>=4.2b1',
-	"Pygments>=2.1.3",
+	"Pygments>=2.7.4",
 	"beautifulsoup4>=4.4.1",
 	"bs4>=0.0.1",
         "mistune>=0.8.4",
