@@ -41,7 +41,7 @@ def gen_title(link=""):
         title = link
     return title
 
-def md2html(mdstr=""):
+def md2html(mdstr="", meta_text=""):
     #import markdown
     
     exts = ['markdown.extensions.extra', 'markdown.extensions.codehilite',
@@ -52,8 +52,7 @@ def md2html(mdstr=""):
     <html lang="zh-cn">
     <head>
     <meta content="text/html; charset=utf-8" http-equiv="content-type" />
-    <link href="default.css" rel="stylesheet">
-    <link href="github.css" rel="stylesheet">
+    %s
     </head>
     <body>
     %s
@@ -65,10 +64,10 @@ def md2html(mdstr=""):
     markdown = mistune.Markdown(renderer=renderer)
     ret = markdown(mdstr)
     #ret = markdown.markdown(mdstr,extensions=exts)
-    return html % ret
+    return html % (meta_text,ret)
 
 def to_page_mk2(notename=""):
-    import codecs,os
+    import codecs,os, time
     # from orgnote.markdown import Markdown
 
 
@@ -79,25 +78,71 @@ def to_page_mk2(notename=""):
 '''
 
 
-    print("to_page_mk2(%s)" % notename)
+    # print("to_page_mk2(%s)" % notename)
 
-    input_file = codecs.open(notename, mode="r", encoding="utf-8")
-    text = input_file.read()
-    
+    meta_text = ""
+    md_text = ""
+    has_header = True
+    in_header = False
+    end_header = False
+    with codecs.open(notename, mode="r", encoding="utf-8") as input_file:
+        for line in input_file:
+            if not end_header and not in_header and line.strip() and not line.strip().startswith("---"):
+                has_header = False
+                md_text += line
+                continue
+
+            if has_header and not end_header and not in_header and line.strip().startswith("---"):
+                in_header = True
+                continue
+
+            if in_header and line.strip().startswith("---"):
+                in_header = False
+                end_header = True
+                continue
+
+            if in_header:
+                line = [i.strip() for i in line.strip().split(":")]
+                name = line[0] if line else ""
+                text = ':'.join(line[1:]) if line else ""
+                if name == "title":
+                    meta_text += "<title>%s</title>\n" % text
+                elif name == "tags":
+                    meta_text += '<meta name="keywords" content="%s" />\n' % text
+                elif name == "author":
+                    meta_text += '<meta name="author" content="%s" />\n' % text
+                elif name == "date":
+                    try:
+                        text = time.strptime(text,"%Y-%m-%d %H:%M:%S")
+                        text = time.strftime("%Y/%m/%d",text)
+                    except:
+                        text = time.strftime("%Y/%m/%d")
+                    meta_text += '<meta name="generated" content="%s" />\n' % text
+                else:
+                    continue
+            else:
+                md_text += line
+                md_text += "\n"
+            
     # mk = Markdown()
     # html = mk.mk2html(text)
 
     # print(text)
     # print("="*20)
     # print("="*20)
+    # print("="*20)
+    # print(meta_text)
+    # print("="*20)
+    # print(md_text)
+    # print("="*20)
     
-    html = md2html(text)
+    html = md2html(md_text,meta_text)
 
     html_file = notename.replace(".md",".html")
-    output_file = codecs.open(html_file, "w",encoding="utf-8",errors="xmlcharrefreplace")
-    output_file.write(html)
-    output_file.close()
     print("save to " + html_file)
+    
+    with codecs.open(html_file, "w",encoding="utf-8",errors="xmlcharrefreplace") as output_file:
+        output_file.write(html)
     
 
 def to_page_mk(notename=""):
@@ -190,9 +235,9 @@ def publish_note(notename="",srcdir="./notes/"):
             else:
                 _html = _file.replace(".md",".html")
                 #print(">",_file,_html)
-                if not os.path.exists(_html):
-                    print("to_page_mk2()",_file)
-                    to_page_mk2(_file)
+                # if not os.path.exists(_html):
+                #    to_page_mk2(_file)
+                to_page_mk2(_file)
 
             #_title = gen_title(_html)
             #return "- [[%s][%s]]" % (_html,_title)

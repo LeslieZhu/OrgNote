@@ -688,7 +688,6 @@ class OrgNote(object):
         else:
             content_data = html_data.find('body')
             content_data_text = str(content_data).replace("<body>","").replace("</body>","")
-            print(content_data_text)
 
         obj = html_data.find(attrs={"name":"keywords"})
         if obj  and 'content' in obj:
@@ -1926,15 +1925,19 @@ class OrgNote(object):
         html_data = BeautifulSoup(open(link,"r").read(),"html.parser")
 
         date_tag = html_data.find('p',{'class':'date'})
-
-        if not date_tag:
-            date_tag = html_data.find('meta',{'name':'generated'})
-
-        if date_tag:
-            pubdate = date_tag.contents[0].split(':')[-1].strip()
-        else:
-            pubdate = time.strftime("%m/%d/%Y")
+        pubdate = time.strftime("%m/%d/%Y")
         
+        if date_tag:
+            try:
+                pubdate = date_tag.contents[0].split(':')[-1].strip()
+            except:
+                pubdate = time.strftime("%m/%d/%Y")    
+        else:
+            try:
+                # print(html_data.find('meta',{'name':'generated'}))
+                pubdate = html_data.find('meta',{'name':'generated'}).attrs['content']
+            except:
+                pubdate = time.strftime("%m/%d/%Y")
                 
         if "/" in pubdate:
             try:
@@ -2303,8 +2306,6 @@ class OrgNote(object):
         nopublish_list = self.dirs[1]
 
         publish_line = util.publish_note(notename,self.source_dir)
-        print("publish_line: ",publish_line)
-        
         if publish_line == None:
             print("\033[31m[ERROR]\033[0m: Can not publish note: %s, are you sure the html file exists?" % notename)
             return
