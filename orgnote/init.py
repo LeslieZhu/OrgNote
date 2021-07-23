@@ -12,6 +12,9 @@ then use orgnote convert into new html with default theme.
 from __future__ import print_function
 from __future__ import absolute_import
 
+import os,os.path
+
+
 def create_emacs_init(initfile="init-orgnote.el"):
     """
     init ./scripts/init-orgnote.el
@@ -159,6 +162,33 @@ def create_about_note(name="about.org"):
         return None
 
 
+def create_md_note(name="HelloOrgNote.md"):
+    import os
+    import os.path
+    import time
+
+    import orgnote.parser
+    
+    blog = orgnote.parser.OrgNote()
+    
+    _dirname = blog.source_dir + time.strftime("%Y/%m/%d",time.localtime())
+    _init_file = _dirname + "/" + os.path.basename(name)
+
+    _data = "# %s" % name
+
+    if not os.path.exists(_dirname):
+        os.makedirs(_dirname)
+
+    if not os.path.exists(_init_file):
+        print("[info] create ",_init_file)
+        output = open(_init_file,"w")
+        print(_data,file=output)
+        output.close()
+        return _init_file
+    else:
+        print("File %s already exists, please use a new name!" % _init_file)
+        return None
+    
 def create_default_note(name="HelloOrgNote.org"):
     """
     init source_dir/template.org

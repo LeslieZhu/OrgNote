@@ -139,7 +139,7 @@ def to_page_mk2(notename=""):
     html = md2html(md_text,meta_text)
 
     html_file = notename.replace(".md",".html")
-    print("save to " + html_file)
+    # print("save to " + html_file)
     
     with codecs.open(html_file, "w",encoding="utf-8",errors="xmlcharrefreplace") as output_file:
         output_file.write(html)
@@ -198,6 +198,24 @@ def to_page(notename=""):
 
 
 def add_note(notename="",srcdir="notes/"):
+    import os,os.path
+    ### .md file
+    if notename.endswith(".md"):
+        if not notename.startswith(srcdir): notename = srcdir+"/"+notename
+        if not os.path.exists(notename):
+            import orgnote.init
+            note_name = orgnote.init.create_md_note(notename)
+            note_name = note_name.replace("././","./").replace("//","/")
+            if note_name != None:
+                print("%s init done" % note_name)
+                return note_name
+        else:
+            print("%s exists, please use other name or delete it" % notename)
+            return ""
+    else:
+        pass
+
+    #### org-mode
     try:
         import os
         if not notename.endswith('.org'): notename += ".org"

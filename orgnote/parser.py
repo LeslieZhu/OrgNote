@@ -492,6 +492,9 @@ class OrgNote(object):
                 if line.endswith(".org"):
                     link = line.replace(".org",".html")
                 elif line.endswith(".md"):
+                    # always auto re-gen .md to .html
+                    util.publish_note(line,self.source_dir)
+                    # self.do_publish(line) 
                     link = line.replace(".md",".html")
                 else:
                     link = line
@@ -2217,6 +2220,7 @@ class OrgNote(object):
             return util.add_note(notename,self.source_dir)
 
     def do_page(self,notename=""):
+        print(">>>>>>do_page:",notename)
         if notename.endswith(".org") and not os.path.exist(notename):
             notename = notename.replace(".org",".md")
         elif notename.endswith(".md") and not os.path.exist(notename):
