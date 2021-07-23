@@ -38,7 +38,9 @@ def gen_title(link=""):
     if obj:
         title = obj.text
     else:
-        title = link
+        obj = html_data.find_all('h1')
+        title = obj[0].text if obj else link
+
     return title
 
 def md2html(mdstr="", meta_text=""):

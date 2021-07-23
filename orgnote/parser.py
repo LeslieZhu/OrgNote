@@ -682,7 +682,11 @@ class OrgNote(object):
         #[comment.extract() for comment in comments]
 
         obj = html_data.find('h1',{'class':'title'})
-        _title = obj.text if obj else link
+        if obj:
+            _title = obj.text
+        else:
+            obj = html_data.find_all('h1')
+            _title = obj[0].text if obj else link
 
         obj = html_data.find('div',{'id':'content'})
         if obj:
@@ -788,7 +792,14 @@ class OrgNote(object):
 
         html_data = BeautifulSoup(open(link,"r").read(),"html.parser")
 
-        _title = html_data.find('h1',{'class':'title'}).text
+        # _title = html_data.find('h1',{'class':'title'}).text
+        obj = html_data.find('h1',{'class':'title'})
+        if obj:
+            _title = obj.text
+        else:
+            obj = html_data.find_all('h1')
+            _title = obj[0].text if obj else link
+
         content_data = html_data.find('div',{'id':'content'})
 
         if 'table-of-contents' in str(content_data):
