@@ -38,8 +38,12 @@ def gen_title(link=""):
     if obj:
         title = obj.text
     else:
-        obj = html_data.find_all('h1')
-        title = obj[0].text if obj else link
+        obj = html_data.find("title")
+        if obj:
+            title = obj.text
+        else:
+            obj = html_data.find_all('h1')
+            title = obj[0].text if obj else link
 
     return title
 

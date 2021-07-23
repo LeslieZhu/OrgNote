@@ -685,8 +685,12 @@ class OrgNote(object):
         if obj:
             _title = obj.text
         else:
-            obj = html_data.find_all('h1')
-            _title = obj[0].text if obj else link
+            obj = html_data.find("title")
+            if obj:
+                _title = obj.text
+            else:
+                obj = html_data.find_all('h1')
+                _title = obj[0].text if obj else link
 
         obj = html_data.find('div',{'id':'content'})
         if obj:
@@ -797,8 +801,12 @@ class OrgNote(object):
         if obj:
             _title = obj.text
         else:
-            obj = html_data.find_all('h1')
-            _title = obj[0].text if obj else link
+            obj = html_data.find("title")
+            if obj:
+                _title = obj.text
+            else:
+                obj = html_data.find_all('h1')
+                _title = obj[0].text if obj else link
 
         content_data = html_data.find('div',{'id':'content'})
 
