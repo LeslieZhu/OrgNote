@@ -1956,7 +1956,6 @@ class OrgNote(object):
                 pubdate = time.strftime("%m/%d/%Y")    
         else:
             try:
-                # print(html_data.find('meta',{'name':'generated'}))
                 pubdate = html_data.find('meta',{'name':'generated'}).attrs['content']
             except:
                 pubdate = time.strftime("%m/%d/%Y")

@@ -119,10 +119,15 @@ def to_page_mk2(notename=""):
                     meta_text += '<meta name="author" content="%s" />\n' % text
                 elif name == "date":
                     try:
-                        text = time.strptime(text,"%Y-%m-%d %H:%M:%S")
-                        text = time.strftime("%Y/%m/%d",text)
-                    except:
+                        text = time.strptime(text,"%Y/%m/%d")
+                    except ValueError:
+                        text = time.strptime(text,"%m/%d/%Y")
+                    except Exception as e:
+                        print(e)
                         text = time.strftime("%Y/%m/%d")
+                    finally:
+                        text = time.strftime("%Y/%m/%d",text)
+                        
                     meta_text += '<meta name="generated" content="%s" />\n' % text
                 else:
                     continue
