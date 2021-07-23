@@ -13,18 +13,63 @@ then use orgnote convert into new html with default theme.
 from __future__ import absolute_import
 from bs4 import BeautifulSoup
 
+import mistune
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name
+from pygments.formatters import html as py_html
+ 
+ 
+class HighlightRenderer(mistune.Renderer):
+ 
+    def block_code(self, code, lang):
+        if not lang:
+            return '\n<pre><code>%s</code></pre>\n' % mistune.escape(code)
+        lexer = get_lexer_by_name(lang, stripall=True)
+        formatter = py_html.HtmlFormatter()
+        return highlight(code, lexer, formatter)
+ 
 
 def gen_title(link=""):
     """ Filter Title from HTML metadata """
 
     import re
     html_data = BeautifulSoup(open(link,"r").read(),"html.parser")
-    title = html_data.find('h1',{'class':'title'}).text
+    obj = html_data.find('h1',{'class':'title'})
+    if obj:
+        title = obj.text
+    else:
+        title = link
     return title
+
+def md2html(mdstr=""):
+    #import markdown
+    
+    exts = ['markdown.extensions.extra', 'markdown.extensions.codehilite',
+            'markdown.extensions.tables','markdown.extensions.toc',
+            'code-friendly', 'fenced-code-blocks', 'footnotes']
+
+    html = '''
+    <html lang="zh-cn">
+    <head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <link href="default.css" rel="stylesheet">
+    <link href="github.css" rel="stylesheet">
+    </head>
+    <body>
+    %s
+    </body>
+    </html>
+    '''
+
+    renderer = HighlightRenderer()
+    markdown = mistune.Markdown(renderer=renderer)
+    ret = markdown(mdstr)
+    #ret = markdown.markdown(mdstr,extensions=exts)
+    return html % ret
 
 def to_page_mk2(notename=""):
     import codecs,os
-    from orgnote.markdown import Markdown
+    # from orgnote.markdown import Markdown
 
 
     css = '''
@@ -39,17 +84,20 @@ def to_page_mk2(notename=""):
     input_file = codecs.open(notename, mode="r", encoding="utf-8")
     text = input_file.read()
     
-    mk = Markdown()
-    
-    #print("*" * 20)
-    #print(text)
-    #print("*" * 20)
-    
-    html = mk.mk2html(text)
-    
-    output_file = codecs.open(notename.replace(".md",".html"), "w",encoding="utf-8",errors="xmlcharrefreplace")
-    output_file.write(css+html)
+    # mk = Markdown()
+    # html = mk.mk2html(text)
 
+    # print(text)
+    # print("="*20)
+    # print("="*20)
+    
+    html = md2html(text)
+
+    html_file = notename.replace(".md",".html")
+    output_file = codecs.open(html_file, "w",encoding="utf-8",errors="xmlcharrefreplace")
+    output_file.write(html)
+    output_file.close()
+    print("save to " + html_file)
     
 
 def to_page_mk(notename=""):
@@ -143,10 +191,10 @@ def publish_note(notename="",srcdir="./notes/"):
                 _html = _file.replace(".md",".html")
                 #print(">",_file,_html)
                 if not os.path.exists(_html):
-                    #print("to_page_mk2()",_file)
+                    print("to_page_mk2()",_file)
                     to_page_mk2(_file)
 
-            _title = gen_title(_html)
+            #_title = gen_title(_html)
             #return "- [[%s][%s]]" % (_html,_title)
             return _file
         return None

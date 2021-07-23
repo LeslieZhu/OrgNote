@@ -677,12 +677,25 @@ class OrgNote(object):
         #去除注释
         #comments = html_data(text=lambda text: isinstance(text, Comment))
         #[comment.extract() for comment in comments]
-        
-        _title = html_data.find('h1',{'class':'title'}).text
-        content_data = html_data.find('div',{'id':'content'})
-        content_data_text = str(content_data)
 
-        keywordtext = html_data.find(attrs={"name":"keywords"})['content']
+        obj = html_data.find('h1',{'class':'title'})
+        _title = obj.text if obj else link
+
+        obj = html_data.find('div',{'id':'content'})
+        if obj:
+            content_data = obj
+            content_data_text = str(content_data)
+        else:
+            content_data = html_data.find('body')
+            content_data_text = str(content_data).replace("<body>","").replace("</body>","")
+            print(content_data_text)
+
+        obj = html_data.find(attrs={"name":"keywords"})
+        if obj  and 'content' in obj:
+            keywordtext = obj['content']
+        else:
+            keywordtext = ""
+            
         if self.rdmode_keyword in keywordtext:
             content_data_text = content_data_text.replace("id=\"content\"","id=\"content-reading\"")
                         
@@ -698,7 +711,14 @@ class OrgNote(object):
         if data_file in content_data_text:
             content_data_text = content_data_text.replace(data_file, data_path)
 
-        src_data = content_data.find_all('div',{'class':'org-src-container'})
+        if content_data:
+            try:
+                src_data = content_data.find_all('div',{'class':'org-src-container'})
+            except:
+                src_data = ""
+        else:
+            src_data = ""
+            
         for src_tag in src_data:
             # src-python
             src_lang = src_tag.find('pre').attrs['class'][-1].split('-')[-1]
@@ -1912,6 +1932,8 @@ class OrgNote(object):
 
         if date_tag:
             pubdate = date_tag.contents[0].split(':')[-1].strip()
+        else:
+            pubdate = time.strftime("%m/%d/%Y")
         
                 
         if "/" in pubdate:
@@ -2281,6 +2303,7 @@ class OrgNote(object):
         nopublish_list = self.dirs[1]
 
         publish_line = util.publish_note(notename,self.source_dir)
+        print("publish_line: ",publish_line)
         
         if publish_line == None:
             print("\033[31m[ERROR]\033[0m: Can not publish note: %s, are you sure the html file exists?" % notename)
