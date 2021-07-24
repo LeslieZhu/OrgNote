@@ -174,7 +174,15 @@ def create_md_note(name="HelloOrgNote.md"):
     _dirname = blog.source_dir + time.strftime("%Y/%m/%d",time.localtime())
     _init_file = _dirname + "/" + os.path.basename(name)
 
-    _data = "# %s" % name
+    _data = """---
+title: %s
+date: %s
+tags: %s
+---
+
+# %s
+"""
+    _data = _data % (name,time.strftime("%Y/%m/%d",time.localtime()),blog.default_tag,name)
 
     if not os.path.exists(_dirname):
         os.makedirs(_dirname)
@@ -227,7 +235,8 @@ def create_default_note(name="HelloOrgNote.org"):
 * Hello OrgNote
 
 [[https://github.com/LeslieZhu/OrgNote][OrgNote]] is a simple blog based on org-mode, enjoy it:)
-""" % (blog.language, blog.default_tag, os.path.basename(name).strip(".org"),blog.author,blog.email,time.strftime("%Y/%m/%d",time.localtime()))
+""" % (blog.language, blog.default_tag, os.path.basename(name).strip(".org"),
+       blog.author,blog.email,time.strftime("%Y/%m/%d",time.localtime()))
 
     
     _dirname = blog.source_dir + time.strftime("%Y/%m/%d",time.localtime())

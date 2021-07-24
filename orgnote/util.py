@@ -259,15 +259,13 @@ def publish_note(notename="",srcdir="./notes/"):
             if _file.endswith(".org"):
                 _html = _file.replace(".org",".html")
                 #print(">",_file,_html)
-                if not os.path.exists(_html):
+                if not os.path.exists(_html) or os.stat(_file).st_mtime > os.stat(_html).st_mtime:
                     to_page(_file)                    
             else:
                 _html = _file.replace(".md",".html")
                 #print(">",_file,_html)
-                # if not os.path.exists(_html):
-                #    to_page_mk2(_file)
-                to_page_mk2(_file)
-
+                if not os.path.exists(_html) or os.stat(_file).st_mtime > os.stat(_html).st_mtime:
+                    to_page_mk2(_file)
             #_title = gen_title(_html)
             #return "- [[%s][%s]]" % (_html,_title)
             return _file

@@ -143,6 +143,7 @@ class OrgNote(object):
 
         self.per_page = self.cfg.cfg.get("per_page",6)
         self.auto_publish = self.cfg.cfg.get("auto_publish",True);
+        # self.auto_md2html = self.cfg.cfg.get("auto_md2html",True);
 
         self.sidebar_show = self.cfg.cfg.get("sidebar_show",0)
         self.sidebar_show_page = self.cfg.cfg.get("sidebar_show_page",0)
@@ -492,9 +493,7 @@ class OrgNote(object):
                 if line.endswith(".org"):
                     link = line.replace(".org",".html")
                 elif line.endswith(".md"):
-                    # always auto re-gen .md to .html
                     util.publish_note(line,self.source_dir)
-                    # self.do_publish(line) 
                     link = line.replace(".md",".html")
                 else:
                     link = line
@@ -2396,6 +2395,18 @@ class OrgNote(object):
                     #print("Run: emacs -l scripts/init-orgnote.el --batch %s --funcall org-html-export-to-html" % _note)
                     util.to_page(_note)
 
+    def do_md2html(self,note=""):
+        if note:
+            if note.endswith(".md"):
+                util.to_page_mk2(note)
+            else:
+                print("%s not .md file" % note)
+        else:
+            self.scan()
+            for _note in reversed(sorted(self.notes_db.keys())):
+                if _note.endswith(".md"):
+                    util.to_page_mk2(_note)
+
 
 
     def do_status(self):
@@ -2449,6 +2460,7 @@ Commands:
   list       List this blog notes
   status     Status of those notes
   org2html   Run Emacs to convert .org to .html
+  md2html    convert .md to .html
   publish    Publish a note
   recall     Cancel publish a note
   generate   Generate static files
@@ -2491,6 +2503,8 @@ def main(args=None):
             blog.do_status()
         elif sys.argv[1] == "org2html":
             blog.do_org2html()
+        elif sys.argv[1] == "md2html":
+            blog.do_md2html()
         else:
             usage()
     elif len(sys.argv) == 3:
@@ -2508,6 +2522,8 @@ def main(args=None):
             blog.do_recall(sys.argv[2])
         elif sys.argv[1] == "org2html":
             blog.do_org2html(sys.argv[2])
+        elif sys.argv[1] == "md2html":
+            blog.do_md2html(sys.argv[2])
         else:
             usage()
     else:
