@@ -697,16 +697,18 @@ class OrgNote(object):
             content_data_text = str(content_data)
         else:
             content_data = html_data.find('body')
-            content_data_text = str(content_data).replace("<body>","").replace("</body>","")
+            # content_data_text = str(content_data).replace("<body>","").replace("</body>","")
+            content_data_text = str(content_data).replace("<body>","<div id='content'>").replace("</body>","</div>")
 
         obj = html_data.find(attrs={"name":"keywords"})
-        if obj  and 'content' in obj:
-            keywordtext = obj['content']
+        if obj and obj.has_attr('content'):   # 'content' in obj:
+            keywordtext = obj.attrs['content']   # obj['content']
         else:
             keywordtext = ""
-            
+
         if self.rdmode_keyword in keywordtext:
             content_data_text = content_data_text.replace("id=\"content\"","id=\"content-reading\"")
+            content_data_text = content_data_text.replace("id=\'content\'","id=\'content-reading\'")
                         
         # replace images path
         image_file = "file:///%s/" % self.images_dir
