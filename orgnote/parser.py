@@ -103,11 +103,12 @@ class OrgNote(object):
         self.blogroot = self.cfg.cfg.get("root","/")
         
         self.source_dir = "./" + self.cfg.cfg.get("source_dir","notes") +'/'
-        
+
         self.images_dir = self.cfg.cfg.get("images_dir","images")
         self.files_dir = self.cfg.cfg.get("files_dir","data")
 
-        self.public_dir = './' + self.cfg.cfg.get("public_dir","public") + '/'
+        self.public  = self.cfg.cfg.get("public_dir","public")
+        self.public_dir = './' + self.public + '/'
         self.sync_dirs = self.cfg.cfg.get("sync_dirs",list())
         
         self.tags_dir = self.public_dir + "/tags"
@@ -711,6 +712,11 @@ class OrgNote(object):
             content_data_text = content_data_text.replace("id=\'content\'","id=\'content-reading\'")
                         
         # replace images path
+        public_file = "file:///%s/" % self.public
+        public_path = "%s" %(self.public_url)
+        if public_file in content_data_text:
+            content_data_text = content_data_text.replace(public_file, public_path)
+        
         image_file = "file:///%s/" % self.images_dir
         image_path = "%s%s/" %(self.public_url,self.images_dir)
         if image_file in content_data_text:
