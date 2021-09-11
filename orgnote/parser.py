@@ -1749,7 +1749,7 @@ class OrgNote(object):
             <link> %s </link>
             <author><![CDATA[%s]]></author>
             <guid isPermaLink="true">%s</guid>
-            ''' % (name,self.gen_public_link(link,self.public_url),
+            ''' % (name.replace("&","&amp;"),self.gen_public_link(link,self.public_url),
                    self.author,self.gen_public_link(link,self.public_url))
 
             for tag in self.gen_category(link):
