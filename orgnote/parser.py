@@ -302,6 +302,7 @@ class OrgNote(object):
         <link rel="stylesheet" href="%stheme/%s/css/%s-highlight.css" media="screen" type="text/css">
         <script type="text/javascript" src="%stheme/%s/js/jquery-2.0.3.min.js"></script>
         <script type="text/javascript" src="%stheme/%s/js/local-search.js?v=7.4.1"></script>
+        <ORGNOTESTYLE>
         </head>
         """ % (self.js_config(),title, self.author, self.email, self.description, self.title,self._keywords,
                self.blogroot,
@@ -672,6 +673,17 @@ class OrgNote(object):
         
         return output
 
+    def get_style(self,link=""):
+        output = "<style>"
+
+        html_data = BeautifulSoup(open(link,"r").read(),"html.parser")
+        obj = html_data.find('style')
+        if obj:
+            output += obj.text
+
+        output += "</style>"
+        return output
+    
     def contain_page(self,link="",num=0, public=True):
         output = ""
 
@@ -1791,7 +1803,14 @@ class OrgNote(object):
             os.makedirs(page_dir)
 
         output = open(page_file,"w")
-        print(self.header_prefix(2,note[1].strip()),file=output)
+
+        header = self.header_prefix(2,note[1].strip())
+        style = self.get_style(note[0])
+        header = header.replace("<ORGNOTESTYLE>", style)
+        header = header.replace("<ORGNOTESTYLE>", "")
+
+        # print(self.header_prefix(2,note[1].strip()),file=output)
+        print(header,file=output)
         print(self.body_prefix(),file=output)
         print(self.body_menu(self.menus),file=output)
         if public:
