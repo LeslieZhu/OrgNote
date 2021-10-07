@@ -44,11 +44,11 @@ else:
 
 
 class OrgNoteFileSystemEventHander(FileSystemEventHandler):
-    def __init__(self, fn,port=""):
+    def __init__(self, orgobj,fn,port=""):
         super(OrgNoteFileSystemEventHander, self).__init__()
         self.restart = fn
         self.port = port
-        self.orglist = ["calendar.org","links.org","nopublic.org","public.org","slinks.org"]
+        self.orglist = [orgobj.calendar_jobfile, orgobj.links_file,orgobj.nopublic_file, orgobj.public_file, orgobj.slinks_file]
 
     def on_any_event(self, event):
         if event.src_path.endswith('.html') or os.path.basename(event.src_path) in self.orglist:
@@ -110,6 +110,9 @@ class OrgNote(object):
         self.public  = self.cfg.cfg.get("public_dir","public")
         self.public_dir = './' + self.public + '/'
         self.sync_dirs = self.cfg.cfg.get("sync_dirs",list())
+
+        self.public_file = self.cfg.cfg.get("public_file","public.org")
+        self.nopublic_file = self.cfg.cfg.get("nopublic_file","nopublic.org")
         
         self.tags_dir = self.public_dir + "/tags"
         
@@ -152,26 +155,26 @@ class OrgNote(object):
         self._sidebar_contact_name = self.cfg.cfg.get("sidebar_contact_name","联系/反馈")
         self.sidebar_list = self.cfg.cfg.get("sidebar",list())
         
-        self.dirs = [self.source_dir + "public.org", self.source_dir + "nopublic.org"]
+        self.dirs = [self.source_dir + self.public_file, self.source_dir + self.nopublic_file]
                         
         self.menu_list = self.cfg.cfg.get("menu_list",dict())
         
 
 
         self.slinks_name = self.cfg.cfg.get("slinks_name","友情链接")
-        self.slinks_file = self.cfg.cfg.get("slinks_file","")
+        self.slinks_file = self.cfg.cfg.get("slinks_file","slinks.org")
         if self.slinks_file:
             self.slinks_file = self.source_dir + self.slinks_file
 
         self.links_name = self.cfg.cfg.get("links_name","觅链")        
-        self.links_file = self.cfg.cfg.get("links_file","")
+        self.links_file = self.cfg.cfg.get("links_file","links.org")
         if self.links_file:
             self.links_file = self.source_dir + self.links_file
         
 
         self.shift_hour = self.cfg.cfg.get("shift_hour",0)
         self.calendar_name = self.cfg.cfg.get("calendar_name","")
-        self.calendar_jobfile = self.cfg.cfg.get("calendar_jobfile","")
+        self.calendar_jobfile = self.cfg.cfg.get("calendar_jobfile","calendar.org")
         if self.calendar_jobfile:
             self.calendar_jobfile = self.source_dir + self.calendar_jobfile
         
@@ -259,10 +262,10 @@ class OrgNote(object):
                 if item not in self.links[curtitle]:
                     self.links[curtitle].append(item)
         #
-        self.links[self.links_title_key].append(self.links_default_title)
-        nopublic_link = [self.public_url + "tags/" + self.nopublic_tag + ".html","fa fa-link",self.nopublic_tag]
-        if nopublic_link not in self.links[self.links_default_title]:
-            self.links[self.links_default_title].append(nopublic_link)
+        # self.links[self.links_title_key].append(self.links_default_title)
+        # nopublic_link = [self.public_url + "tags/" + self.nopublic_tag + ".html","fa fa-link",self.nopublic_tag]
+        # if nopublic_link not in self.links[self.links_default_title]:
+            # self.links[self.links_default_title].append(nopublic_link)
 
     def header_prefix(self,deep=1,title=""):
         """
@@ -479,32 +482,44 @@ class OrgNote(object):
         gen each note from blog list
         """
         import os
-        for i,notedir in enumerate(dirs):
-            for line in open(notedir):                
-                line = line.strip()
-                if not line or line.startswith("#"): continue
+        public_file = dirs[0]
+        nopublic_file = dirs[1]
 
-                public = False
-                local  = False
-                
-                #if "- [[" in line: public = True
-                #if "+ [[" in line: local  = True
-                public = True if i == 0 else False
-                local = not public
+        nopublic_notes = []
+        for line in open(nopublic_file):
+            line = line.strip()
+            if not line or line.startswith("#"): continue
             
-                if line.endswith(".org"):
-                    link = line.replace(".org",".html")
-                elif line.endswith(".md"):
-                    util.publish_note(line,self.source_dir)
-                    link = line.replace(".md",".html")
-                else:
-                    link = line
+            nopublic_notes.append(line)
+            
+            if line.endswith(".org"):
+                link = line.replace(".org",".html")
+            elif line.endswith(".md"):
+                util.publish_note(line,self.source_dir)
+                link = line.replace(".md",".html")
+            else:
+                link = line
 
-                name = util.gen_title(link)
-                if public:
-                    self.notes += [[link,name]]
-                if local:
-                    self.localnotes += [[link,name]]
+            name = util.gen_title(link)
+            self.localnotes += [[link,name]]
+
+        for line in open(public_file):                
+            line = line.strip()
+            if not line or line.startswith("#"): continue
+            
+            if line in nopublic_notes: continue
+
+            if line.endswith(".org"):
+                link = line.replace(".org",".html")
+            elif line.endswith(".md"):
+                util.publish_note(line,self.source_dir)
+                link = line.replace(".md",".html")
+            else:
+                link = line
+
+            name = util.gen_title(link)
+            self.notes += [[link,name]]
+
 
     def contain_notes(self,data=list(),num=0,lastone=0):
         # each note
@@ -2050,7 +2065,7 @@ class OrgNote(object):
         self.monitor_path = self.source_dir
         
         observer = Observer()
-        observer.schedule(OrgNoteFileSystemEventHander(self.monitor_restart,self.port), self.monitor_path, recursive=True)
+        observer.schedule(OrgNoteFileSystemEventHander(OrgNote(),self.monitor_restart,self.port), self.monitor_path, recursive=True)
         observer.start()
         
         self.monitor_log('Watching directory %s' % self.monitor_path)
@@ -2252,7 +2267,7 @@ class OrgNote(object):
         self.gen_rss()
         self.gen_search()
         self.gen_timetags()
-        self.gen_nopublic()
+        # self.gen_nopublic()
         self.gen_calendar()
         print("notes generate done")
 
@@ -2371,9 +2386,14 @@ class OrgNote(object):
             data = open(publish_list,"r").readlines()
             data = [i.strip() for i in data if not i.startswith("#")]
 
-            if publish_line in data or publish_line in nopublish_data:
+            if publish_line in nopublish_data:
+                print(" it is in no-public file '%s', will not publish!" % self.nopublic_file)
+                return
+
+            if publish_line in data:
                 print(" publish done")
                 return
+            
             output = open(publish_list,"w")
             print(publish_line,file=output)
             for line in data:
@@ -2396,7 +2416,7 @@ class OrgNote(object):
             for _file in files:
                 if not _file.endswith(".org") and not _file.endswith(".md"):continue
                 _path = path + "/"+ _file
-                if _path in [self.source_dir + "public.org",self.source_dir + "nopublic.org",self.source_dir + "about.org"]: continue
+                if _path in [self.source_dir + self.public_file,self.source_dir + self.nopublic_file,self.source_dir + "about.org"]: continue
                 if _path.endswith(".html"):continue
                 self.notes_db[_path] = _path #_file
 

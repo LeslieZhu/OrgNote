@@ -166,6 +166,11 @@ calendar_jobfile: calendar.org
 # shift hour for calendar job
 # default: 0h
 shift_hour: 0
+
+# public note files
+# format: /path/to/file.[org|md]
+public_file: public.org
+nopublic_file: nopublic.org
 """
 
     def __init__(self,cfgfile="_config.yml"):

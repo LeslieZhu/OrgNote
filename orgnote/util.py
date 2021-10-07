@@ -260,6 +260,8 @@ def publish_note(notename="",srcdir="./notes/"):
                 _html = _file.replace(".org",".html")
                 #print(">",_file,_html)
                 if not os.path.exists(_html) or os.stat(_file).st_mtime > os.stat(_html).st_mtime:
+                    # print(_file,":", os.stat(_file).st_mtime)
+                    # print(_html,":", os.stat(_html).st_mtime)
                     to_page(_file)                    
             else:
                 _html = _file.replace(".md",".html")
