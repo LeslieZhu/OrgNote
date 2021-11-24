@@ -171,6 +171,10 @@ shift_hour: 0
 # format: /path/to/file.[org|md]
 public_file: public.org
 nopublic_file: nopublic.org
+
+# html file string replace
+replace_str:
+    - "typora-export => container"
 """
 
     def __init__(self,cfgfile="_config.yml"):

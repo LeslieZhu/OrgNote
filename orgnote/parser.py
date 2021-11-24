@@ -158,9 +158,9 @@ class OrgNote(object):
         self.dirs = [self.source_dir + self.public_file, self.source_dir + self.nopublic_file]
                         
         self.menu_list = self.cfg.cfg.get("menu_list",dict())
+
+        self.replace_str_list = self.cfg.cfg.get("replace_str",list())
         
-
-
         self.slinks_name = self.cfg.cfg.get("slinks_name","友情链接")
         self.slinks_file = self.cfg.cfg.get("slinks_file","slinks.org")
         if self.slinks_file:
@@ -1810,7 +1810,7 @@ class OrgNote(object):
     def gen_page(self,note=list(),num=0,public=True):
         import os
         import os.path
-        
+
         page_file = './' + self.gen_public_link(note[0],self.public_dir)
         page_dir = os.path.dirname(page_file)
         
@@ -1818,26 +1818,33 @@ class OrgNote(object):
             os.makedirs(page_dir)
 
         output = open(page_file,"w")
+        output_html = ""
 
         header = self.header_prefix(2,note[1].strip())
         style = self.get_style(note[0])
         header = header.replace("<ORGNOTESTYLE>", style)
         header = header.replace("<ORGNOTESTYLE>", "")
 
-        # print(self.header_prefix(2,note[1].strip()),file=output)
-        print(header,file=output)
-        print(self.body_prefix(),file=output)
-        print(self.body_menu(self.menus),file=output)
+        output_html += header
+        output_html += self.body_prefix()
+        output_html += self.body_menu(self.menus)
+        
         if public:
-            print(self.contain_prefix(self.page_tags[note[0]],"标签: ",util.gen_title(note[0])),file=output)
+            output_html += self.contain_prefix(self.page_tags[note[0]],"标签: ",util.gen_title(note[0]))
         else:
-            print(self.contain_prefix([self.nopublic_tag],"标签: ",util.gen_title(note[0])),file=output)
-        print(self.contain_prefix_end(note[0]),file=output)
-        print(self.contain_page(note[0],num,public),file=output)              # auto gen
-        print(self.gen_sidebar_page(),file=output)
-        print(self.contain_suffix(),file=output)
-        print(self.header_suffix(),file=output)
+            output_html += self.contain_prefix([self.nopublic_tag],"标签: ",util.gen_title(note[0]))
 
+        output_html += self.contain_prefix_end(note[0])
+        output_html += self.contain_page(note[0],num,public)
+        output_html += self.gen_sidebar_page()
+        output_html += self.contain_suffix()
+        output_html += self.header_suffix()
+
+        for item in self.replace_str_list:
+            if not item and len(item) != 2: continue
+            output_html = output_html.replace(item[0],item[1])
+
+        print(output_html, file=output)
         output.close()
         
     def gen_public(self):
