@@ -121,7 +121,7 @@ def to_page_mk2(notename=""):
                     try:
                         text = time.strptime(text,"%Y/%m/%d")
                     except ValueError:
-                        text = time.strptime(text,"%m/%d/%Y")
+                        text = time.strptime(text,"%Y-%m-%d %H:%M:%S")
                     except Exception as e:
                         print(e)
                         text = time.strftime("%Y/%m/%d")
@@ -195,8 +195,7 @@ def to_page(notename=""):
         print("Run: %s" % cmd)
         os.system(cmd)
     except Exception as ex:
-        pass
-        #print(">>>>>",str(ex))
+        print("emacs: to html",">>>>>",str(ex))
         
     html_file = notename.replace('.org','.html')
 
@@ -242,8 +241,7 @@ def add_note(notename="",srcdir="notes/"):
             print("%s exists, please use other name or delete it" % notename)
             return ""
     except Exception as ex:
-        return ""
-        #print(">>>>>",str(ex))
+        print("add .org file:",">>>>>",str(ex))
 
             
 def publish_note(notename="",srcdir="./notes/"):
