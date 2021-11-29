@@ -247,34 +247,28 @@ def add_note(notename="",srcdir="notes/"):
 
             
 def publish_note(notename="",srcdir="./notes/"):
-    try:
-        import glob,os.path
-        #if notename.endswith(".org"): notename = notename[:-4]
-        if notename.startswith(srcdir):
-            glob_re = notename
-        else:
-            glob_re = srcdir+"/????/??/??/%s" % os.path.basename(notename)
-
-        for _file in reversed(sorted(glob.glob(glob_re))):
+    import glob,os.path
+    if notename.startswith(srcdir):
+        glob_re = notename
+    else:
+        glob_re = srcdir+"/????/??/??/%s" % os.path.basename(notename)
+        
+    for _file in reversed(sorted(glob.glob(glob_re))):
+        try:
             if _file.endswith(".org"):
                 _html = _file.replace(".org",".html")
-                #print(">",_file,_html)
                 if not os.path.exists(_html) or os.stat(_file).st_mtime > os.stat(_html).st_mtime:
-                    # print(_file,":", os.stat(_file).st_mtime)
-                    # print(_html,":", os.stat(_html).st_mtime)
                     to_page(_file)                    
             else:
                 _html = _file.replace(".md",".html")
-                #print(">",_file,_html)
                 if not os.path.exists(_html) or os.stat(_file).st_mtime > os.stat(_html).st_mtime:
                     to_page_mk2(_file)
-            #_title = gen_title(_html)
-            #return "- [[%s][%s]]" % (_html,_title)
             return _file
-        return None
-    except Exception as ex:
-        pass
-        #print(">>>>>",str(ex))
+        except Exception as ex:
+            print(_file," >>>>> ",str(ex))
+            
+    return None
+        
 
 
 def get_emacs_version():
