@@ -188,9 +188,9 @@ def to_page(notename=""):
         emacs_version = [int(i) for i in get_emacs_version()]
         if emacs_version[0] >= 24:
             #cmd = "emacs -l scripts/ox-html.el --batch %s --funcall org-html-export-to-html 2>/dev/null" % notename
-            cmd = "emacs -l scripts/init-orgnote.el --batch %s --funcall org-html-export-to-html 2>/dev/null" % notename
+            cmd = "emacs -l scripts/init-orgnote.el --batch '%s' --funcall org-html-export-to-html 2>/dev/null" % notename
         else:
-            cmd = "emacs -l scripts/init-orgnote.el --batch %s --funcall org-export-as-html 2>/dev/null" % notename
+            cmd = "emacs -l scripts/init-orgnote.el --batch '%s' --funcall org-export-as-html 2>/dev/null" % notename
             
         print("Run: %s" % cmd)
         os.system(cmd)
@@ -255,10 +255,12 @@ def publish_note(notename="",srcdir="./notes/"):
         try:
             if _file.endswith(".org"):
                 _html = _file.replace(".org",".html")
+                
                 if not os.path.exists(_html) or os.stat(_file).st_mtime > os.stat(_html).st_mtime:
                     to_page(_file)                    
             else:
                 _html = _file.replace(".md",".html")
+
                 if not os.path.exists(_html) or os.stat(_file).st_mtime > os.stat(_html).st_mtime:
                     to_page_mk2(_file)
             return _file
