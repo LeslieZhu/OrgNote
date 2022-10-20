@@ -2483,7 +2483,7 @@ class OrgNote(object):
                 _html = _note.replace(".md",".html")
             else:
                 _html = _note
-                
+
             publish_line = util.publish_note(self.notes_db[_note],self.source_dir)
 
             if publish_line not in publish_data and publish_line not in nopublish_data:
@@ -2496,6 +2496,20 @@ class OrgNote(object):
                 # \033[34m蓝色字\033[0m
                 # \033[41;37m红色\033[0m
                 all_publish = False
+
+        # check .html exists
+        for _note in publish_data:
+            if _note.endswith(".org"):
+                _html = _note.replace(".org",".html")
+            elif _note.endswith(".md"):
+                _html = _note.replace(".md",".html")
+            else:
+                continue
+
+            if os.path.exists(_note) and not os.path.exists(_html):
+                all_publish = False
+                print("\033[34m[Warning]\033[0m: %s not generate html file yet!" % _note)
+                publish_line = util.publish_note(_note,_note)
 
         if all_publish:
             print("all notes published!")
