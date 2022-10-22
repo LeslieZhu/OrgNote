@@ -1590,7 +1590,13 @@ class OrgNote(object):
         if prefix == None:
             prefix = "" #self.public_url
 
-        return prefix+'/'.join(link.split('/')[2:])
+        link_list = link.split('/')[2:]
+
+        if len(link_list) >= 4:
+            link_list = link_list[-4:]
+            
+        return prefix+'/'.join(link_list)
+        # return prefix+'/'.join(link.split('/')[2:])
         #return re.sub("//*","/",'/'.join(link.split('/')[2:]))
 
     def gen_sidebar(self):
