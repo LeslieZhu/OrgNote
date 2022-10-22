@@ -924,7 +924,10 @@ class OrgNote(object):
             output += "<h3>%s</h3>" % archives            
             for archive in data[archives]:
                 if len(archive) == 2:
-                    newarchive = [self.public_url + '/'.join(archive[0].split('/')[2:]),'fa fa-file-o',archive[1]]
+                    link_list = archive[0].split('/')[2:]
+                    if len(link_list) >= 4:
+                        link_list = link_list[-4:]
+                    newarchive = [self.public_url + '/'.join(link_list),'fa fa-file-o',archive[1]]
                     output += self.gen_href(newarchive)
                 else:
                     output += self.gen_href(archive)
@@ -956,7 +959,10 @@ class OrgNote(object):
         
         for archive in data:
             if len(archive) == 2:
-                newarchive = [self.public_url + '/'.join(archive[0].split('/')[2:]),'fa fa-file-o',archive[1]]
+                link_list = archive[0].split('/')[2:]
+                if len(link_list) >= 4:
+                    link_list = link_list[-4:]
+                newarchive = [self.public_url + '/'.join(link_list),'fa fa-file-o',archive[1]]
                 output += self.gen_href(newarchive)
             else:
                 output += self.gen_href(archive)
@@ -1591,7 +1597,6 @@ class OrgNote(object):
             prefix = "" #self.public_url
 
         link_list = link.split('/')[2:]
-
         if len(link_list) >= 4:
             link_list = link_list[-4:]
             
