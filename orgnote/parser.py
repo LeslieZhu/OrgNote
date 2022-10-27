@@ -1241,7 +1241,7 @@ class OrgNote(object):
         return output
 
     def donate(self):
-        if not self.donate_name or (not self.donate_wechatpay and not self.donate_alipay):
+        if not self.donate_name or (not self.donate_wechatpay and not self.donate_alipay and not self.weixin_public):
             return ""
 
         output = ""
