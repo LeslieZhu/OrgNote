@@ -14,12 +14,13 @@ from __future__ import absolute_import
 from bs4 import BeautifulSoup
 
 import mistune
+from mistune.plugins import plugin_table,plugin_task_lists,plugin_url,plugin_strikethrough,plugin_footnotes,plugin_abbr
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import html as py_html
  
  
-class HighlightRenderer(mistune.Renderer):
+class HighlightRenderer(mistune.HTMLRenderer):
  
     def block_code(self, code, lang):
         if not lang:
@@ -67,8 +68,9 @@ def md2html(mdstr="", meta_text=""):
     '''
 
     renderer = HighlightRenderer()
-    markdown = mistune.Markdown(renderer=renderer)
+    markdown = mistune.Markdown(renderer=renderer,plugins=[plugin_table,plugin_task_lists,plugin_url,plugin_strikethrough,plugin_footnotes,plugin_abbr])
     ret = markdown(mdstr)
+    #ret = mistune.html(mdstr)
     #ret = markdown.markdown(mdstr,extensions=exts)
     return html % (meta_text,ret)
 
@@ -133,7 +135,7 @@ def to_page_mk2(notename=""):
                     continue
             else:
                 md_text += line
-                md_text += "\n"
+                # md_text += "\n"
             
     # mk = Markdown()
     # html = mk.mk2html(text)
