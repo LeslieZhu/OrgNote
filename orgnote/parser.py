@@ -2537,7 +2537,7 @@ Usage: orgnote <command>
 
 Commands:
   init       Create a new OrgNote folder
-  new        Create a new .org post
+  new        Create a new .org or .md post
   list       List this blog notes
   status     Status of those notes
   org2html   Run Emacs to convert .org to .html
