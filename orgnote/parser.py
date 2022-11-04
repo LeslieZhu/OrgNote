@@ -1220,7 +1220,7 @@ class OrgNote(object):
                 job_data = sorted(jobs)
             elif jobs == self.job_prev:
                 output += "<h3>上周行程</h3>"
-                job_data = sorted(jobs)
+                job_data = sorted(jobs,reverse=True)
             else:
                 output += "<h3>完成行程</h3>"
                 job_data = sorted(jobs,reverse=True)
