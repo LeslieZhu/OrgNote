@@ -1537,7 +1537,7 @@ class OrgNote(object):
         return """
         <div class="container-narrow">
         <footer>
-        <p>&copy; 2014 %s
+        <p>&copy; 2014-%d %s
         with help from <a href="https://github.com/LeslieZhu/OrgNote" target="_blank">OrgNote</a>. Theme by <a href="https://github.com/LeslieZhu/orgnote-theme-freemind">orgnote-theme-freemind</a>.  Published with GitHub Pages. 
         </p> </footer>
         </div> <!-- container-narrow -->
@@ -1550,7 +1550,7 @@ class OrgNote(object):
 
         </body>
         </html>
-        """ % (self.author,self.gen_jscripts())
+        """ % (time.localtime().tm_year,self.author,self.gen_jscripts())
 
     def js_config(self):
         return """
