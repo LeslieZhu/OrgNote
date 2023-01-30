@@ -122,6 +122,8 @@ def to_page_mk2(notename=""):
                     meta_text += '<meta name="keywords" content="%s" />\n' % text
                 elif name == "author":
                     meta_text += '<meta name="author" content="%s" />\n' % text
+                elif name == "reading-mode" and text == "yes":
+                    meta_text += '<meta name="reading-mode" content="yes" />\n'
                 elif name == "date":
                     try:
                         text = time.strptime(text,"%Y/%m/%d")

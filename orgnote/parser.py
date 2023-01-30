@@ -735,10 +735,27 @@ class OrgNote(object):
         else:
             keywordtext = ""
 
+        reading_mode_obj = html_data.find(attrs={"name":"reading-mode"})
+        if reading_mode_obj and reading_mode_obj.has_attr('content'):
+            reading_mode_status = True
+        else:
+            reading_mode_status = False
+
+        reading_mode_processed = False
+        if reading_mode_status:
+            content_data_text = content_data_text.replace("id=\"content\"","id=\"content-reading\"")
+            content_data_text = content_data_text.replace("id=\'content\'","id=\'content-reading\'")
+            reading_mode_processed = True
+            
         for rdmode_key in self.rdmode_keyword_list:
+            if reading_mode_processed:
+                break
+            
             if rdmode_key in keywordtext:
                 content_data_text = content_data_text.replace("id=\"content\"","id=\"content-reading\"")
                 content_data_text = content_data_text.replace("id=\'content\'","id=\'content-reading\'")
+                reading_mode_processed = True
+                break
                         
         # replace images path
         public_file = "file:///%s/" % self.public
