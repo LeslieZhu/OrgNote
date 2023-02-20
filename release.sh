@@ -6,4 +6,4 @@ do
     #python setup.py sdist
 done
 
-twine upload dist/orgnote-1.0.4*
+twine upload dist/orgnote-1.0.5*
