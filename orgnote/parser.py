@@ -2104,7 +2104,7 @@ class OrgNote(object):
             keywords = keywords_list[0].attrs['content']
             return [i.strip() for i in keywords.split(",") if i not in self.ignore_tags_list]
         else:
-            return self.default_tag_list
+            return [i.strip() for i in self.default_tag_list]
 
     def monitor_log(self,s=""):
         print("[Monitor] %s" % s)
