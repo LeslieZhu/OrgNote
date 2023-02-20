@@ -60,6 +60,7 @@ auto_publish: True
 # public: start with '-'
 # nopublic: start with '+'
 nopublic_tag: "暂不公开"
+ignore_tags: "未校阅,未发布"
 reading_mode_keyword: "随笔,札记"
 
 # Theme

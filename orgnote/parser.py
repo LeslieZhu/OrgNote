@@ -141,7 +141,12 @@ class OrgNote(object):
             self.rss_type = "ReadMore"
 
         self.default_tag = self.cfg.cfg.get("default_tag", u"默认")
+        self.default_tag_list = self.default_tag.split(',')
         self.nopublic_tag = self.cfg.cfg.get("nopublic_tag",u"暂不公开")
+        
+        self.ignore_tags = self.cfg.cfg.get("ignore_tags", u"")
+        self.ignore_tags_list = self.ignore_tags.split(',')
+        
         self.rdmode_keyword = self.cfg.cfg.get("reading_mode_keyword",u"随笔")
         self.rdmode_keyword_list = self.rdmode_keyword.split(',')
 
@@ -565,16 +570,16 @@ class OrgNote(object):
         
 
         if num == 0:
-            prev_page = '<li class="prev disabled"><a><i class="fa fa-arrow-circle-o-left"></i>Newer</a></li>'
+            prev_page = '<li class="prev disabled"><a><i class="fa fa-arrow-circle-o-left"></i>上一页</a></li>'
         elif num == 1:
-            prev_page = '<li class="prev"><a href="%s" class=alignright prev"><i class="fa fa-arrow-circle-o-left"></i>Newer</a></li>' % (self.blogroot + "index.html")
+            prev_page = '<li class="prev"><a href="%s" class=alignright prev"><i class="fa fa-arrow-circle-o-left"></i>上一页</a></li>' % (self.blogroot + "index.html")
         else:
-            prev_page = '<li class="prev"><a href="%s" class=alignright prev"><i class="fa fa-arrow-circle-o-left"></i>Newer</a></li>' % (self.public_url + "page"+str(num-1)+".html")
+            prev_page = '<li class="prev"><a href="%s" class=alignright prev"><i class="fa fa-arrow-circle-o-left"></i>上一页</a></li>' % (self.public_url + "page"+str(num-1)+".html")
 
         if lastone == len(self.notes):
-            next_page = '<li class="next disabled"><a><i class="fa fa-arrow-circle-o-right"></i>Older</a></li>'
+            next_page = '<li class="next disabled"><a><i class="fa fa-arrow-circle-o-right"></i>下一页</a></li>'
         else:
-            next_page = '<li class="next"><a href="%s" class="alignright next">Older<i class="fa fa-arrow-circle-o-right"></i></a></li>' % (self.public_url + "page"+str(num+1)+".html")
+            next_page = '<li class="next"><a href="%s" class="alignright next">下一页<i class="fa fa-arrow-circle-o-right"></i></a></li>' % (self.public_url + "page"+str(num+1)+".html")
 
         output += """
         <div>
@@ -582,7 +587,7 @@ class OrgNote(object):
         <div class="pagination">
         <ul class="pagination">
         %s
-        <li><a href="%sarchive.html" target="_blank"><i class="fa fa-archive"></i>Archive</a></li>
+        <li><a href="%sarchive.html" target="_blank"><i class="fa fa-archive"></i>归档</a></li>
         %s
         </ul>
         </div>
@@ -624,6 +629,10 @@ class OrgNote(object):
             self.page_tags[link[0]] = keywords
 
             for key in keywords:
+                
+                if key in self.ignore_tags_list:
+                    continue
+                
                 if key not in self.keywords:
                     self.keywords.append(key)
                 if key not in self.tags.keys():
@@ -820,7 +829,7 @@ class OrgNote(object):
             <div class="pagination">
             <ul class="pagination">
             %s
-            <li><a href="%sarchive.html" target="_blank"><i class="fa fa-archive"></i>Archive</a></li>
+            <li><a href="%sarchive.html" target="_blank"><i class="fa fa-archive"></i>归档</a></li>
             %s
             </ul>
             </div>
@@ -1012,6 +1021,10 @@ class OrgNote(object):
         from functools import cmp_to_key
         key = cmp_to_key(lambda x,y: len(self.tags[x]) - len(self.tags[y]))
         for key in sorted(self.keywords,key=key,reverse=True):
+            
+            if key in self.ignore_tags_list:
+                continue
+            
             output += "<a href=\"javascript:showul('%s');\"><h3>%s(%d)</h3></a>" % (key,key,len(self.tags[key]))
             output += "<ul id='%s' style='display:none'>" %  key
             for link in self.tags[key]:
@@ -1419,6 +1432,10 @@ class OrgNote(object):
         from functools import cmp_to_key
         key = cmp_to_key(lambda x,y: len(self.tags[x]) - len(self.tags[y]))
         for key in sorted(self.keywords,key=key,reverse=True):
+            
+            if key in self.ignore_tags_list:
+                continue
+            
             output += "<li><a href=\"%stags/%s.html\">%s<span>%s</span></a></li>" % (self.public_url,key,key,len(self.tags[key]))
 
         output += """
@@ -1436,6 +1453,10 @@ class OrgNote(object):
         from functools import cmp_to_key
         key = cmp_to_key(lambda x,y: len(self.tags[x]) - len(self.tags[y]))
         for key in sorted(self.keywords,key=key,reverse=True):
+            
+            if key in self.ignore_tags_list:
+                continue
+            
             nums = len(self.tags[key])
             size = nums/5.0
             if size < 1:
@@ -1798,6 +1819,10 @@ class OrgNote(object):
                    self.author,self.gen_public_link(link,self.public_url))
 
             for tag in self.gen_category(link):
+                
+                if tag in self.ignore_tags_list:
+                    continue
+                
                 output += '''<category><![CDATA[%s]]></category>''' % tag
                 
 
@@ -1858,9 +1883,13 @@ class OrgNote(object):
         output_html += header
         output_html += self.body_prefix()
         output_html += self.body_menu(self.menus)
-        
+
         if public:
-            output_html += self.contain_prefix(self.page_tags[note[0]],"标签: ",util.gen_title(note[0]))
+            tags = self.page_tags[note[0]]
+            if self.ignore_tags_list:
+                tags = [i for i in tags if i not in self.ignore_tags_list]
+                
+            output_html += self.contain_prefix(tags,"标签: ",util.gen_title(note[0]))
         else:
             output_html += self.contain_prefix([self.nopublic_tag],"标签: ",util.gen_title(note[0]))
 
@@ -1966,6 +1995,9 @@ class OrgNote(object):
 
     def gen_tags(self):
         for key in self.keywords:
+            if key in self.ignore_tags_list:
+                continue
+            
             output = open("./" + self.public_dir + "tags/" + key + ".html","w")
             print(self.header_prefix(title=key),file=output)
             print(self.body_prefix(),file=output)
@@ -2070,9 +2102,9 @@ class OrgNote(object):
 
         if keywords_list and 'content' in keywords_list[0].attrs.keys():
             keywords = keywords_list[0].attrs['content']
-            return [i.strip() for i in keywords.split(",")]
+            return [i.strip() for i in keywords.split(",") if i not in self.ignore_tags_list]
         else:
-            return [self.default_tag]
+            return self.default_tag_list
 
     def monitor_log(self,s=""):
         print("[Monitor] %s" % s)

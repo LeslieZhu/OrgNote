@@ -114,7 +114,7 @@ setup(
 	"Pygments>=2.7.4",
 	"beautifulsoup4>=4.4.1",
 	"bs4>=0.0.1",
-        "mistune>=0.8.4",
+        "mistune==2.0.4",
     "Markdown>=3.1.1",
     "watchdog>=0.9.0",
     ]
