@@ -14,6 +14,7 @@ from __future__ import absolute_import
 from bs4 import BeautifulSoup
 
 import mistune
+import re
 from mistune.plugins import plugin_table,plugin_task_lists,plugin_url,plugin_strikethrough,plugin_footnotes,plugin_abbr
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
@@ -21,6 +22,46 @@ from pygments.formatters import html as py_html
  
  
 class HighlightRenderer(mistune.HTMLRenderer):
+
+    def __init__(self):
+        super().__init__()
+        self.toc = []
+        self.anchor_count = {}
+        self.level_counts = [0] * 10  # 假设最多支持 10 级标题
+        self.last_level = 1
+
+    def heading(self, text, level):
+        # self.toc.append((level, text))
+        # return super().heading(text, level)
+
+        # 生成锚点 ID
+        anchor_text = re.sub(r'[^\w\s-]', '', text).strip().replace(' ', '-').lower()
+        if anchor_text in self.anchor_count:
+            self.anchor_count[anchor_text] += 1
+            anchor_id = f'{anchor_text}-{self.anchor_count[anchor_text]}'
+        else:
+            self.anchor_count[anchor_text] = 0
+            anchor_id = anchor_text
+
+        # 处理标题序号
+        while level > self.last_level:
+            self.last_level += 1
+        while level < self.last_level:
+            self.last_level -= 1
+            # 重置下级标题的计数
+            for i in range(self.last_level, len(self.level_counts)):
+                self.level_counts[i] = 0
+                
+        self.level_counts[level - 1] += 1
+        
+        # 生成序号
+        number = '.'.join(map(str, self.level_counts[:level]))
+
+        # 提取标题信息、锚点 ID 和序号
+        self.toc.append((level, text, anchor_id, number))
+
+        # 渲染标题并添加锚点 ID
+        return f'<h{level} id="{anchor_id}">{number}. {text}</h{level}>'
 
     def block_code(self, code, lang="text"):
         lang = lang.strip()
@@ -59,6 +100,26 @@ def gen_title(link=""):
 
     return title
 
+def get_toc_html(toc=""):
+    toc_html = '<h1>目录</h1><ul>'
+    last_level = 1
+    
+    for level, text, anchor_id, number in toc:
+        while level > last_level:
+            toc_html += '<ul>'
+            last_level += 1
+        while level < last_level:
+            toc_html += '</ul>\n'
+            last_level -= 1
+            
+        toc_html += f'<li><a href="#{anchor_id}">{number}. {text}</a></li>\n'
+
+    while last_level > 1:
+        toc_html += '</ul>\n'
+        last_level -= 1
+    toc_html += '</ul>\n'
+    return toc_html
+
 def md2html(mdstr="", meta_text=""):
     #import markdown
     
@@ -80,9 +141,15 @@ def md2html(mdstr="", meta_text=""):
 
     renderer = HighlightRenderer()
     markdown = mistune.Markdown(renderer=renderer,plugins=[plugin_table,plugin_task_lists,plugin_url,plugin_strikethrough,plugin_footnotes,plugin_abbr])
-    ret = markdown(mdstr)
-    #ret = mistune.html(mdstr)
-    #ret = markdown.markdown(mdstr,extensions=exts)
+
+    if "[TOC]" in mdstr:
+        ret = markdown(mdstr.replace("[TOC]", ""))
+        toc = markdown.renderer.toc
+        toc_html = get_toc_html(toc)    
+        ret = toc_html + ret
+    else:
+        ret = markdown(mdstr)
+    
     return html % (meta_text,ret)
 
 def to_page_mk2(notename=""):
