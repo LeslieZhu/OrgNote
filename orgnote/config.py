@@ -176,6 +176,7 @@ nopublic_file: nopublic.org
 # html file string replace
 replace_str:
     - "typora-export => container"
+    - ['class="typora-export"', 'class="container"']
 """
 
     def __init__(self,cfgfile="_config.yml"):

@@ -21,17 +21,25 @@ from pygments.formatters import html as py_html
  
  
 class HighlightRenderer(mistune.HTMLRenderer):
- 
+
     def block_code(self, code, lang="text"):
         lang = lang.strip()
         if lang == "":
             lang = "text"
         if not lang:
             return '\n<pre><code>%s</code></pre>\n' % mistune.escape(code)
+        elif lang == "mermaid":
+            # 生成 Mermaid 专用的 HTML 结构
+            return f'\n<div class="mermaid">\n{code}\n</div>\n'
+
+        # 其他代码块使用默认渲染逻辑
+        # return super().block_code(code, lang)
+
+        # use highlight
         lexer = get_lexer_by_name(lang, stripall=True)
         formatter = py_html.HtmlFormatter()
         return highlight(code, lexer, formatter)
- 
+
 
 def gen_title(link=""):
     """ Filter Title from HTML metadata """

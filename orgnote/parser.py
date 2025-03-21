@@ -311,6 +311,12 @@ class OrgNote(object):
         <link rel="stylesheet" href="%stheme/%s/css/%s-highlight.css" media="screen" type="text/css">
         <script type="text/javascript" src="%stheme/%s/js/jquery-2.0.3.min.js"></script>
         <script type="text/javascript" src="%stheme/%s/js/local-search.js?v=7.4.1"></script>
+
+        <script type="text/javascript" src="%stheme/%s/js/mermaid-10.6.1.min.js"></script>
+        <script>
+            mermaid.initialize({ startOnLoad: true });
+        </script>
+        
         <ORGNOTESTYLE>
         </head>
         """ % (self.js_config(),title, self.author, self.email, self.description, self.title,self._keywords,
@@ -320,6 +326,7 @@ class OrgNote(object):
                self.blogroot,self.theme,
                self.blogroot,self.theme,
                self.blogroot,self.theme,self.css_highlight,
+               self.blogroot,self.theme,
                self.blogroot,self.theme,
                self.blogroot,self.theme
         )
@@ -1900,11 +1907,15 @@ class OrgNote(object):
         output_html += self.header_suffix()
 
         for item in self.replace_str_list:
-            if not item and len(item) != 2: continue
+            if not isinstance(item, list):
+                item = [i.strip() for i in item.split("=>")]
+            if not item or not len(item) != 2: continue
             output_html = output_html.replace(item[0],item[1])
 
         print(output_html, file=output)
         output.close()
+
+
         
     def gen_public(self):
         for i,note in enumerate(self.notes):
